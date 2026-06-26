@@ -99,7 +99,7 @@ def evaluate_pack(pack_name: str, root: Path, coll, model, reranker, top_n: int)
     pack_chunk_ids = load_pack_chunk_ids(pack_dir)
     # over-fetch from the global collection, then filter down to this pack's
     # own chunk_ids so scoping matches test_retrieval_embedding.py exactly
-    fetch_n = max(top_n * 4, 20)
+    fetch_n = max(top_n * 2, 10)
 
     metrics: dict[str, object] = {"queries": 0, "sum_precision": 0.0, "sum_recall": 0.0, "details": []}
 
