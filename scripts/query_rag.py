@@ -73,7 +73,7 @@ except ImportError as exc:
 EMBED_MODEL         = "nomic-ai/nomic-embed-text-v2-moe"
 RERANK_MODEL        = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 RERANK_FETCH_MULTIPLIER = 4   # over-fetch this many times --top from Chroma before reranking
-RERANK_FETCH_MIN        = 8  # ...but always fetch at least this many candidates
+RERANK_FETCH_MIN        = 20  # ...but always fetch at least this many candidates
 DEVICE              = "cpu"
 CHROMA_PATH         = Path(__file__).parent.parent / "chroma_db"
 COLLECTION          = "ncnr_rag"

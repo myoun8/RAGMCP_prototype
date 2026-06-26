@@ -49,6 +49,31 @@ def slugify(value: str) -> str:
     return value.strip('_') or 'section'
 
 
+MIN_CHUNK_CHARS = 1200
+MAX_CHUNK_CHARS = 4000
+
+
+def split_oversized_section(parent_title: str, section_body: str) -> List[Tuple[str, str]]:
+    # An H2 section that's too large on its own (e.g. a year-by-year
+    # publication list) gets split further on its H3 subheadings, then
+    # those subsections are re-merged up to size by the caller.
+    matches = list(re.finditer(r'^###\s+(.+?)\s*$', section_body, flags=re.MULTILINE))
+    if not matches:
+        return [(parent_title, section_body)]
+
+    parts: List[Tuple[str, str]] = []
+    intro = section_body[:matches[0].start()].strip()
+    if intro:
+        parts.append((parent_title, intro))
+    for idx, match in enumerate(matches):
+        start = match.start()
+        end = matches[idx + 1].start() if idx + 1 < len(matches) else len(section_body)
+        sub_title = match.group(1).strip()
+        sub_body = section_body[start:end].strip()
+        parts.append((f'{parent_title} / {sub_title}', sub_body))
+    return parts
+
+
 def split_by_h2(body: str) -> List[Tuple[str, str]]:
     # Keep H1 title as context, split primarily on H2 headings.
     h1 = ''
@@ -60,15 +85,49 @@ def split_by_h2(body: str) -> List[Tuple[str, str]]:
     if not matches:
         return [(h1 or 'Document', body.strip())]
 
-    chunks: List[Tuple[str, str]] = []
+    sections: List[Tuple[str, str]] = []
     intro = body[:matches[0].start()].strip()
     if intro:
-        chunks.append(('Overview', intro))
+        sections.append(('Overview', intro))
     for idx, match in enumerate(matches):
         start = match.start()
         end = matches[idx + 1].start() if idx + 1 < len(matches) else len(body)
         section_title = match.group(1).strip()
         section_body = body[start:end].strip()
+        if len(section_body) > MAX_CHUNK_CHARS:
+            sections.extend(split_oversized_section(section_title, section_body))
+        else:
+            sections.append((section_title, section_body))
+
+    # Merge consecutive small sections so document length doesn't translate
+    # directly into chunk count: a verbose source shouldn't dominate
+    # retrieval purely by contributing many more chunks than its peers.
+    merged: List[Tuple[str, str]] = []
+    pending_titles: List[str] = []
+    pending_bodies: List[str] = []
+    pending_len = 0
+    for title, text in sections:
+        if pending_bodies and pending_len + len(text) > MAX_CHUNK_CHARS:
+            merged.append((' / '.join(pending_titles), '\n\n'.join(pending_bodies)))
+            pending_titles, pending_bodies, pending_len = [], [], 0
+        pending_titles.append(title)
+        pending_bodies.append(text)
+        pending_len += len(text)
+        if pending_len >= MIN_CHUNK_CHARS:
+            merged.append((' / '.join(pending_titles), '\n\n'.join(pending_bodies)))
+            pending_titles, pending_bodies, pending_len = [], [], 0
+    if pending_bodies:
+        if merged:
+            prev_title, prev_text = merged[-1]
+            merged[-1] = (
+                prev_title + ' / ' + ' / '.join(pending_titles),
+                prev_text + '\n\n' + '\n\n'.join(pending_bodies),
+            )
+        else:
+            merged.append((' / '.join(pending_titles), '\n\n'.join(pending_bodies)))
+
+    chunks: List[Tuple[str, str]] = []
+    for section_title, section_body in merged:
         if h1:
             section_body = f'# {h1}\n\n{section_body}'
         chunks.append((section_title, section_body))
