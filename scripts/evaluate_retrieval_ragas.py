@@ -28,7 +28,8 @@ import json
 from pathlib import Path
 
 import chromadb
-from ollama_embed import embed as ollama_embed
+from langchain_chroma import Chroma
+from langchain_ollama import OllamaEmbeddings
 
 MODEL_NAME = "nomic-embed-text"
 QUERY_PREFIX = "search_query: "
@@ -83,7 +84,7 @@ def context_recall(retrieved_source_ids: list[str], expected_sources: set[str]) 
     return len(found) / len(expected_sources)
 
 
-def evaluate_pack(pack_name: str, root: Path, coll, top_n: int) -> dict[str, object]:
+def evaluate_pack(pack_name: str, root: Path, vectorstore: Chroma, embedder: OllamaEmbeddings, top_n: int) -> dict[str, object]:
     pack_dir = root / pack_name
     questions = load_eval_questions(pack_dir)
     pack_chunk_ids = load_pack_chunk_ids(pack_dir)
@@ -97,12 +98,11 @@ def evaluate_pack(pack_name: str, root: Path, coll, top_n: int) -> dict[str, obj
         query_text = question.get("question", "")
         expected_sources = set(question.get("expected_sources", []))
 
-        query_vec = ollama_embed([QUERY_PREFIX + query_text])
-        result = coll.query(query_embeddings=query_vec, n_results=fetch_n, include=["documents", "metadatas"])
-
-        ids = result["ids"][0]
-        metas = result["metadatas"][0]
-        filtered_metas = [meta for cid, meta in zip(ids, metas) if cid in pack_chunk_ids][:top_n]
+        query_vec = embedder.embed_query(QUERY_PREFIX + query_text)
+        docs = vectorstore.similarity_search_by_vector(query_vec, k=fetch_n)
+        # chunk_id is carried in metadata (set by embed_and_ingest.py) since
+        # LangChain Document objects don't reliably expose the Chroma id itself.
+        filtered_metas = [d.metadata for d in docs if d.metadata.get("chunk_id") in pack_chunk_ids][:top_n]
         retrieved_source_ids = [m.get("source_id") for m in filtered_metas]
 
         relevance = [1 if sid in expected_sources else 0 for sid in retrieved_source_ids]
@@ -153,12 +153,13 @@ def main() -> int:
 
     root = Path.cwd()
     client = chromadb.PersistentClient(path=CHROMA_PATH)
-    coll = client.get_collection(COLLECTION)
+    embedder = OllamaEmbeddings(model=MODEL_NAME)
+    vectorstore = Chroma(client=client, collection_name=COLLECTION, embedding_function=embedder)
 
     if args.evaluate_all:
         rows = []
         for pack_name in PACKS:
-            metrics = evaluate_pack(pack_name, root, coll, args.top)
+            metrics = evaluate_pack(pack_name, root, vectorstore, embedder, args.top)
             rows.append({
                 "pack": pack_name,
                 "top_n": args.top,
@@ -175,7 +176,7 @@ def main() -> int:
         print("ERROR: pack is required unless --evaluate-all is used.")
         return 2
 
-    metrics = evaluate_pack(args.pack, root, coll, args.top)
+    metrics = evaluate_pack(args.pack, root, vectorstore, embedder, args.top)
     print(f"RAGAS-standard retrieval evaluation for top {args.top}")
     print(f"  queries: {metrics['queries']}")
     print(f"  mean Context Precision@{args.top}: {metrics['mean_context_precision']:.3f}")

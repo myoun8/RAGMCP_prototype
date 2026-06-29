@@ -34,7 +34,8 @@ Adjust the field access in load_chunks() to match your actual schema.
 import json
 import glob
 import chromadb
-from ollama_embed import embed as ollama_embed
+from langchain_chroma import Chroma
+from langchain_ollama import OllamaEmbeddings
 
 # ---- config ---------------------------------------------------------------
 OLLAMA_MODEL    = "nomic-embed-text"
@@ -118,9 +119,14 @@ def main():
         seen.add(cid)
 
         meta = sanitize_metadata(r.get("metadata", {}))
-        # carry doc_id / source_id into metadata so they're filterable too
+        # carry doc_id / source_id / chunk_id into metadata so they're filterable too.
+        # chunk_id in particular: LangChain's Document objects returned from Chroma
+        # similarity search don't reliably expose the Chroma-assigned id, so callers
+        # that need to scope results back to a pack's own chunk_ids (the eval scripts)
+        # have to read it from metadata instead.
         meta.setdefault("doc_id", r.get("doc_id", ""))
         meta.setdefault("source_id", r.get("source_id", ""))
+        meta.setdefault("chunk_id", cid)
 
         ids.append(cid)
         docs_store.append(r["text"])  # store the clean text for retrieval
@@ -130,11 +136,12 @@ def main():
         metas.append(meta)
 
     # ---- embed (document side: search_document: prefix, normalized) ----
+    embedder = OllamaEmbeddings(model=OLLAMA_MODEL, base_url=OLLAMA_BASE_URL)
     print(f"Embedding via Ollama ({OLLAMA_MODEL}) ...")
     vectors = []
     for i in range(0, len(docs_for_embed), BATCH):
         batch = docs_for_embed[i:i + BATCH]
-        vectors.extend(ollama_embed(batch, model=OLLAMA_MODEL, base_url=OLLAMA_BASE_URL))
+        vectors.extend(embedder.embed_documents(batch))
         print(f"  embedded {min(i + BATCH, len(docs_for_embed))}/{len(docs_for_embed)}")
 
     # sanity: dimension must match what the collection will expect
@@ -148,21 +155,31 @@ def main():
         client.delete_collection(COLLECTION)
     except Exception:
         pass
-    coll = client.create_collection(
-        name=COLLECTION,
-        metadata={"hnsw:space": "cosine"},   # match normalized Nomic Embed vectors
+    # Wrap in langchain_chroma.Chroma so the collection this script produces is the
+    # same vectorstore object query_rag.py / the eval scripts consume as a retriever.
+    vectorstore = Chroma(
+        client=client,
+        collection_name=COLLECTION,
+        embedding_function=embedder,
+        collection_metadata={"hnsw:space": "cosine"},   # match normalized Nomic Embed vectors
     )
 
     print("Adding to Chroma ...")
+    # Chroma.add_texts()/from_documents() always re-embeds page_content themselves
+    # (no precomputed-embeddings parameter), which would discard the search_document:
+    # prefix + doc_id/section enrichment baked into docs_for_embed above and embed the
+    # stored (unenriched) text instead. Reaching into the wrapped raw chromadb
+    # collection preserves "embed enriched text, store/display original text",
+    # identical to the add() call this replaces.
     for i in range(0, len(ids), BATCH):
         sl = slice(i, i + BATCH)
-        coll.add(
+        vectorstore._collection.add(
             ids=ids[sl],
             embeddings=vectors[sl],
             documents=docs_store[sl],
             metadatas=metas[sl],
         )
-    print(f"Done. Collection '{COLLECTION}' now holds {coll.count()} chunks.")
+    print(f"Done. Collection '{COLLECTION}' now holds {vectorstore._collection.count()} chunks.")
 
 
 if __name__ == "__main__":

@@ -3,18 +3,27 @@ Query the NCNR RAG knowledge pack with an LLM — local Ollama (default) or
 any OpenAI-compatible chat-completions endpoint (e.g. an NVIDIA NIM
 container) reached over a manually-established SSH tunnel.
 
+Built on LangChain: retrieval goes through langchain_chroma.Chroma
+(embedding via langchain_ollama.OllamaEmbeddings), and all three chat
+backends are exposed as a langchain_core.BaseChatModel so the
+prompt-construction / invocation code path is backend-agnostic. The `ssh`
+backend has no existing LangChain integration (paramiko exec_command + curl
+against a container's own loopback, not an HTTP client), so it's wrapped in
+a small custom BaseChatModel subclass (SSHChatModel, below) rather than left
+as a separate non-LangChain code path.
+
 Prerequisites (Ollama backend, default):
   1. Ollama installed and running  (ollama serve)
   2. A chat model pulled          (ollama pull llama3.2)
   3. The embedding model pulled   (ollama pull nomic-embed-text)
   4. Chroma DB populated          (python scripts/embed_and_ingest.py)
-  5. pip install chromadb
+  5. pip install -r requirements.txt
 
 Prerequisites (OpenAI-compatible backend, e.g. NIM on a remote GB10 box):
   1. Ollama running locally with nomic-embed-text pulled (used for query
      embedding even when the chat call goes to a remote NIM endpoint)
   2. Chroma DB populated          (python scripts/embed_and_ingest.py)
-  3. pip install chromadb
+  3. pip install -r requirements.txt
   4. SSH tunnel opened manually in another terminal, e.g.:
        ssh -L 8001:localhost:8001 user@gb10-host
      (the NIM container must already be serving on that remote port)
@@ -24,7 +33,7 @@ no local port-forward needed):
   1. Ollama running locally with nomic-embed-text pulled (used for query
      embedding even when the chat call goes to a remote NIM endpoint)
   2. Chroma DB populated          (python scripts/embed_and_ingest.py)
-  3. pip install chromadb paramiko
+  3. pip install -r requirements.txt (includes paramiko)
   4. NIM container already serving on the remote host's own loopback
      (this runs the same curl pattern as test.py, but over SSH exec
      instead of from a local tunnel, and with credentials read from
@@ -61,19 +70,26 @@ import json
 import os
 import re
 import shlex
-import urllib.request
-import urllib.error
 from pathlib import Path
+from typing import Any, Optional
 
 try:
     import chromadb
 except ImportError as exc:
     raise SystemExit(
         f"Missing dependency: {exc}\n"
-        "Run: pip install chromadb"
+        "Run: pip install -r requirements.txt"
     )
 
-from ollama_embed import embed as ollama_embed
+from langchain_chroma import Chroma
+from langchain_ollama import OllamaEmbeddings, ChatOllama
+from langchain_openai import ChatOpenAI
+from langchain_core.documents import Document
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.messages import AIMessage, BaseMessage, SystemMessage
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.outputs import ChatGeneration, ChatResult
+from langchain_core.prompts import ChatPromptTemplate
 
 # ── Config ───────────────────────────────────────────────────────────────────
 EMBED_MODEL         = "nomic-embed-text"
@@ -98,6 +114,8 @@ DEFAULT_REMOTE_NIM_PORT   = 8001
 # nomic-embed-text-v2-moe requires an instruction prefix on BOTH sides
 # (see nomic-ai/nomic-embed-text-v2-moe model card) -- this is the query-side prefix;
 # embed_and_ingest.py applies the matching "search_document: " prefix on the doc side.
+# OllamaEmbeddings has no knowledge of this convention, so it's still applied
+# explicitly here rather than inside the embeddings client.
 QUERY_PREFIX = "search_query: "
 
 # access_level cascade: each level includes all levels below it
@@ -117,11 +135,12 @@ SYSTEM_PROMPT = (
     "Only say the information isn't available if no context chunk is actually relevant. "
     "Cite your sources inline using [source_id] notation after relevant statements."
 )
+
+PROMPT = ChatPromptTemplate.from_messages([
+    ("system", SYSTEM_PROMPT),
+    ("human", "Context:\n{context}\n\nQuestion: {question}"),
+])
 # ─────────────────────────────────────────────────────────────────────────────
-
-
-def embed_query(query: str) -> list:
-    return ollama_embed([QUERY_PREFIX + query], model=EMBED_MODEL, base_url=EMBED_BASE_URL)[0]
 
 
 def build_chroma_filter(access_level: str, pack: str | None) -> dict:
@@ -134,19 +153,11 @@ def build_chroma_filter(access_level: str, pack: str | None) -> dict:
     return {"$and": conditions}
 
 
-def build_context(chunks_raw: list[tuple[str, dict]]) -> tuple[str, list[dict]]:
-    chunks = []
-    for text, meta in chunks_raw:
-        chunks.append({
-            "source_id": meta.get("source_id", "unknown"),
-            "section":   meta.get("section", ""),
-            "url":       meta.get("source_url_or_path", ""),
-            "text":      text,
-        })
-    context_str = "\n\n---\n\n".join(
-        f"[{c['source_id']}] {c['section']}\n{c['text']}" for c in chunks
+def format_docs(docs: list[Document]) -> str:
+    return "\n\n---\n\n".join(
+        f"[{d.metadata.get('source_id', 'unknown')}] {d.metadata.get('section', '')}\n{d.page_content}"
+        for d in docs
     )
-    return context_str, chunks
 
 
 def strip_thinking(answer: str) -> str:
@@ -154,50 +165,14 @@ def strip_thinking(answer: str) -> str:
     return re.sub(r"^\s*<think>.*?</think>\s*", "", answer, count=1, flags=re.DOTALL)
 
 
-def call_llm(
-    backend: str,
-    base_url: str,
-    model_name: str,
-    user_message: str,
-    api_key: str | None = None,
-) -> str:
-    headers = {"Content-Type": "application/json"}
-    payload = json.dumps({
-        "model": model_name,
-        "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user",   "content": user_message},
-        ],
-        "stream": False,
-    }).encode()
-
-    if backend == "ollama":
-        url = f"{base_url.rstrip('/')}/api/chat"
-    else:  # openai
-        url = f"{base_url.rstrip('/')}/chat/completions"
-        if api_key:
-            headers["Authorization"] = f"Bearer {api_key}"
-
-    req = urllib.request.Request(url, data=payload, headers=headers)
-    try:
-        with urllib.request.urlopen(req, timeout=180) as resp:
-            body = json.loads(resp.read())
-    except urllib.error.URLError as exc:
-        if backend == "ollama":
-            raise SystemExit(
-                f"Cannot reach Ollama at {url}\n"
-                f"Is it running? Try: ollama serve\n{exc}"
-            )
-        raise SystemExit(
-            f"Cannot reach OpenAI-compatible endpoint at {url}\n"
-            "Is the SSH tunnel to the GB10 box open? Try something like:\n"
-            "  ssh -L 8001:localhost:8001 user@gb10-host\n"
-            f"{exc}"
-        )
-
-    if backend == "ollama":
-        return body["message"]["content"]
-    return body["choices"][0]["message"]["content"]
+def _message_to_dict(message: BaseMessage) -> dict:
+    if isinstance(message, SystemMessage):
+        role = "system"
+    elif isinstance(message, AIMessage):
+        role = "assistant"
+    else:
+        role = "user"
+    return {"role": role, "content": message.content}
 
 
 def call_llm_via_ssh(
@@ -208,22 +183,19 @@ def call_llm_via_ssh(
     ssh_key_file: str | None,
     remote_port: int,
     model_name: str,
-    user_message: str,
+    messages: list[dict],
 ) -> str:
     try:
         import paramiko
     except ImportError as exc:
         raise SystemExit(
             f"Missing dependency: {exc}\n"
-            "Run: pip install paramiko"
+            "Run: pip install -r requirements.txt"
         )
 
     payload = json.dumps({
         "model": model_name,
-        "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user",   "content": user_message},
-        ],
+        "messages": messages,
         "stream": False,
     })
 
@@ -276,6 +248,43 @@ def call_llm_via_ssh(
         )
 
     return body["choices"][0]["message"]["content"]
+
+
+class SSHChatModel(BaseChatModel):
+    """Chat model for an OpenAI-compatible endpoint reached only via SSH
+    remote-exec (paramiko + curl against the remote host's own loopback),
+    e.g. an NVIDIA NIM container with no local network path or tunnel.
+
+    Wrapping this as a BaseChatModel (instead of a separate non-LangChain
+    code path) lets query_rag.py's retrieval/prompt/invocation logic stay
+    backend-agnostic across all three --backend choices.
+    """
+
+    ssh_host: str
+    ssh_port: int = DEFAULT_SSH_PORT
+    ssh_user: str
+    ssh_password: Optional[str] = None
+    ssh_key_file: Optional[str] = None
+    remote_port: int = DEFAULT_REMOTE_NIM_PORT
+    model_name: str
+
+    @property
+    def _llm_type(self) -> str:
+        return "ssh-nim"
+
+    def _generate(
+        self,
+        messages: list[BaseMessage],
+        stop: Optional[list[str]] = None,
+        run_manager: Any = None,
+        **kwargs: Any,
+    ) -> ChatResult:
+        message_dicts = [_message_to_dict(m) for m in messages]
+        answer = call_llm_via_ssh(
+            self.ssh_host, self.ssh_port, self.ssh_user, self.ssh_password,
+            self.ssh_key_file, self.remote_port, self.model_name, message_dicts,
+        )
+        return ChatResult(generations=[ChatGeneration(message=AIMessage(content=answer))])
 
 
 def main():
@@ -375,6 +384,18 @@ def main():
              f"loopback (default: {DEFAULT_REMOTE_NIM_PORT}). Only used by --backend ssh.",
     )
     parser.add_argument(
+        "--max-distance",
+        type=float,
+        default=0.5,
+        metavar="D",
+        dest="max_distance",
+        help="Skip the LLM call if even the closest retrieved chunk's cosine "
+             "distance exceeds this (i.e. nothing relevant enough was found). "
+             "Cosine distance ranges 0 (identical) to 2 (opposite); lower is "
+             "stricter. Default 0.5 is a starting point -- calibrate against "
+             "this pack's own eval questions. Pass 2 to disable the guard.",
+    )
+    parser.add_argument(
         "--access-level",
         choices=list(ACCESS_LEVEL_MAP),
         default="public",
@@ -383,13 +404,12 @@ def main():
     )
     args = parser.parse_args()
 
-    ssh_host = ssh_user = ssh_password = ssh_key_file = None
-    ssh_port = remote_port = None
+    ssh_host = ssh_user = None
 
     if args.backend == "ollama":
         base_url = args.base_url or OLLAMA_BASE_URL
         model_name = args.model or DEFAULT_MODEL
-        api_key = None
+        llm = ChatOllama(model=model_name, base_url=base_url)
     elif args.backend == "openai":
         if not args.base_url:
             raise SystemExit(
@@ -406,15 +426,14 @@ def main():
         base_url = args.base_url
         model_name = args.model
         api_key = args.api_key or os.environ.get(NIM_API_KEY_ENV_VAR)
+        # ChatOpenAI requires a non-empty api_key even against unauthenticated
+        # self-hosted endpoints.
+        llm = ChatOpenAI(model=model_name, base_url=base_url, api_key=api_key or "not-needed")
     else:  # ssh
-        base_url = None
-        api_key = None
         ssh_host = args.ssh_host or os.environ.get(GB10_SSH_HOST_ENV_VAR)
         ssh_user = args.ssh_user or os.environ.get(GB10_SSH_USER_ENV_VAR)
         ssh_password = args.ssh_password or os.environ.get(GB10_SSH_PASSWORD_ENV_VAR)
         ssh_key_file = args.ssh_key_file or os.environ.get(GB10_SSH_KEY_FILE_ENV_VAR)
-        ssh_port = args.ssh_port
-        remote_port = args.remote_port
         if not ssh_host:
             raise SystemExit(
                 f"--ssh-host is required for --backend ssh (or set {GB10_SSH_HOST_ENV_VAR})."
@@ -434,6 +453,11 @@ def main():
                 "Example: --model nvidia/llama-3.3-nemotron-super-49b-v1.5"
             )
         model_name = args.model
+        llm = SSHChatModel(
+            ssh_host=ssh_host, ssh_port=args.ssh_port, ssh_user=ssh_user,
+            ssh_password=ssh_password, ssh_key_file=ssh_key_file,
+            remote_port=args.remote_port, model_name=model_name,
+        )
 
     if not CHROMA_PATH.exists():
         raise SystemExit(
@@ -443,8 +467,10 @@ def main():
 
     print("Connecting to Chroma ...")
     client = chromadb.PersistentClient(path=str(CHROMA_PATH))
+    embedder = OllamaEmbeddings(model=EMBED_MODEL, base_url=EMBED_BASE_URL)
+    vectorstore = Chroma(client=client, collection_name=COLLECTION, embedding_function=embedder)
     try:
-        collection = client.get_collection(COLLECTION)
+        vectorstore._collection.count()
     except Exception:
         raise SystemExit(
             f"Collection '{COLLECTION}' not found in {CHROMA_PATH}\n"
@@ -453,47 +479,52 @@ def main():
 
     where_filter = build_chroma_filter(args.access_level, args.pack)
     print(f"Embedding query via Ollama ({EMBED_MODEL}) ...")
-    query_vec    = embed_query(args.query)
-
     print(f"Retrieving top {args.top} chunks ...")
-    results = collection.query(
-        query_embeddings=[query_vec],
-        n_results=args.top,
-        where=where_filter,
-        include=["documents", "metadatas", "distances"],
+    # similarity_search_with_score (unlike .as_retriever()) surfaces the raw
+    # cosine distance per result, needed for the --max-distance guard below.
+    docs_with_scores = vectorstore.similarity_search_with_score(
+        QUERY_PREFIX + args.query, k=args.top, filter=where_filter,
     )
 
-    if not results["documents"][0]:
+    if not docs_with_scores:
         raise SystemExit("No chunks matched the query and filters. Try relaxing --access-level or --pack.")
 
-    chunks_raw = list(zip(results["documents"][0], results["metadatas"][0]))
-    context_str, chunks = build_context(chunks_raw)
-    user_message = f"Context:\n{context_str}\n\nQuestion: {args.query}"
+    best_doc, best_distance = docs_with_scores[0]
+    print(f"Closest match distance: {best_distance:.3f} (--max-distance {args.max_distance})")
+
+    if best_distance > args.max_distance:
+        raise SystemExit(
+            "No sufficiently relevant context found "
+            f"(closest match [{best_doc.metadata.get('source_id', 'unknown')}] "
+            f"at distance {best_distance:.3f} > --max-distance {args.max_distance}). "
+            "Skipping LLM call. Try relaxing --max-distance, --access-level, or --pack."
+        )
+
+    docs = [d for d, _score in docs_with_scores]
+    chain = PROMPT | llm | StrOutputParser()
 
     if args.backend == "ollama":
         print(f"Calling Ollama ({model_name}) ...\n")
-        answer = call_llm(args.backend, base_url, model_name, user_message, api_key)
     elif args.backend == "openai":
         print(f"Calling OpenAI-compatible endpoint ({model_name} @ {base_url}) ...\n")
-        answer = call_llm(args.backend, base_url, model_name, user_message, api_key)
     else:  # ssh
-        print(f"Calling NIM over SSH ({model_name} @ {ssh_user}@{ssh_host}:{remote_port}) ...\n")
-        answer = call_llm_via_ssh(
-            ssh_host, ssh_port, ssh_user, ssh_password, ssh_key_file,
-            remote_port, model_name, user_message,
-        )
+        print(f"Calling NIM over SSH ({model_name} @ {ssh_user}@{ssh_host}:{args.remote_port}) ...\n")
+
+    answer = chain.invoke({"context": format_docs(docs), "question": args.query})
     answer = strip_thinking(answer)
 
     print("=" * 60)
     print(answer)
     print("=" * 60)
     print("\nSources:")
-    for c in chunks:
-        label = f"  [{c['source_id']}]"
-        if c["section"]:
-            label += f" {c['section']}"
-        if c["url"]:
-            label += f" — {c['url']}"
+    for d in docs:
+        label = f"  [{d.metadata.get('source_id', 'unknown')}]"
+        section = d.metadata.get("section", "")
+        if section:
+            label += f" {section}"
+        url = d.metadata.get("source_url_or_path", "")
+        if url:
+            label += f" — {url}"
         print(label)
 
 
