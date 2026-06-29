@@ -5,22 +5,27 @@ container) reached over a manually-established SSH tunnel.
 
 Prerequisites (Ollama backend, default):
   1. Ollama installed and running  (ollama serve)
-  2. A model pulled               (ollama pull llama3.2)
-  3. Chroma DB populated          (python scripts/embed_and_ingest.py)
-  4. pip install sentence-transformers chromadb
+  2. A chat model pulled          (ollama pull llama3.2)
+  3. The embedding model pulled   (ollama pull nomic-embed-text)
+  4. Chroma DB populated          (python scripts/embed_and_ingest.py)
+  5. pip install chromadb
 
 Prerequisites (OpenAI-compatible backend, e.g. NIM on a remote GB10 box):
-  1. Chroma DB populated          (python scripts/embed_and_ingest.py)
-  2. pip install sentence-transformers chromadb
-  3. SSH tunnel opened manually in another terminal, e.g.:
+  1. Ollama running locally with nomic-embed-text pulled (used for query
+     embedding even when the chat call goes to a remote NIM endpoint)
+  2. Chroma DB populated          (python scripts/embed_and_ingest.py)
+  3. pip install chromadb
+  4. SSH tunnel opened manually in another terminal, e.g.:
        ssh -L 8001:localhost:8001 user@gb10-host
      (the NIM container must already be serving on that remote port)
 
 Prerequisites (SSH remote-exec backend, e.g. NIM on a remote GB10 box,
 no local port-forward needed):
-  1. Chroma DB populated          (python scripts/embed_and_ingest.py)
-  2. pip install sentence-transformers chromadb paramiko
-  3. NIM container already serving on the remote host's own loopback
+  1. Ollama running locally with nomic-embed-text pulled (used for query
+     embedding even when the chat call goes to a remote NIM endpoint)
+  2. Chroma DB populated          (python scripts/embed_and_ingest.py)
+  3. pip install chromadb paramiko
+  4. NIM container already serving on the remote host's own loopback
      (this runs the same curl pattern as test.py, but over SSH exec
      instead of from a local tunnel, and with credentials read from
      env vars instead of hardcoded)
@@ -61,20 +66,18 @@ import urllib.error
 from pathlib import Path
 
 try:
-    from sentence_transformers import SentenceTransformer, CrossEncoder
     import chromadb
 except ImportError as exc:
     raise SystemExit(
         f"Missing dependency: {exc}\n"
-        "Run: pip install sentence-transformers chromadb"
+        "Run: pip install chromadb"
     )
 
+from ollama_embed import embed as ollama_embed
+
 # ── Config ───────────────────────────────────────────────────────────────────
-EMBED_MODEL         = "nomic-ai/nomic-embed-text-v2-moe"
-RERANK_MODEL        = "cross-encoder/ms-marco-MiniLM-L-6-v2"
-RERANK_FETCH_MULTIPLIER = 2   # over-fetch this many times --top from Chroma before reranking
-RERANK_FETCH_MIN        = 10  # ...but always fetch at least this many candidates
-DEVICE              = "cpu"
+EMBED_MODEL         = "nomic-embed-text"
+EMBED_BASE_URL      = "http://localhost:11434"
 CHROMA_PATH         = Path(__file__).parent.parent / "chroma_db"
 COLLECTION          = "ncnr_rag"
 DEFAULT_BACKEND     = "ollama"
@@ -117,11 +120,8 @@ SYSTEM_PROMPT = (
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-def embed_query(model, query: str) -> list:
-    return model.encode(
-        QUERY_PREFIX + query,
-        normalize_embeddings=True,
-    ).tolist()
+def embed_query(query: str) -> list:
+    return ollama_embed([QUERY_PREFIX + query], model=EMBED_MODEL, base_url=EMBED_BASE_URL)[0]
 
 
 def build_chroma_filter(access_level: str, pack: str | None) -> dict:
@@ -132,22 +132,6 @@ def build_chroma_filter(access_level: str, pack: str | None) -> dict:
     if pack:
         conditions.append({"instrument": {"$eq": pack.upper()}})
     return {"$and": conditions}
-
-
-def rerank(reranker: CrossEncoder, query: str, documents: list[str], metadatas: list[dict], top_n: int) -> list[tuple[str, dict]]:
-    """Cross-encoder rerank of Chroma's vector-search candidates.
-
-    Vector search alone ranks by embedding similarity, which struggles when
-    two documents genuinely overlap in topic (e.g. two docs that both mention
-    the same software). A cross-encoder scores each (query, candidate) pair
-    jointly instead of via separately-embedded vectors, which sharpens
-    ranking among already-relevant candidates.
-    """
-    if not documents:
-        return []
-    scores = reranker.predict([(query, doc) for doc in documents])
-    ranked = sorted(zip(scores, documents, metadatas), key=lambda x: x[0], reverse=True)
-    return [(doc, meta) for _, doc, meta in ranked[:top_n]]
 
 
 def build_context(chunks_raw: list[tuple[str, dict]]) -> tuple[str, list[dict]]:
@@ -457,11 +441,6 @@ def main():
             "Run: python scripts/embed_and_ingest.py"
         )
 
-    print(f"Loading embedding model {EMBED_MODEL} ...")
-    embed_model = SentenceTransformer(EMBED_MODEL, device=DEVICE, trust_remote_code=True)
-    print(f"Loading reranker {RERANK_MODEL} ...")
-    reranker = CrossEncoder(RERANK_MODEL, device=DEVICE)
-
     print("Connecting to Chroma ...")
     client = chromadb.PersistentClient(path=str(CHROMA_PATH))
     try:
@@ -473,21 +452,21 @@ def main():
         )
 
     where_filter = build_chroma_filter(args.access_level, args.pack)
-    query_vec    = embed_query(embed_model, args.query)
+    print(f"Embedding query via Ollama ({EMBED_MODEL}) ...")
+    query_vec    = embed_query(args.query)
 
-    fetch_n = max(args.top * RERANK_FETCH_MULTIPLIER, RERANK_FETCH_MIN)
-    print(f"Retrieving top {fetch_n} candidates, reranking down to {args.top} ...")
+    print(f"Retrieving top {args.top} chunks ...")
     results = collection.query(
         query_embeddings=[query_vec],
-        n_results=fetch_n,
+        n_results=args.top,
         where=where_filter,
-        include=["documents", "metadatas", "distances"],    
+        include=["documents", "metadatas", "distances"],
     )
 
     if not results["documents"][0]:
         raise SystemExit("No chunks matched the query and filters. Try relaxing --access-level or --pack.")
 
-    chunks_raw = rerank(reranker, args.query, results["documents"][0], results["metadatas"][0], args.top)
+    chunks_raw = list(zip(results["documents"][0], results["metadatas"][0]))
     context_str, chunks = build_context(chunks_raw)
     user_message = f"Context:\n{context_str}\n\nQuestion: {args.query}"
 

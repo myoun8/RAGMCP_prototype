@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Evaluate embedding-based retrieval (Chroma + nomic-embed-text-v2-moe) against the
+"""Evaluate embedding-based retrieval (Chroma + Ollama nomic-embed-text) against the
 same eval questions used by test_retrieval.py, for apples-to-apples comparison
 with the TF-IDF baseline.
 
@@ -19,11 +19,10 @@ import time
 from pathlib import Path
 
 import chromadb
-from sentence_transformers import SentenceTransformer, CrossEncoder
+from ollama_embed import embed as ollama_embed
 
-MODEL_NAME = "nomic-ai/nomic-embed-text-v2-moe"
+MODEL_NAME = "nomic-embed-text"
 QUERY_PREFIX = "search_query: "
-RERANK_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 CHROMA_PATH = "./chroma_db"
 COLLECTION = "ncnr_rag"
 PACK_INSTRUMENT = {
@@ -59,16 +58,7 @@ def load_pack_chunk_ids(pack_dir: Path) -> set[str]:
     return ids
 
 
-def rerank(reranker: CrossEncoder, query: str, documents: list[str], metadatas: list[dict], top_n: int) -> list[dict]:
-    """Cross-encoder rerank of the vector-search candidates down to top_n metadatas."""
-    if not documents:
-        return []
-    scores = reranker.predict([(query, doc) for doc in documents])
-    ranked = sorted(zip(scores, metadatas), key=lambda x: x[0], reverse=True)
-    return [meta for _, meta in ranked[:top_n]]
-
-
-def evaluate_pack(pack_name: str, root: Path, coll, model, reranker, top_n: int) -> dict[str, object]:
+def evaluate_pack(pack_name: str, root: Path, coll, top_n: int) -> dict[str, object]:
     pack_dir = root / pack_name
     questions = load_eval_questions(pack_dir)
     pack_chunk_ids = load_pack_chunk_ids(pack_dir)
@@ -83,20 +73,14 @@ def evaluate_pack(pack_name: str, root: Path, coll, model, reranker, top_n: int)
         expected_sources = set(question.get("expected_sources", []))
 
         start = time.perf_counter()
-        query_vec = model.encode([QUERY_PREFIX + query_text], normalize_embeddings=True).tolist()
+        query_vec = ollama_embed([QUERY_PREFIX + query_text])
         result = coll.query(query_embeddings=query_vec, n_results=fetch_n, include=["documents", "metadatas"])
         ids = result["ids"][0]
-        docs = result["documents"][0]
         metas = result["metadatas"][0]
-        filtered_docs, filtered_metas = [], []
-        for cid, doc, meta in zip(ids, docs, metas):
-            if cid in pack_chunk_ids:
-                filtered_docs.append(doc)
-                filtered_metas.append(meta)
-        filtered = rerank(reranker, query_text, filtered_docs, filtered_metas, top_n)
+        filtered_metas = [meta for cid, meta in zip(ids, metas) if cid in pack_chunk_ids][:top_n]
         elapsed = time.perf_counter() - start
 
-        retrieved_source_ids = [m.get("source_id") for m in filtered]
+        retrieved_source_ids = [m.get("source_id") for m in filtered_metas]
 
         metrics["queries"] += 1
         metrics["total_query_time"] += elapsed
@@ -152,15 +136,11 @@ def main() -> int:
     root = Path.cwd()
     client = chromadb.PersistentClient(path=CHROMA_PATH)
     coll = client.get_collection(COLLECTION)
-    print(f"Loading model {MODEL_NAME} ...")
-    model = SentenceTransformer(MODEL_NAME, device="cpu", trust_remote_code=True)
-    print(f"Loading reranker {RERANK_MODEL} ...")
-    reranker = CrossEncoder(RERANK_MODEL, device="cpu")
 
     if args.evaluate_all:
         rows = []
         for pack_name in ["candor", "common", "nse", "vsans"]:
-            metrics = evaluate_pack(pack_name, root, coll, model, reranker, args.top)
+            metrics = evaluate_pack(pack_name, root, coll, args.top)
             rows.append({
                 "pack": pack_name,
                 "top_n": args.top,
@@ -181,7 +161,7 @@ def main() -> int:
         print("ERROR: pack is required unless --evaluate-all is used.")
         return 2
 
-    metrics = evaluate_pack(args.pack, root, coll, model, reranker, args.top)
+    metrics = evaluate_pack(args.pack, root, coll, args.top)
     print(f"Evaluation results for top {args.top}")
     print(f"  queries: {metrics['queries']}")
     print(f"  top-1 accuracy: {metrics['accuracy_top1']:.3f}")

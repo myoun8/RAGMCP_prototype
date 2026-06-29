@@ -1,9 +1,9 @@
 """
-Embed normalized RAG chunks with a self-hosted Nomic Embed model and load into Chroma.
+Embed normalized RAG chunks with Ollama's nomic-embed-text model and load into Chroma.
 
 Assumptions (change at top if different):
-  - Model:   nomic-ai/nomic-embed-text-v2-moe  (768-dim, cosine)
-  - Device:  cpu
+  - Model:   nomic-embed-text via Ollama (768-dim, cosine)
+  - Ollama:  running locally, model pulled (`ollama pull nomic-embed-text`)
   - Chroma:  PersistentClient -> ./chroma_db
   - Input:   per-pack *_chunks.jsonl files, one JSON object per line
   - Output:  ONE collection "ncnr_rag", filter by metadata
@@ -33,12 +33,12 @@ Adjust the field access in load_chunks() to match your actual schema.
 
 import json
 import glob
-from sentence_transformers import SentenceTransformer
 import chromadb
+from ollama_embed import embed as ollama_embed
 
 # ---- config ---------------------------------------------------------------
-MODEL_NAME   = "nomic-ai/nomic-embed-text-v2-moe"
-DEVICE       = "cpu"                 # "cuda" if you have a GPU
+OLLAMA_MODEL    = "nomic-embed-text"
+OLLAMA_BASE_URL = "http://localhost:11434"
 CHUNK_GLOB   = "*/chunks/*_chunks.jsonl"   # adjust to where your JSONL live
 CHROMA_PATH  = "./chroma_db"
 COLLECTION   = "ncnr_rag"
@@ -130,15 +130,12 @@ def main():
         metas.append(meta)
 
     # ---- embed (document side: search_document: prefix, normalized) ----
-    print(f"Loading model {MODEL_NAME} on {DEVICE} ...")
-    model = SentenceTransformer(MODEL_NAME, device=DEVICE, trust_remote_code=True)
-    print("Embedding ...")
-    vectors = model.encode(
-        docs_for_embed,
-        batch_size=BATCH,
-        normalize_embeddings=True,   # cosine-ready
-        show_progress_bar=True,
-    ).tolist()
+    print(f"Embedding via Ollama ({OLLAMA_MODEL}) ...")
+    vectors = []
+    for i in range(0, len(docs_for_embed), BATCH):
+        batch = docs_for_embed[i:i + BATCH]
+        vectors.extend(ollama_embed(batch, model=OLLAMA_MODEL, base_url=OLLAMA_BASE_URL))
+        print(f"  embedded {min(i + BATCH, len(docs_for_embed))}/{len(docs_for_embed)}")
 
     # sanity: dimension must match what the collection will expect
     dim = len(vectors[0])
