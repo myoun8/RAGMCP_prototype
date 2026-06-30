@@ -1,0 +1,21 @@
+{
+  "name": "run-pipeline",
+  "description": "Run the full RAG ingestion pipeline (normalize → chunk → validate → embed).",
+  "command": "python",
+  "args": [
+    "scripts/run_pipeline.py",
+    "--pack",
+    "{pack}",
+    "--model",
+    "{model}",
+    "--dry-run",
+    "{dry_run}"
+  ],
+  "env": {
+    "GROQ_API_KEY": "{env.GROQ_API_KEY}"
+  },
+  "timeoutSeconds": 1800,
+  "allowStdout": true,
+  "allowStderr": true,
+  "streamOutput": true
+}

@@ -119,6 +119,7 @@ def main():
         )
 
     print(f"Returning {len(kept)} of {len(docs_with_scores)} chunks (distance <= {args.max_distance}):\n")
+    chunks: list[str] = []
     for i, (doc, score) in enumerate(kept, 1):
         source_id = doc.metadata.get("source_id", "unknown")
         section   = doc.metadata.get("section", "")
@@ -132,6 +133,9 @@ def main():
         print("-" * 60)
         print(doc.page_content)
         print()
+        chunks.append(doc.page_content)
+
+    return chunks
 
 
 if __name__ == "__main__":

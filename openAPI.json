@@ -1,0 +1,561 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "version": "1.0.0",
+    "title": "CHRNS metadata search API",
+    "contact": {
+      "email": "ncnrdata@nist.gov"
+    },
+    "license": {
+      "name": "Public Domain",
+      "url": "https://www.nist.gov/open/copyright-fair-use-and-licensing-statements-srd-data-software-and-technical-series-publications#data"
+    },
+    "x-logo": {
+      "url": "https://ncnr.nist.gov/ncnrdata/metadata/chrns-3-smaller.png"
+    },
+    "description": "This API allows you to search for openly-accessible datafile and experiment metadata for neutron measurements done at the [NIST Center for Neutron Research](https://www.nist.gov/ncnr).  \n\nSupport for this portal is provided by the NSF through the [Center for High Resolution Neutron Scattering (CHRNS)](https://www.nist.gov/ncnr/chrns)\n"
+  },
+  "tags": [
+    {
+      "name": "Experiment",
+      "description": "A single measurement (beamtime)"
+    },
+    {
+      "name": "Datafiles",
+      "description": "Operations on datafiles"
+    }
+  ],
+  "servers": [
+    {
+      "url": "https://ncnr.nist.gov/ncnrdata/metadata/api/v1"
+    }
+  ],
+  "security": [
+    {}
+  ],
+  "paths": {
+    "/experiments": {
+      "get": {
+        "tags": [
+          "Experiment"
+        ],
+        "summary": "Find experiments",
+        "description": "Note that the result must satisfy all search parameters, so the more you specify, \nthe smaller the result set will be.  Examples: \\\n - `/experiments?id=27585` will return a list of experiments with that *id* on all instruments, while\n - `/experiments?id=nonims2&instrument_id=35` will return only a single result\n",
+        "operationId": "searchExperiments",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "either an IMS id (numeric) or nonims",
+            "example": "25847",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "instrument_id",
+            "in": "query",
+            "description": "numeric id of the instrument",
+            "schema": {
+              "type": "integer",
+              "example": 35
+            }
+          },
+          {
+            "name": "participant_name",
+            "in": "query",
+            "description": "match name from list of participants (case insensitive)",
+            "example": "Krycka",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "description": "match part of experiment title",
+            "example": "morphology",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "participant_orcid",
+            "in": "query",
+            "description": "match ORCID id from list of participants (enter with or without https://orcid.org/ prefix)",
+            "schema": {
+              "$ref": "#/components/schemas/ORCID"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "description": "only find experiments active after this date",
+            "example": "November 10 2020",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "description": "only find experiments active before this date",
+            "example": "January 10 2021",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "maximum number of returned results (up to 250)",
+            "schema": {
+              "type": "integer",
+              "default": 25,
+              "minimum": 1,
+              "maximum": 250
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "return results starting at offset (defaults to 0) \\\n*combine with limit for pagination*\n",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Experiment"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/instruments": {
+      "get": {
+        "tags": [
+          "Instrument"
+        ],
+        "summary": "instrument details",
+        "description": "get instrument info by id or alias",
+        "operationId": "searchInstruments",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "numeric instrument_id",
+            "example": 35,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "alias",
+            "in": "query",
+            "description": "short string alias for instrument",
+            "schema": {
+              "type": "string",
+              "example": "ng7sans"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Instrument"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/datafiles": {
+      "get": {
+        "tags": [
+          "Datafiles"
+        ],
+        "description": "get datafile metadata",
+        "operationId": "searchDatafiles",
+        "parameters": [
+          {
+            "name": "experiment_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "rxcycle_id",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "instrument",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "vsans",
+              "enum": [
+                "bt1",
+                "bt2",
+                "bt4",
+                "bt5",
+                "bt7",
+                "bt8",
+                "bt9",
+                "macs",
+                "ng1",
+                "cg1",
+                "hfbs",
+                "vsans",
+                "dcs",
+                "ng5",
+                "ng7",
+                "ng7sans",
+                "nse",
+                "ngb30sans",
+                "ngbsans",
+                "ngd",
+                "cgd",
+                "phades",
+                "candor"
+              ]
+            },
+            "description": "string alias for the instrument"
+          },
+          {
+            "name": "instrument_id",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "example": 36
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "only find datafiles started before this date",
+            "example": "November 10 2020"
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "description": "only find datafiles started after this date",
+            "example": "January 10 2021",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "metadata",
+            "in": "query",
+            "description": "find by arbitrary metadata",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "property_path": [
+                      "sample",
+                      "name"
+                    ],
+                    "comparison": "like",
+                    "value": "%Li6%"
+                  }
+                ],
+                "schema": {
+                  "$ref": "#/components/schemas/MetadataQueryConstraint"
+                }
+              }
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "maximum number of returned results (up to 250)",
+            "schema": {
+              "type": "integer",
+              "default": 25,
+              "minimum": 1,
+              "maximum": 250
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "return results starting at offset (defaults to 0) \\\n*combine with limit for pagination*\n",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Datafile"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Experiment": {
+        "description": "A scheduled beamtime experiment at the NCNR",
+        "type": "object",
+        "properties": {
+          "id": {
+            "example": "27585"
+          },
+          "description": {
+            "example": ""
+          },
+          "instrument_id": {
+            "type": "integer",
+            "example": 36
+          },
+          "participant_names": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "Charles Majkrzak",
+              "Ying-Heng Tein",
+              "Brian Maranville"
+            ]
+          },
+          "participant_orcid": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              null,
+              null,
+              null
+            ]
+          },
+          "local_contact": {
+            "example": "Brian Maranville"
+          },
+          "creation_timestamp": {
+            "example": 1578325297.714
+          },
+          "title": {
+            "example": "Development of Horizontal-Mode reflectometry with slits at MAGIK"
+          }
+        }
+      },
+      "Datafile": {
+        "description": "information about a single datafile",
+        "type": "object",
+        "example": {
+          "filename": "FeSe_0T_10K_87693.ng0",
+          "experiment_id": "20180713",
+          "rxcycle_id": 201806,
+          "instrument_id": 13,
+          "instrument": "bt1",
+          "start_date": "2018-07-19T15:11:49-04:00",
+          "sha256": "c187680d5a20aff276678c4703184fc31c9935973808960f047d7b2e99ff13c4",
+          "metadata": {
+            "Ef": {
+              "max": 3.7006699999999997,
+              "min": 3.7006699999999997,
+              "mean": 3.70067
+            },
+            "Ei": {
+              "max": 4.45,
+              "min": 4.45,
+              "mean": 4.45
+            },
+            "PTAI": {
+              "max": 12,
+              "min": 12,
+              "mean": 12
+            },
+            "Temp": {
+              "max": 10.037,
+              "min": 10.014,
+              "mean": 10.028270833333336
+            },
+            "Time": {
+              "max": 22.4233,
+              "min": 22.1577,
+              "mean": 22.28976666666667
+            },
+            "Kidney": {
+              "max": 0.5188,
+              "min": 0.5188,
+              "mean": 0.5188
+            },
+            "Comment": "0 T 10 K E=0.75 meV",
+            "Monitor": {
+              "max": 240000,
+              "min": 240000,
+              "mean": 240000
+            },
+            "LiveTime": 534.9544000000001,
+            "MagField": {
+              "max": 0.002412,
+              "min": 0.002412,
+              "mean": 0.002412
+            },
+            "ScanType": "ANGLE",
+            "TemperatureSetpoint": {
+              "max": 10,
+              "min": 10,
+              "mean": 10
+            },
+            "TemperatureHeaterPower": {
+              "max": "NaN",
+              "min": "NaN",
+              "mean": "NaN"
+            },
+            "TemperatureControlReading": {
+              "max": 0,
+              "min": 0,
+              "mean": 0
+            }
+          }
+        },
+        "properties": {
+          "filename": {
+            "type": "string"
+          },
+          "experiment_id": {
+            "type": "string",
+            "description": "either an IMS id (numeric) or nonims",
+            "example": "nonims2"
+          },
+          "instrument": {
+            "type": "string",
+            "description": "alias of the instrument",
+            "example": "macs"
+          },
+          "instrument_id": {
+            "type": "integer",
+            "description": "numeric id of the instrument",
+            "example": 13
+          },
+          "rxcycle_id": {
+            "type": "integer",
+            "description": "the reactor cycle in which the datafile was collected, having the form <year><month> as an integer",
+            "example": 201907
+          },
+          "start_date": {
+            "type": "string",
+            "format": "ISO8601",
+            "description": "creation timestamp for the file"
+          },
+          "sha256": {
+            "type": "string",
+            "description": "sha256 sum of the file contents"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "process and sample metadata from the user and instrument"
+          }
+        }
+      },
+      "Instrument": {
+        "description": "a CHRNS/NCNR instrument",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "unique numeric id",
+            "type": "integer",
+            "example": 38
+          },
+          "alias": {
+            "description": "short string alias",
+            "type": "string",
+            "example": "candor"
+          },
+          "fullname": {
+            "description": "full title of instrument",
+            "type": "string",
+            "example": "NG-1 -- CANDOR White-Beam Reflectometer"
+          },
+          "hostname": {
+            "description": "network name of the instrument computer",
+            "type": "string",
+            "example": "candor.ncnr.nist.gov"
+          }
+        }
+      },
+      "ORCID": {
+        "description": "ORCID iD",
+        "type": "string",
+        "pattern": "^https:\\/\\/orcid.org\\/[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X]$",
+        "example": "https://orcid.org/0000-0002-6105-8789"
+      },
+      "MetadataQueryConstraint": {
+        "description": "search term for arbitrary metadata",
+        "type": "object",
+        "properties": {
+          "property_path": {
+            "description": "list of names in path of property",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "temperature",
+              "min"
+            ]
+          },
+          "comparison": {
+            "type": "string",
+            "enum": [
+              "<",
+              "<=",
+              ">",
+              ">=",
+              "=",
+              "like",
+              "ilike"
+            ],
+            "description": "use like and ilike for string comparison (ilike for case-insensitive), with the '%' character as a wildcard"
+          },
+          "value": {
+            "example": 296.8,
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

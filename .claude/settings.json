@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [],
+    "deny": [],
+    "ask": []
+  },
+  "allowedTools": ["run-pipeline"],
+  "allowedEnv": ["GROQ_API_KEY"],
+  "customCommands": {
+    "/pipeline": {
+      "tool": "run-pipeline",
+      "prompt": "Run the RAG pipeline for a pack.\n\nArguments:\n  pack (required) – candor|vsans|nse|common\n  model (optional) – Groq model name\n  dry_run (optional) – true|false\n\nExample: /pipeline candor --model moonshotai/kimi-k2-instruct"
+    }
+  }
+}
