@@ -12,7 +12,7 @@ Usage:
       --model <model-name> \\
       [--api-key KEY] [--pack PACK] [--dry-run]
 
---api-key defaults to the GROQ_API_KEY env var.
+--api-key defaults to the RCHAT_API_KEY env var.
 
 PDF support requires:  pip install pypdf
 """
@@ -74,7 +74,7 @@ ASSET_EXTENSIONS = {
 }
 SKIP_NAMES = {".gitkeep", "README.md"}
 
-GROQ_API_KEY_ENV_VAR = "GROQ_API_KEY"
+RCHAT_API_KEY_ENV_VAR = "RCHAT_API_KEY"
 MAX_CONTENT_CHARS    = 50_000
 
 
@@ -403,7 +403,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--api-key", default=None, metavar="KEY",
-        help=f"Groq API key (falls back to {GROQ_API_KEY_ENV_VAR} env var)",
+        help=f"API key (falls back to {RCHAT_API_KEY_ENV_VAR} env var)",
     )
     parser.add_argument(
         "--pack", choices=PACKS,
@@ -415,7 +415,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    api_key = args.api_key or os.environ.get(GROQ_API_KEY_ENV_VAR) or ""
+    api_key = args.api_key or os.environ.get(RCHAT_API_KEY_ENV_VAR) or ""
 
     print(f"Model    : {args.model}")
     if args.dry_run:

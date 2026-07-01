@@ -13,7 +13,7 @@ After completion, query the knowledge base with:
   python scripts/query_rag.py "<question>" [--pack PACK]
 
 Normalisation (step 1) uses the Groq API.
-GROQ_API_KEY is read from a .env file in the repo root (or the environment).
+RCHAT_API_KEY is read from a .env file in the repo root (or the environment).
 
 Flags:
   --skip-normalize   Skip step 1 (originals already normalized)
@@ -35,7 +35,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = REPO_ROOT / "scripts"
 PACKS = ["candor", "nse", "vsans", "common"]
 
-GROQ_API_KEY_ENV = "GROQ_API_KEY"
+RCHAT_API_KEY_ENV = "RCHAT_API_KEY"
 DEFAULT_MODEL = "moonshotai/kimi-k2-instruct"
 
 
@@ -98,10 +98,10 @@ def main() -> None:
 
     # ── Step 1: Normalize via Groq API ───────────────────────────────────────
     if not args.skip_normalize:
-        api_key = os.environ.get(GROQ_API_KEY_ENV)
+        api_key = os.environ.get(RCHAT_API_KEY_ENV)
         if not api_key:
             print(
-                f"[pipeline] {GROQ_API_KEY_ENV} not found in environment or .env file.",
+                f"[pipeline] {RCHAT_API_KEY_ENV} not found in environment or .env file.",
                 file=sys.stderr,
             )
             sys.exit(1)
