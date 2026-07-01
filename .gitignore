@@ -36,6 +36,6 @@ Thumbs.db
 apikey.txt
 
 # Original source files (large, not needed in repo) - keep empty folders via .gitkeep
-*/originals/**/*
-!*/originals/**/
-!*/originals/**/.gitkeep
+**/originals/**/*
+!**/originals/**/
+!**/originals/**/.gitkeep
