@@ -20,6 +20,7 @@ def run_pipeline() -> bool:
     Markdown via the Groq API, chunk each pack's Markdown
     by headings into JSONL, validate pack structure and
     schema, then embed all chunks and load them into a Chroma vectorstore.
+    Should be run after the original database is updated or new source documents are added.
     """
     result = subprocess.run([sys.executable, str(SCRIPTS / "run_pipeline.py")], cwd=str(REPO_ROOT))
 

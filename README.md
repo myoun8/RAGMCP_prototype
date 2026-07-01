@@ -34,7 +34,7 @@ RCHAT_API_KEY=...             # required for full_document_ingestion.py / run_pi
    - Chunks `normalized/**/*.md` into JSONL
    - Validates pack structure, JSONL syntax, and metadata
    - Embeds all chunks and loads them into the local Chroma vector store
-5. Use `python scripts/query_rag.py "<question>" [--pack <pack>]` for end-to-end RAG question answering, or start the interactive agent with `python agent.py`.
+5. Start the interactive agent with `python agent.py` to query the knowledge base via conversation.
 
 Individual steps can also be run directly — see **Scripts** below.
 
@@ -46,7 +46,6 @@ Individual steps can also be run directly — see **Scripts** below.
 - `validate_pack.py <pack>` — validates a pack's required files/dirs, JSONL syntax, chunk/metadata completeness, and cross-references chunk `source_id`s against `source_inventory.csv`.
 - `embed_and_ingest.py` — embeds every pack's `chunks/*_chunks.jsonl` with `nomic-embed-text` via Ollama and loads them into a Chroma `PersistentClient` at `./chroma_db` (collection `ncnr_rag`). Requires Ollama running with `nomic-embed-text` pulled.
 - `gen_chunks.py "<question>"` — retrieval-only script; queries the Chroma vectorstore and prints the top-k matching chunks without calling an LLM. Useful for inspecting raw retrieval results or piping chunk text into another tool. Flags: `[--pack PACK]`, `[--top N]`, `[--max-distance D]`, `[--access-level public|internal|restricted]`.
-- `query_rag.py "<question>"` — end-to-end RAG query: embeds the question, retrieves filtered chunks from Chroma, and calls an LLM (`--backend ollama|openai|ssh`) with the retrieved context.
 - `test_retrieval_embedding.py` — embedding-based retrieval evaluation against the Chroma collection from `embed_and_ingest.py`; reports top-1/top-k accuracy and MRR.
 - `evaluate_retrieval_ragas.py` — embedding-based retrieval evaluation using RAGAS-standard Context Precision@K and Context Recall against each eval question's `expected_sources`.
 - `mcpServer.py` — **FastMCP server** exposing two tools over stdio: `gen_chunks` (semantic retrieval from the Chroma vectorstore) and `run_pipeline` (full ingestion pipeline). Run as `python scripts/mcpServer.py`; consumed by `agent.py` and any MCP-compatible client.

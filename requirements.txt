@@ -5,7 +5,6 @@ langchain-core>=0.3,<0.4
 langchain-ollama>=0.3,<0.4
 langchain-chroma>=0.2,<0.3
 langchain-openai>=0.3,<0.4
-groq>=0.9,<1.0             # full_document_ingestion.py — Groq API calls
 pypdf>=4.0,<6.0            # full_document_ingestion.py — PDF text extraction (optional)
 fastmcp>=2.0,<3.0          # mcpServer.py — MCP server exposing the pipeline as tools
 langgraph>=0.2,<0.4        # agent.py — create_react_agent, MemorySaver
