@@ -18,7 +18,38 @@
       align-items: center;
     }
 
-    /* ── Chat column ── */
+    /* ══════════════════════════════════════
+       WELCOME STATE  (body has no .chatting)
+       ══════════════════════════════════════ */
+    body:not(.chatting) {
+      justify-content: center;
+      gap: 28px;
+    }
+    body:not(.chatting) #chat { display: none; }
+
+    #welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      user-select: none;
+    }
+    body.chatting #welcome { display: none; }
+
+    #welcome .logo {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: #c96442;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 24px; font-weight: 700;
+      margin-bottom: 6px;
+    }
+    #welcome h1 { font-size: 26px; font-weight: 600; color: #1a1a1a; }
+    #welcome p  { font-size: 14px; color: #999; }
+
+    /* ══════════════════════════════════════
+       CHAT STATE  (body.chatting)
+       ══════════════════════════════════════ */
     #chat {
       flex: 1;
       width: 100%;
@@ -27,27 +58,6 @@
       padding: 48px 24px 8px;
       scroll-behavior: smooth;
     }
-
-    /* ── Welcome state ── */
-    #welcome {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      user-select: none;
-    }
-    #welcome .logo {
-      width: 48px; height: 48px;
-      border-radius: 50%;
-      background: #c96442;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-size: 22px; font-weight: 700;
-      margin-bottom: 4px;
-    }
-    #welcome h1 { font-size: 26px; font-weight: 600; }
-    #welcome p  { font-size: 14px; color: #888; }
 
     /* ── Message turns ── */
     .turn { margin-bottom: 32px; }
@@ -110,7 +120,7 @@
     }
     .details-btn:hover { background: #f0ede6; color: #444; }
 
-    /* ── Steps summary toggle (shown after completion) ── */
+    /* ── Steps summary toggle (after completion) ── */
     .steps-summary {
       display: inline-flex;
       align-items: center;
@@ -148,44 +158,26 @@
       border-bottom: 1px solid #ede9e3;
     }
     .step-item:last-child { border-bottom: none; }
-
     .step-name {
-      font-weight: 600;
-      font-size: 12px;
-      color: #555;
-      margin-bottom: 7px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      font-weight: 600; font-size: 12px; color: #555;
+      margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.05em;
     }
     .step-label {
-      font-size: 11px;
-      color: #999;
-      margin-bottom: 3px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+      font-size: 11px; color: #999; margin-bottom: 3px;
+      text-transform: uppercase; letter-spacing: 0.04em;
     }
     .step-code {
       font-family: "SFMono-Regular", Consolas, monospace;
-      font-size: 12px;
-      color: #333;
-      background: #f5f2ed;
-      border-radius: 6px;
-      padding: 7px 10px;
-      white-space: pre-wrap;
-      word-break: break-word;
-      max-height: 180px;
-      overflow-y: auto;
-      margin-bottom: 8px;
+      font-size: 12px; color: #333;
+      background: #f5f2ed; border-radius: 6px;
+      padding: 7px 10px; white-space: pre-wrap; word-break: break-word;
+      max-height: 180px; overflow-y: auto; margin-bottom: 8px;
     }
     .step-code:last-child { margin-bottom: 0; }
     .step-code.pending { color: #aaa; font-style: italic; }
 
     /* ── Response text ── */
-    .response-body {
-      font-size: 15px;
-      line-height: 1.7;
-      color: #1a1a1a;
-    }
+    .response-body { font-size: 15px; line-height: 1.7; color: #1a1a1a; }
     .response-body p               { margin: 0 0 10px; }
     .response-body p:last-child    { margin-bottom: 0; }
     .response-body h1,
@@ -196,17 +188,12 @@
     .response-body li              { margin: 3px 0; }
     .response-body code {
       font-family: "SFMono-Regular", Consolas, monospace;
-      font-size: 13px;
-      background: #efece6;
-      padding: 1px 5px;
-      border-radius: 4px;
+      font-size: 13px; background: #efece6;
+      padding: 1px 5px; border-radius: 4px;
     }
     .response-body pre {
-      background: #f3f0ea;
-      border-radius: 10px;
-      padding: 14px 16px;
-      overflow-x: auto;
-      margin: 8px 0;
+      background: #f3f0ea; border-radius: 10px;
+      padding: 14px 16px; overflow-x: auto; margin: 8px 0;
     }
     .response-body pre code { background: none; padding: 0; font-size: 13px; }
     .response-body table {
@@ -217,23 +204,25 @@
     }
     .response-body th { background: #f0ede6; font-weight: 600; }
 
-    /* streaming cursor */
     .cursor {
-      display: inline-block;
-      width: 2px; height: 1em;
-      background: #c96442;
-      margin-left: 1px;
+      display: inline-block; width: 2px; height: 1em;
+      background: #c96442; margin-left: 1px;
       vertical-align: text-bottom;
       animation: blink 1s step-end infinite;
     }
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-    /* ── Input area ── */
+    /* ══════════════════════════════════════
+       INPUT WRAP  (shared by both states)
+       ══════════════════════════════════════ */
     #input-wrap {
       width: 100%;
       max-width: 736px;
-      padding: 8px 24px 28px;
+      padding: 0 24px 28px;
     }
+    /* give the bottom bar some top breathing room only in chat mode */
+    body.chatting #input-wrap { padding-top: 8px; }
+
     #input-box {
       background: #fff;
       border: 1px solid #e0ddd7;
@@ -271,14 +260,17 @@
 </head>
 <body>
 
-  <div id="chat">
-    <div id="welcome">
-      <div class="logo">N</div>
-      <h1>NCNR Assistant</h1>
-      <p>Ask about instruments, experiments, or documentation.</p>
-    </div>
+  <!-- Welcome header — visible only before first message -->
+  <div id="welcome">
+    <div class="logo">N</div>
+    <h1>NCNR Assistant</h1>
+    <p>Ask about instruments, experiments, or documentation.</p>
   </div>
 
+  <!-- Messages — visible only after first message -->
+  <div id="chat"></div>
+
+  <!-- Input box — lives in page flow (welcome) or sticks to bottom (chat) -->
   <div id="input-wrap">
     <div id="input-box">
       <textarea id="user-input" placeholder="Message NCNR Assistant…" rows="1"></textarea>
@@ -299,7 +291,6 @@
     marked.setOptions({ breaks: true });
 
     const chatEl  = document.getElementById('chat');
-    const welcome = document.getElementById('welcome');
     const inputEl = document.getElementById('user-input');
     const sendBtn = document.getElementById('send-btn');
 
@@ -312,12 +303,18 @@
       sendBtn.disabled = !inputEl.value.trim();
     });
 
-    /* ── scroll helpers ── */
     function scrollBottom() { chatEl.scrollTop = chatEl.scrollHeight; }
+
+    /* ── switch to chat layout on first message ── */
+    function enterChatMode() {
+      if (!document.body.classList.contains('chatting')) {
+        document.body.classList.add('chatting');
+      }
+    }
 
     /* ── add user bubble ── */
     function addUserTurn(text) {
-      welcome?.remove();
+      enterChatMode();
       const turn   = document.createElement('div');
       turn.className = 'turn user-turn';
       const bubble = document.createElement('div');
@@ -340,14 +337,13 @@
       const body = document.createElement('div');
       body.className = 'assistant-body';
 
-      /* status bar */
-      const statusBar = document.createElement('div');
+      const statusBar  = document.createElement('div');
       statusBar.className = 'status-bar';
 
-      const spinner   = document.createElement('div');
+      const spinner    = document.createElement('div');
       spinner.className = 'spinner';
 
-      const statusTxt = document.createElement('span');
+      const statusTxt  = document.createElement('span');
       statusTxt.className = 'status-text';
       statusTxt.textContent = 'Thinking…';
 
@@ -359,12 +355,10 @@
       statusBar.appendChild(statusTxt);
       statusBar.appendChild(detailsBtn);
 
-      /* steps panel (hidden by default) */
       const stepsPanel = document.createElement('div');
       stepsPanel.className = 'steps-panel';
       stepsPanel.hidden = true;
 
-      /* response area */
       const responseEl = document.createElement('div');
       responseEl.className = 'response-body';
 
@@ -376,7 +370,6 @@
       chatEl.appendChild(turn);
       scrollBottom();
 
-      /* toggle details panel */
       let detailsOpen = false;
       detailsBtn.addEventListener('click', () => {
         detailsOpen = !detailsOpen;
@@ -388,22 +381,20 @@
       return { body, statusBar, statusTxt, detailsBtn, stepsPanel, responseEl };
     }
 
-    /* ── add or update a step item in the panel ── */
-    const stepMap = new Map(); // name+index → itemEl refs
-
-    function addStepStart(stepsPanel, name, input, stepIndex) {
+    /* ── add a step item to the panel ── */
+    function addStepStart(stepsPanel, name, input) {
       const item = document.createElement('div');
       item.className = 'step-item';
 
-      const nameEl = document.createElement('div');
+      const nameEl   = document.createElement('div');
       nameEl.className = 'step-name';
       nameEl.textContent = name;
 
-      const inLabel = document.createElement('div');
+      const inLabel  = document.createElement('div');
       inLabel.className = 'step-label';
       inLabel.textContent = 'Input';
 
-      const inCode = document.createElement('div');
+      const inCode   = document.createElement('div');
       inCode.className = 'step-code';
       inCode.textContent = input || '—';
 
@@ -411,21 +402,19 @@
       outLabel.className = 'step-label';
       outLabel.textContent = 'Output';
 
-      const outCode = document.createElement('div');
+      const outCode  = document.createElement('div');
       outCode.className = 'step-code pending';
       outCode.textContent = 'waiting…';
 
       item.append(nameEl, inLabel, inCode, outLabel, outCode);
       stepsPanel.appendChild(item);
-
-      return outCode; // caller fills this in on step_end
+      return outCode;
     }
 
-    /* ── finalize turn after streaming done ── */
+    /* ── finalize turn after stream ends ── */
     function finalizeTurn(refs, steps, rawText) {
       const { body, statusBar, stepsPanel, responseEl } = refs;
 
-      /* replace status bar with collapsible summary (only if there were steps) */
       statusBar.remove();
 
       if (steps.length > 0) {
@@ -443,12 +432,11 @@
         });
 
         body.insertBefore(summary, stepsPanel);
-        stepsPanel.hidden = true; /* collapse on completion */
+        stepsPanel.hidden = true;
       } else {
         stepsPanel.remove();
       }
 
-      /* render final markdown */
       responseEl.innerHTML = rawText
         ? marked.parse(rawText)
         : '<em style="color:#aaa">No response.</em>';
@@ -456,7 +444,7 @@
       scrollBottom();
     }
 
-    /* ── main send function ── */
+    /* ── main send ── */
     async function send() {
       const text = inputEl.value.trim();
       if (!text) return;
@@ -469,13 +457,10 @@
       const refs = createAssistantTurn();
       const { statusTxt, stepsPanel, responseEl } = refs;
 
-      let rawText  = '';
-      let steps    = [];         // [{name, outCodeEl}]
-      let stepIdx  = 0;
-      let stepPending = {};      // name → outCodeEl for last open step
-
-      /* streaming cursor while text arrives */
-      let cursor = null;
+      let rawText     = '';
+      let steps       = [];
+      let stepPending = {};
+      let cursor      = null;
 
       function ensureCursor() {
         if (!cursor) {
@@ -484,10 +469,7 @@
           responseEl.appendChild(cursor);
         }
       }
-      function removeCursor() {
-        cursor?.remove();
-        cursor = null;
-      }
+      function removeCursor() { cursor?.remove(); cursor = null; }
 
       function handleEvent(data) {
         switch (data.type) {
@@ -496,7 +478,7 @@
             break;
 
           case 'step_start': {
-            const outCodeEl = addStepStart(stepsPanel, data.name, data.input, stepIdx++);
+            const outCodeEl = addStepStart(stepsPanel, data.name, data.input);
             stepPending[data.name] = outCodeEl;
             steps.push({ name: data.name, outCodeEl });
             scrollBottom();
@@ -504,10 +486,10 @@
           }
 
           case 'step_end': {
-            const outCodeEl = stepPending[data.name];
-            if (outCodeEl) {
-              outCodeEl.classList.remove('pending');
-              outCodeEl.textContent = data.output || '—';
+            const el = stepPending[data.name];
+            if (el) {
+              el.classList.remove('pending');
+              el.textContent = data.output || '—';
               delete stepPending[data.name];
             }
             break;
@@ -515,7 +497,6 @@
 
           case 'token':
             rawText += data.text;
-            /* show plain text while streaming; markdown rendered on done */
             removeCursor();
             responseEl.textContent = rawText;
             ensureCursor();
@@ -535,7 +516,6 @@
         }
       }
 
-      /* fetch SSE stream */
       try {
         const response = await fetch('/chat/stream', {
           method: 'POST',
@@ -550,24 +530,19 @@
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-
           buffer += decoder.decode(value, { stream: true });
           const lines = buffer.split('\n');
-          buffer = lines.pop(); /* keep incomplete last line */
-
+          buffer = lines.pop();
           for (const line of lines) {
             if (line.startsWith('data: ')) {
-              try {
-                handleEvent(JSON.parse(line.slice(6)));
-              } catch (_) { /* malformed JSON, skip */ }
+              try { handleEvent(JSON.parse(line.slice(6))); } catch (_) {}
             }
           }
         }
 
-        /* ensure done fires even if server closes without it */
         handleEvent({ type: 'done' });
 
-      } catch (err) {
+      } catch (_) {
         finalizeTurn(refs, steps, '_Error reaching the server._');
         sendBtn.disabled = false;
         inputEl.focus();
