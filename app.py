@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import os
 import sys
 from contextlib import asynccontextmanager
@@ -6,7 +7,7 @@ from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -132,6 +133,74 @@ async def chat(req: ChatRequest):
             block.get("text", "") for block in content if isinstance(block, dict)
         )
     return {"response": content}
+
+
+TOOL_STATUS = {
+    "gen_chunks":         "Searching knowledge base…",
+    "run_pipeline":       "Running ingestion pipeline…",
+    "search-instruments": "Searching instruments…",
+    "search-experiments": "Searching experiments…",
+    "search-datafiles":   "Searching data files…",
+}
+
+
+@app.post("/chat/stream")
+async def chat_stream(req: ChatRequest):
+    async def generate():
+        config = {"configurable": {"thread_id": req.thread_id}}
+
+        def emit(obj: dict) -> str:
+            return f"data: {json.dumps(obj)}\n\n"
+
+        try:
+            async for event in agent_executor.astream_events(
+                {"messages": [("user", req.message)]},
+                config=config,
+                version="v2",
+            ):
+                kind = event["event"]
+                name = event.get("name", "")
+
+                if kind == "on_chat_model_start":
+                    yield emit({"type": "status", "text": "Thinking…"})
+
+                elif kind == "on_tool_start":
+                    status = TOOL_STATUS.get(name, f"Using {name}…")
+                    inp = event["data"].get("input", {})
+                    inp_str = (
+                        inp.get("input", str(inp)) if isinstance(inp, dict) else str(inp)
+                    )
+                    yield emit({"type": "status", "text": status})
+                    yield emit({"type": "step_start", "name": name, "input": inp_str[:1200]})
+
+                elif kind == "on_tool_end":
+                    out = event["data"].get("output", "")
+                    yield emit({"type": "step_end", "name": name, "output": str(out)[:2000]})
+
+                elif kind == "on_chat_model_stream":
+                    chunk = event["data"].get("chunk")
+                    if chunk and not getattr(chunk, "tool_call_chunks", None):
+                        content = getattr(chunk, "content", "")
+                        if isinstance(content, str) and content:
+                            yield emit({"type": "token", "text": content})
+                        elif isinstance(content, list):
+                            for block in content:
+                                if isinstance(block, dict) and block.get("type") == "text":
+                                    t = block.get("text", "")
+                                    if t:
+                                        yield emit({"type": "token", "text": t})
+
+            yield emit({"type": "done"})
+
+        except Exception as exc:
+            yield emit({"type": "error", "text": str(exc)})
+            yield emit({"type": "done"})
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 if __name__ == "__main__":
