@@ -37,13 +37,10 @@
     body.chatting #welcome { display: none; }
 
     #welcome .logo {
-      width: 52px; height: 52px;
-      border-radius: 50%;
-      background: #c96442;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-size: 24px; font-weight: 700;
+      width: 96px; height: 96px;
       margin-bottom: 6px;
     }
+    #welcome .logo img { width: 100%; height: 100%; }
     #welcome h1 { font-size: 26px; font-weight: 600; color: #1a1a1a; }
     #welcome p  { font-size: 14px; color: #999; }
 
@@ -79,33 +76,27 @@
     .assistant-turn { display: flex; gap: 14px; align-items: flex-start; }
     .avatar {
       flex-shrink: 0;
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      background: #c96442;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-size: 12px; font-weight: 700;
-      margin-top: 1px;
+      width: 40px; height: 40px;
+      margin-top: 2px;
     }
+    .avatar img { width: 100%; height: 100%; }
+    @keyframes spin { to { transform: rotate(360deg); } }
     .assistant-body { flex: 1; min-width: 0; }
 
     /* ── Status bar (shown during processing) ── */
     .status-bar {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
+      gap: 10px;
+      margin-bottom: 14px;
       font-size: 13px;
       color: #777;
     }
-    .spinner {
+    .status-logo {
       flex-shrink: 0;
-      width: 13px; height: 13px;
-      border: 2px solid #e0dcd6;
-      border-top-color: #c96442;
-      border-radius: 50%;
-      animation: spin 0.75s linear infinite;
+      width: 36px; height: 36px;
+      animation: spin 2.4s linear infinite;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
     .status-text { flex: 1; }
     .details-btn {
       background: none;
@@ -262,7 +253,7 @@
 
   <!-- Welcome header — visible only before first message -->
   <div id="welcome">
-    <div class="logo">N</div>
+    <div class="logo"><img src="/static/atom.svg" alt="NCNR atom logo"/></div>
     <h1>NCNR Assistant</h1>
     <p>Ask about instruments, experiments, or documentation.</p>
   </div>
@@ -330,20 +321,20 @@
       const turn = document.createElement('div');
       turn.className = 'turn assistant-turn';
 
-      const av = document.createElement('div');
-      av.className = 'avatar';
-      av.textContent = 'N';
-
+      /* no avatar yet — injected by finalizeTurn once response arrives */
       const body = document.createElement('div');
       body.className = 'assistant-body';
 
-      const statusBar  = document.createElement('div');
+      /* status bar: [rotating logo]  [text]  [Details] — all in one row */
+      const statusBar = document.createElement('div');
       statusBar.className = 'status-bar';
 
-      const spinner    = document.createElement('div');
-      spinner.className = 'spinner';
+      const statusLogo = document.createElement('img');
+      statusLogo.src       = '/static/atom.svg';
+      statusLogo.alt       = '';
+      statusLogo.className = 'status-logo';
 
-      const statusTxt  = document.createElement('span');
+      const statusTxt = document.createElement('span');
       statusTxt.className = 'status-text';
       statusTxt.textContent = 'Thinking…';
 
@@ -351,7 +342,7 @@
       detailsBtn.className = 'details-btn';
       detailsBtn.textContent = 'Details ▾';
 
-      statusBar.appendChild(spinner);
+      statusBar.appendChild(statusLogo);
       statusBar.appendChild(statusTxt);
       statusBar.appendChild(detailsBtn);
 
@@ -365,7 +356,6 @@
       body.appendChild(statusBar);
       body.appendChild(stepsPanel);
       body.appendChild(responseEl);
-      turn.appendChild(av);
       turn.appendChild(body);
       chatEl.appendChild(turn);
       scrollBottom();
@@ -415,7 +405,17 @@
     function finalizeTurn(refs, steps, rawText) {
       const { body, statusBar, stepsPanel, responseEl } = refs;
 
+      /* remove the thinking status bar (takes the rotating logo with it) */
       statusBar.remove();
+
+      /* inject the static avatar — 1 copy, no animation */
+      const av    = document.createElement('div');
+      av.className = 'avatar';
+      const avImg = document.createElement('img');
+      avImg.src   = '/static/atom.svg';
+      avImg.alt   = '';
+      av.appendChild(avImg);
+      body.parentElement.insertBefore(av, body);
 
       if (steps.length > 0) {
         const summary = document.createElement('button');
@@ -461,6 +461,7 @@
       let steps       = [];
       let stepPending = {};
       let cursor      = null;
+      let finalized   = false;
 
       function ensureCursor() {
         if (!cursor) {
@@ -508,6 +509,8 @@
             break;
 
           case 'done':
+            if (finalized) break;
+            finalized = true;
             removeCursor();
             finalizeTurn(refs, steps, rawText);
             sendBtn.disabled = false;

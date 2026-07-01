@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <!-- Electron sphere gradient -->
+    <radialGradient id="eg" cx="36%" cy="30%" r="62%">
+      <stop offset="0%"   stop-color="#d8eef8"/>
+      <stop offset="38%"  stop-color="#88bde0"/>
+      <stop offset="100%" stop-color="#2d6aaa"/>
+    </radialGradient>
+
+    <!-- Nucleus outer spheres -->
+    <radialGradient id="ns" cx="35%" cy="28%" r="64%">
+      <stop offset="0%"   stop-color="#a8d4ee"/>
+      <stop offset="42%"  stop-color="#5090c8"/>
+      <stop offset="100%" stop-color="#0c4890"/>
+    </radialGradient>
+
+    <!-- Nucleus center sphere (brighter) -->
+    <radialGradient id="nc" cx="33%" cy="27%" r="62%">
+      <stop offset="0%"   stop-color="#c8e4f4"/>
+      <stop offset="38%"  stop-color="#70aadc"/>
+      <stop offset="100%" stop-color="#1460a8"/>
+    </radialGradient>
+
+    <!-- Orbital stroke gradient (left→right, darkening at edges) -->
+    <linearGradient id="og1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#163264"/>
+      <stop offset="50%"  stop-color="#254f96"/>
+      <stop offset="100%" stop-color="#163264"/>
+    </linearGradient>
+
+    <!-- Drop shadow filter for electrons & nucleus -->
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="1" dy="1.5" stdDeviation="2" flood-color="#0a2855" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- ── Three orbital rings ─────────────────────────────── -->
+  <ellipse cx="100" cy="100" rx="88" ry="24"
+           fill="none" stroke="#1c3e7a" stroke-width="5.5"
+           transform="rotate(0,100,100)"/>
+  <ellipse cx="100" cy="100" rx="88" ry="24"
+           fill="none" stroke="#1c3e7a" stroke-width="5.5"
+           transform="rotate(60,100,100)"/>
+  <ellipse cx="100" cy="100" rx="88" ry="24"
+           fill="none" stroke="#1c3e7a" stroke-width="5.5"
+           transform="rotate(-60,100,100)"/>
+
+  <!-- ── Six electrons ───────────────────────────────────── -->
+  <!-- ring 0°  -->
+  <circle cx="12"  cy="100" r="11" fill="url(#eg)" filter="url(#sh)"/>
+  <circle cx="188" cy="100" r="11" fill="url(#eg)" filter="url(#sh)"/>
+  <!-- ring 60°  -->
+  <circle cx="56"  cy="24"  r="11" fill="url(#eg)" filter="url(#sh)"/>
+  <circle cx="144" cy="176" r="11" fill="url(#eg)" filter="url(#sh)"/>
+  <!-- ring -60° -->
+  <circle cx="144" cy="24"  r="11" fill="url(#eg)" filter="url(#sh)"/>
+  <circle cx="56"  cy="176" r="11" fill="url(#eg)" filter="url(#sh)"/>
+
+  <!-- ── Nucleus cluster ─────────────────────────────────── -->
+  <!-- 6 outer spheres in a hexagonal ring (r=13.5) -->
+  <circle cx="100" cy="86"   r="13" fill="url(#ns)" filter="url(#sh)"/>
+  <circle cx="112" cy="93"   r="13" fill="url(#ns)" filter="url(#sh)"/>
+  <circle cx="112" cy="107"  r="13" fill="url(#ns)" filter="url(#sh)"/>
+  <circle cx="100" cy="114"  r="13" fill="url(#ns)" filter="url(#sh)"/>
+  <circle cx="88"  cy="107"  r="13" fill="url(#ns)" filter="url(#sh)"/>
+  <circle cx="88"  cy="93"   r="13" fill="url(#ns)" filter="url(#sh)"/>
+  <!-- Central sphere (larger, brighter) -->
+  <circle cx="100" cy="100"  r="15" fill="url(#nc)" filter="url(#sh)"/>
+</svg>
