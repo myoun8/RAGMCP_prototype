@@ -1,6 +1,6 @@
 # RAG Knowledge Pack Template
 
-This repository is a set of RAG-ready knowledge packs for NIST NCNR neutron-scattering instrument documentation: [`candor/`](candor/), [`vsans/`](vsans/), [`nse/`](nse/), [`magik/`](magik/) (instrument-specific) and [`common/`](common/) (shared NICE/NCNR-wide docs).
+This repository is a set of RAG-ready knowledge packs for NIST NCNR neutron-scattering instrument documentation: [`candor/`](context_database/candor/), [`vsans/`](context_database/vsans/), [`nse/`](context_database/nse/), [`magik/`](context_database/magik/) (instrument-specific) and [`common/`](context_database/common/) (shared NICE/NCNR-wide docs).
 
 A RAG-ready pack is more than a folder of PDFs. It contains:
 
@@ -91,9 +91,10 @@ common/   Shared NCNR resources such as NICE, data access, sample environments, 
 candor/   CANDOR-specific documentation and examples
 vsans/    VSANS-specific documentation and examples
 nse/      NSE-specific documentation and examples
+magik/    MAGIK-specific documentation and examples
 ```
 
-([`common/`](common/), [`candor/`](candor/), [`vsans/`](vsans/), [`nse/`](nse/))
+([`common/`](context_database/common/), [`candor/`](context_database/candor/), [`vsans/`](context_database/vsans/), [`nse/`](context_database/nse/), [`magik/`](context_database/magik/))
 
 ## Templates ([`templates/`](templates/))
 

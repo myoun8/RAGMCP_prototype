@@ -66,21 +66,14 @@ async def run_agent():
     print("Connecting LangGraph adapter to MCP Servers...")
     tools = await mcp_client.get_tools() + [gen_chunks_tool, run_pipeline_tool]
 
-    system_instruction = (
-        "You are an intelligent data router for the NIST Center for Neutron Research (NCNR).\n"
-        "You have access to structured API databases and an unstructured RAG vector database.\n\n"
-        "Available tools:\n"
-        "--- STRUCTURED API TOOLS ---\n"
-        "- 'search-instruments': Use this if the user asks for available, active, or listed instruments.\n"
-        "- 'search-experiments': Use this if the user asks for specific research runs, IDs, or experiments.\n"
-        "- 'search-datafiles': Use this if the user asks for specific files or raw data arrays.\n\n"
-        "--- RAG & KNOWLEDGE TOOLS ---\n"
-        "- 'gen_chunks': Use this if the user asks general knowledge questions, wants to search manuals, or asks for semantic information that requires looking up text from the local vector database.\n"
-        "- 'run_pipeline': ONLY use this if the user explicitly asks you to 'ingest documents', 'update the database', or 'run the pipeline'. This triggers a heavy ingestion process.\n\n"
-        "CRITICAL TOOL RULES:\n"
-        "1. ONLY include arguments that are explicitly requested by the user.\n"
-        "2. DO NOT pass empty strings, 'None', or null for optional parameters. Omit them entirely.\n"
-    )
+    system_instruction = ("You are an intelligent data router for the NIST Center for Neutron Research (NCNR).\n"
+                          "You have access to structured API databases and an unstructured RAG vector database "
+                          "through your provided tools.\n"
+                          "\n"
+                          "CRITICAL TOOL RULES:\n"
+                          "1. ONLY include arguments that are explicitly requested by the user.\n"
+                          "2. DO NOT pass empty strings, 'None', or null for optional parameters. Omit them entirely.")
+ 
     memory = MemorySaver()
     agent_executor = create_agent(
         model=rchat_llm,
