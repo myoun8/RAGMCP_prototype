@@ -1,0 +1,24 @@
+pack: bt7
+access_levels:
+  public:
+    description: Can be used in public answers.
+    allowed_users:
+      - all
+  internal:
+    description: Internal documentation for approved users and staff.
+    allowed_users:
+      - approved_users
+      - staff
+  restricted:
+    description: Operational, safety-sensitive, unpublished, or otherwise restricted material.
+    allowed_users:
+      - instrument_staff
+      - administrators
+
+rules:
+  - name: enforce_access_filter_before_retrieval
+    description: Retrieval must filter chunks by user access level before answer generation.
+  - name: do_not_surface_restricted_to_public
+    description: Restricted chunks must never be used in public answers.
+  - name: mark_legacy_content
+    description: Legacy content may be retrieved only when explicitly relevant and must be labeled as legacy.
