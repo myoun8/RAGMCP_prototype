@@ -34,7 +34,9 @@ def gen_chunks(input: str) -> str:
     similarity search with optional filtering by
     instrument pack, access level, and status. Returns
     the matching chunk texts (dropping any below a
-    configurable distance threshold)."""
+    configurable distance threshold). You MUST use 
+    this tool if the user asks HOW a specific 
+    instrument (like CANDOR or MACS) works."""
     output = subprocess.run(
         [sys.executable, str(SCRIPTS / "gen_chunks.py"), input],
         cwd=str(REPO_ROOT),
