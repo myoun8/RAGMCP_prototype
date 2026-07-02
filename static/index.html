@@ -407,7 +407,7 @@
     /* ── forward scroll/touch anywhere on the page to #chat ── */
     document.addEventListener('wheel', (e) => {
       if (e.target.closest('.step-code, #user-input')) return;
-      chatEl.scrollTop += e.deltaY;
+      chatEl.scrollTop += e.deltaY * 2.5;
     }, { passive: true });
 
     let _touchY = 0;
@@ -575,7 +575,7 @@
 
       addUserTurn(text);
       const refs = createAssistantTurn();
-      const { statusTxt, stepsPanel, responseEl } = refs;
+      const { turn, statusTxt, stepsPanel, responseEl } = refs;
 
       let rawText        = '';
       let steps          = [];
@@ -608,6 +608,8 @@
 
       function startStreamInterval() {
         if (streamInterval) return;
+        /* pin the avatar to flex-start before any content renders */
+        turn.classList.remove('thinking');
         renderStream(); // immediate first paint
         streamInterval = setInterval(renderStream, 80);
       }

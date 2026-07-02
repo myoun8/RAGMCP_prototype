@@ -140,7 +140,7 @@ def main() -> int:
         return 2
     root = Path.cwd()
     pack = sys.argv[1]
-    pack_dir = root / pack
+    pack_dir = root / 'context_database' / pack
     norm_dir = pack_dir / 'normalized'
     if not norm_dir.is_dir():
         print(f'ERROR: normalized directory not found: {norm_dir}')

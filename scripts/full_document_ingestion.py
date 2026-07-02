@@ -428,7 +428,7 @@ def main() -> None:
     packs = [args.pack] if args.pack else PACKS
 
     for pack in packs:
-        pack_dir = REPO_ROOT / pack
+        pack_dir = REPO_ROOT / 'context_database' / pack
         if not pack_dir.exists():
             print(f"\n[{pack}] Directory not found, skipping.")
             continue
