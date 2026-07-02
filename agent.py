@@ -80,7 +80,6 @@ async def run_agent():
         "CRITICAL TOOL RULES:\n"
         "1. ONLY include arguments that are explicitly requested by the user.\n"
         "2. DO NOT pass empty strings, 'None', or null for optional parameters. Omit them entirely.\n"
-        "3. Do not say 'I cannot access the database'. Do not tell the user to visit a website."
     )
     memory = MemorySaver()
     agent_executor = create_agent(

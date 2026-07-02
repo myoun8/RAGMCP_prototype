@@ -15,7 +15,7 @@ import time
 import urllib.request
 from pathlib import Path
 
-PACKS = ["candor", "common", "nse", "vsans"]
+PACKS = ["candor", "common", "nse", "vsans", "magik"]
 
 CHROMA_PATH = Path(__file__).parent.parent / "chroma_db"
 COLLECTION = "ncnr_rag"

@@ -31,14 +31,8 @@ from openai import OpenAI
 # ── Repo layout ────────────────────────────────────────────────────────────────
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-PACKS = ["candor", "nse", "vsans", "common"]
-
-INSTRUMENT_MAP = {
-    "candor": "CANDOR",
-    "nse":    "NSE",
-    "vsans":  "VSANS",
-    "common": "COMMON",
-}
+sys.path.insert(0, str(REPO_ROOT / "scripts"))
+from _common import PACKS  # noqa: E402
 
 WORKFLOW_STAGES = [
     "overview",
@@ -380,7 +374,7 @@ def confirm_and_write(
     if chosen != stage:
         markdown = _set_field(markdown, "workflow_stage", chosen)
 
-    target_dir  = pack_dir / "normalized" / chosen
+    target_dir  = REPO_ROOT / 'context_database' / pack / "normalized" / chosen
     target_path = target_dir / f"{original_stem}.md"
 
     if dry_run:
@@ -433,7 +427,7 @@ def main() -> None:
             print(f"\n[{pack}] Directory not found, skipping.")
             continue
 
-        instrument = INSTRUMENT_MAP[pack]
+        instrument = pack.upper()
         prefix     = instrument
         norm_stems = _normalized_stems(pack_dir)
         originals  = collect_originals(pack_dir)

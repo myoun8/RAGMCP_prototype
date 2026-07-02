@@ -1,0 +1,36 @@
+pack_name: magik
+pack_version: 0.1.0
+instrument: MAGIK
+
+input:
+  manifest_file: manifest.jsonl
+  chunks_file: chunks/magik_chunks.jsonl
+  glossary_file: glossary.yaml
+
+retrieval:
+  namespace: instrument_magik
+  chunk_text_field: text
+  metadata_fields:
+    - instrument
+    - workflow_stage
+    - source_type
+    - software
+    - access_level
+    - status
+    - owner
+    - last_reviewed
+    - source_url_or_path
+    - section
+
+filters:
+  default:
+    status: current
+  public_only:
+    access_level: public
+
+citation:
+  required_fields:
+    - source_id
+    - doc_id
+    - source_url_or_path
+    - section

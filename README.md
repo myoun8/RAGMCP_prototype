@@ -1,6 +1,6 @@
 # RAG Knowledge Pack Template
 
-This repository is a set of RAG-ready knowledge packs for NIST NCNR neutron-scattering instrument documentation: [`candor/`](candor/), [`vsans/`](vsans/), [`nse/`](nse/) (instrument-specific) and [`common/`](common/) (shared NICE/NCNR-wide docs).
+This repository is a set of RAG-ready knowledge packs for NIST NCNR neutron-scattering instrument documentation: [`candor/`](candor/), [`vsans/`](vsans/), [`nse/`](nse/), [`magik/`](magik/) (instrument-specific) and [`common/`](common/) (shared NICE/NCNR-wide docs).
 
 A RAG-ready pack is more than a folder of PDFs. It contains:
 
@@ -30,7 +30,7 @@ RCHAT_API_KEY=...             # required for full_document_ingestion.py / run_pi
 2. Save unmodified source files under `<pack>/originals/`.
 3. Add your API key to `.env`: `RCHAT_API_KEY=...`
 4. Run `python [scripts/run_pipeline.py](scripts/run_pipeline.py) [--pack <pack>]` — this chains all four steps automatically:
-   - Converts originals to normalized Markdown via the Groq API (interactive: confirms stage per file)
+   - Converts originals to normalized Markdown via the RChat API (interactive: confirms stage per file)
    - Chunks `normalized/**/*.md` into JSONL
    - Validates pack structure, JSONL syntax, and metadata
    - Embeds all chunks and loads them into the local Chroma vector store
@@ -42,8 +42,8 @@ Individual steps can also be run directly — see **Scripts** below.
 
 ## Scripts (`scripts/`)
 
-- [`run_pipeline.py`](scripts/run_pipeline.py) — **main entry point**; chains all four ingestion steps in order. Reads `RCHAT_API_KEY` from `.env` or the environment. Flags: `--pack`, `--model` (default: `moonshotai/kimi-k2-instruct`), `--skip-normalize`, `--skip-validate`, `--dry-run`.
-- [`full_document_ingestion.py`](scripts/full_document_ingestion.py) — converts files in `originals/` to normalized Markdown using the Groq API. Interactive: streams each file's output and asks you to confirm the workflow stage before writing. Args: `--model NAME` (required), `[--api-key KEY]`, `[--pack PACK]`, `[--dry-run]`. API key falls back to `RCHAT_API_KEY` env var.
+- [`run_pipeline.py`](scripts/run_pipeline.py) — **main entry point**; chains all four ingestion steps in order. Reads `RCHAT_API_KEY` from `.env` or the environment. Flags: `--pack`, `--model` (default: `gemma-31b`), `--skip-normalize`, `--skip-validate`, `--dry-run`.
+- [`full_document_ingestion.py`](scripts/full_document_ingestion.py) — converts files in `originals/` to normalized Markdown using the RChat API. Interactive: streams each file's output and asks you to confirm the workflow stage before writing. Args: `--model NAME` (required), `[--api-key KEY]`, `[--pack PACK]`, `[--dry-run]`. API key falls back to `RCHAT_API_KEY` env var.
 - [`chunk_markdown.py`](scripts/chunk_markdown.py) `<pack>` — stdlib-only heading-based chunker; splits `normalized/**/*.md` by H2 headings into `<pack>_chunks.generated.jsonl`.
 - [`validate_pack.py`](scripts/validate_pack.py) `<pack>` — validates a pack's required files/dirs, JSONL syntax, chunk/metadata completeness, and cross-references chunk `source_id`s against `source_inventory.csv`.
 - [`embed_and_ingest.py`](scripts/embed_and_ingest.py) — embeds every pack's `chunks/*_chunks.jsonl` with `nomic-embed-text` via Ollama and loads them into a Chroma `PersistentClient` at `./chroma_db` (collection `ncnr_rag`). Requires Ollama running with `nomic-embed-text` pulled.
@@ -55,7 +55,7 @@ Individual steps can also be run directly — see **Scripts** below.
 
 Run any script with `--help` or see [`CLAUDE.md`](CLAUDE.md) for full per-script usage and flags.
 
-[`requirements.txt`](requirements.txt) pins `chromadb`, `paramiko`, `groq`, `pypdf`, the LangChain integration packages (`langchain-core`, `langchain-ollama`, `langchain-chroma`, `langchain-openai`), and the agent-layer packages (`fastmcp`, `langgraph`, `langchain-mcp-adapters`, `python-dotenv`, `fastapi`, `uvicorn`).
+[`requirements.txt`](requirements.txt) pins `chromadb`, `paramiko`, `pypdf`, the LangChain integration packages (`langchain-core`, `langchain-ollama`, `langchain-chroma`, `langchain-openai`), and the agent-layer packages (`fastmcp`, `langgraph`, `langchain-mcp-adapters`, `python-dotenv`, `fastapi`, `uvicorn`).
 
 ## Agent interfaces
 
