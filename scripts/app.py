@@ -29,24 +29,36 @@ _spec.loader.exec_module(_mod)  # type: ignore[union-attr]
 
 agent_executor = None
 
+MCP_TOOL_NAMES = [
+    "run_pipeline",
+    "gen_chunks",
+    "list_instruments",
+    "get_instrument",
+    "list_datasources",
+    "list_data_files",
+    "run_reduction",
+    "get_reduction_output",
+]
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global agent_executor
 
-    gen_chunks_tool = StructuredTool.from_function(
-        func=_mod.gen_chunks,
-        name="gen_chunks",
-        description=_mod.gen_chunks.__doc__,
-    )
-    run_pipeline_tool = StructuredTool.from_function(
-        func=_mod.run_pipeline,
-        name="run_pipeline",
-        description=_mod.run_pipeline.__doc__,
-    )
+    mcp_server_tools = [
+        StructuredTool.from_function(
+            func=getattr(_mod, name),
+            name=name,
+            description=getattr(_mod, name).__doc__,
+        )
+        for name in MCP_TOOL_NAMES
+    ]
 
     rchat_key = os.getenv("RCHAT_API_KEY")
-    rchat_model = "gemma-4-31B-it"
+    # gemma-4-31B-it cannot disambiguate among >=2 tools under tool_choice="auto"
+    # (it returns a blank tool_call with no name/id, which crashes ToolMessage
+    # construction). gpt-oss-120b handles multi-tool auto tool-choice correctly.
+    rchat_model = "gpt-oss-120b"
     raw_endpoint = "https://rchat.nist.gov/api/v1/chat/completions"
     clean_base_url = raw_endpoint.replace("/chat/completions", "")
 
@@ -71,7 +83,7 @@ async def lifespan(app: FastAPI):
     })
 
     print("Connecting to MCP servers...")
-    tools = await mcp_client.get_tools() + [gen_chunks_tool, run_pipeline_tool]
+    tools = await mcp_client.get_tools() + mcp_server_tools
 
     system_instruction = ("You are an intelligent data router for the NIST Center for Neutron Research (NCNR).\n"
                           "You have access to structured API databases and an unstructured RAG vector database through "
@@ -125,11 +137,17 @@ async def chat(req: ChatRequest):
 
 
 TOOL_STATUS = {
-    "gen_chunks":         "Searching knowledge base…",
-    "run_pipeline":       "Running ingestion pipeline…",
-    "search-instruments": "Searching instruments…",
-    "search-experiments": "Searching experiments…",
-    "search-datafiles":   "Searching data files…",
+    "gen_chunks":          "Searching knowledge base…",
+    "run_pipeline":        "Running ingestion pipeline…",
+    "list_instruments":    "Listing instruments…",
+    "get_instrument":      "Looking up instrument definition…",
+    "list_datasources":    "Listing data sources…",
+    "list_data_files":     "Browsing data files…",
+    "run_reduction":       "Running reduction…",
+    "get_reduction_output": "Computing reduction output…",
+    "search-instruments":  "Searching instruments…",
+    "search-experiments":  "Searching experiments…",
+    "search-datafiles":    "Searching data files…",
 }
 
 

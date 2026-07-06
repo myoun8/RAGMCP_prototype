@@ -50,7 +50,7 @@ Individual steps can also be run directly — see **Scripts** below.
 - [`gen_chunks.py`](scripts/gen_chunks.py) `"<question>"` — retrieval-only script; queries the Chroma vectorstore and prints the top-k matching chunks without calling an LLM. Useful for inspecting raw retrieval results or piping chunk text into another tool. Flags: `[--pack PACK]`, `[--top N]`, `[--max-distance D]`, `[--access-level public|internal|restricted]`.
 - [`test_retrieval_embedding.py`](scripts/test_retrieval_embedding.py) — embedding-based retrieval evaluation against the Chroma collection from [`embed_and_ingest.py`](scripts/embed_and_ingest.py); reports top-1/top-k accuracy and MRR.
 - [`evaluate_retrieval_ragas.py`](scripts/evaluate_retrieval_ragas.py) — embedding-based retrieval evaluation using RAGAS-standard Context Precision@K and Context Recall against each eval question's `expected_sources`.
-- [`mcpServer.py`](scripts/mcpServer.py) — **FastMCP server** exposing two tools over stdio: `gen_chunks` (semantic retrieval from the Chroma vectorstore) and `run_pipeline` (full ingestion pipeline). Run as `python scripts/mcpServer.py`; consumed by [`agent.py`](agent.py) and any MCP-compatible client.
+- [`mcpServer.py`](scripts/mcpServer.py) — **FastMCP server** exposing eight tools over stdio: `run_pipeline` (full ingestion pipeline), `gen_chunks` (semantic retrieval from the Chroma vectorstore), and six Reductus tools — `list_instruments`, `get_instrument`, `list_datasources`, `list_data_files`, `run_reduction`, `get_reduction_output` — backed by `reductus.web_gui.api`. Run as `python scripts/mcpServer.py`; consumed by [`agent.py`](agent.py), [`app.py`](app.py), and any MCP-compatible client.
 - [`_common.py`](scripts/_common.py) — shared helpers (Chroma bootstrap, JSONL loading, Ollama health-check/auto-start, eval CSV writer) imported by the other scripts.
 
 Run any script with `--help` or see [`CLAUDE.md`](CLAUDE.md) for full per-script usage and flags.
@@ -59,12 +59,15 @@ Run any script with `--help` or see [`CLAUDE.md`](CLAUDE.md) for full per-script
 
 ## Agent interfaces
 
-Both interfaces share the same LangGraph agent: structured NCNR API access + local RAG knowledge base, backed by the NIST RChat LLM (`gemma-4-31B-it`, OpenAI-compatible). Set `RCHAT_API_KEY` in `.env`.
+Both interfaces share the same LangGraph agent: structured NCNR API access + local RAG knowledge base + Reductus reduction tools, backed by the NIST RChat LLM (`gpt-oss-120b`, OpenAI-compatible). Set `RCHAT_API_KEY` in `.env`.
 
-The agent connects to two data sources:
+> **Model note:** the RChat-hosted `gemma-4-31B-it` model cannot disambiguate between tools under `tool_choice="auto"` once 2+ tools are bound (it returns a blank tool call with no name/id, which crashes `ToolMessage` construction). `gpt-oss-120b` and `NVIDIA-Nemotron-3-Super-120B-A12B-FP8` both handle multi-tool selection correctly; `agent.py`/`app.py` use `gpt-oss-120b`.
+
+The agent connects to three data sources:
 
 - **Structured API** — the NCNR CHRNS metadata REST API ([`openAPI.json`](openAPI.json)) via an OpenAPI MCP server (`@ivotoby/openapi-mcp-server`, invoked automatically via `npx`). Exposes `search-instruments`, `search-experiments`, and `search-datafiles` tools.
 - **RAG knowledge base** — `gen_chunks` (semantic retrieval from Chroma) and `run_pipeline` (ingestion trigger) surfaced as LangChain `StructuredTool`s backed by [`mcpServer.py`](scripts/mcpServer.py).
+- **Reductus reduction service** — `list_instruments`, `get_instrument`, `list_datasources`, `list_data_files`, `run_reduction`, and `get_reduction_output`, also surfaced as `StructuredTool`s backed by [`mcpServer.py`](scripts/mcpServer.py).
 
 Conversation memory is maintained within a session via LangGraph's `MemorySaver`. [`openAPI.json`](openAPI.json) contains the OpenAPI 3.0 spec for the NCNR CHRNS metadata search API and is read at agent startup.
 
