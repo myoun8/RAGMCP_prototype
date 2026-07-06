@@ -36,8 +36,9 @@ MCP_TOOL_NAMES = [
     "get_instrument",
     "list_datasources",
     "list_data_files",
-    "run_reduction",
-    "get_reduction_output",
+    "find_raw_data_paths",
+    "list_reduction_templates",
+    "reduce_files",
 ]
 
 
@@ -150,8 +151,9 @@ TOOL_STATUS = {
     "get_instrument":      "Looking up instrument definition…",
     "list_datasources":    "Listing data sources…",
     "list_data_files":     "Browsing data files…",
-    "run_reduction":       "Running reduction…",
-    "get_reduction_output": "Computing reduction output…",
+    "find_raw_data_paths": "Finding raw data files for experiment…",
+    "list_reduction_templates": "Looking up reduction templates…",
+    "reduce_files":        "Reducing selected files…",
     "search-instruments":  "Searching instruments…",
     "search-experiments":  "Searching experiments…",
     "search-datafiles":    "Searching data files…",

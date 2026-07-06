@@ -27,8 +27,9 @@ MCP_TOOL_NAMES = [
     "get_instrument",
     "list_datasources",
     "list_data_files",
-    "run_reduction",
-    "get_reduction_output",
+    "find_raw_data_paths",
+    "list_reduction_templates",
+    "reduce_files",
 ]
 mcp_server_tools = [
     StructuredTool.from_function(
