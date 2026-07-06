@@ -289,7 +289,7 @@
       color: #bbb; margin-top: 6px;
     }
 
-    /* ── Model selector + BYOK key bar ── */
+    /* ── Model selector + API key status button ── */
     #model-bar {
       position: fixed;
       top: 14px;
@@ -299,8 +299,7 @@
       align-items: center;
       gap: 8px;
     }
-    #model-select,
-    .api-key-input {
+    #model-select {
       font-family: inherit;
       font-size: 13px;
       color: #555;
@@ -309,18 +308,158 @@
       border-radius: 8px;
       padding: 6px 10px;
       outline: none;
+      cursor: pointer;
     }
-    #model-select { cursor: pointer; }
     #model-select:hover { background: #f5f2ed; }
-    .api-key-input {
-      width: 132px;
+
+    #api-key-status-btn {
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      outline: none;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      white-space: nowrap;
     }
-    .api-key-input::placeholder { color: #bbb; }
+    #api-key-status-btn.keys-missing {
+      background: #fdecec;
+      border: 1px solid #f3b4b4;
+      color: #c0392b;
+    }
+    #api-key-status-btn.keys-missing:hover { background: #fbdada; }
+    #api-key-status-btn.keys-set {
+      background: #fff;
+      border: 1px solid #cfe8d1;
+      color: #2f7d43;
+    }
+    #api-key-status-btn.keys-set:hover { background: #f2f9f3; }
+
+    /* ── API key modal ── */
+    #api-key-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    #api-key-modal-overlay.open { display: flex; }
+
+    #api-key-modal {
+      position: relative;
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px;
+      width: 380px;
+      max-width: 90vw;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+    }
+    #api-key-modal h2 {
+      font-size: 17px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+    #api-key-modal .modal-subtitle {
+      font-size: 12.5px;
+      color: #999;
+      margin-bottom: 20px;
+    }
+    #api-key-modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: none;
+      border-radius: 6px;
+      color: #999;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.12s, color 0.12s;
+    }
+    #api-key-modal-close:hover { background: #f0ede6; color: #444; }
+    #api-key-modal-close svg { width: 16px; height: 16px; }
+
+    .key-field { margin-bottom: 14px; }
+    .key-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 6px;
+    }
+    .key-field-row {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .key-field-row input {
+      width: 100%;
+      font-family: inherit;
+      font-size: 13.5px;
+      color: #1a1a1a;
+      background: #faf9f7;
+      border: 1px solid #e0ddd7;
+      border-radius: 8px;
+      padding: 9px 38px 9px 12px;
+      outline: none;
+    }
+    .key-field-row input:focus { border-color: #c9c3b8; background: #fff; }
+    .key-field-row input::placeholder { color: #bbb; }
+    .key-visibility-toggle {
+      position: absolute;
+      right: 6px;
+      width: 26px;
+      height: 26px;
+      border: none;
+      background: none;
+      color: #999;
+      cursor: pointer;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .key-visibility-toggle:hover { background: #eee9e1; color: #555; }
+    .key-visibility-toggle svg { width: 16px; height: 16px; }
+
+    #api-key-save-btn {
+      width: 100%;
+      margin-top: 6px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      background: #1a1a1a;
+      border: none;
+      border-radius: 10px;
+      padding: 11px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    #api-key-save-btn:hover { background: #3a3a3a; }
+    #api-key-save-confirm {
+      text-align: center;
+      font-size: 12px;
+      color: #2f7d43;
+      margin-top: 10px;
+      height: 14px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    #api-key-save-confirm.show { opacity: 1; }
   </style>
 </head>
 <body>
 
-  <!-- Model selector + per-provider BYOK key inputs — always visible, top of the interface -->
+  <!-- Model selector + API key status button — always visible, top of the interface -->
   <div id="model-bar">
     <select id="model-select" aria-label="Select model">
       <optgroup label="OpenAI">
@@ -339,10 +478,56 @@
         <option value="NVIDIA-Nemotron-3-Super-120B-A12B-FP8" data-provider="rchat">NVIDIA-Nemotron-3-Super-120B-A12B-FP8</option>
       </optgroup>
     </select>
-    <input id="openai-key-input" class="api-key-input" type="password" placeholder="OpenAI key" aria-label="OpenAI API key" autocomplete="off" />
-    <input id="anthropic-key-input" class="api-key-input" type="password" placeholder="Anthropic key" aria-label="Anthropic API key" autocomplete="off" />
-    <input id="google-key-input" class="api-key-input" type="password" placeholder="Google key" aria-label="Google API key" autocomplete="off" />
-    <input id="rchat-key-input" class="api-key-input" type="password" placeholder="rchat key" aria-label="NIST rchat API key" autocomplete="off" />
+    <button id="api-key-status-btn" class="keys-missing" aria-haspopup="dialog" aria-expanded="false">Set API Key</button>
+  </div>
+
+  <!-- API key modal -->
+  <div id="api-key-modal-overlay" role="presentation">
+    <div id="api-key-modal" role="dialog" aria-modal="true" aria-labelledby="api-key-modal-title">
+      <button id="api-key-modal-close" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+      <h2 id="api-key-modal-title">API Keys</h2>
+      <p class="modal-subtitle">Keys are stored only in this browser's local storage and sent directly with your requests.</p>
+
+      <div class="key-field">
+        <label for="openai-key-input">OpenAI</label>
+        <div class="key-field-row">
+          <input id="openai-key-input" type="password" placeholder="sk-…" aria-label="OpenAI API key" autocomplete="off" />
+          <button type="button" class="key-visibility-toggle" data-target="openai-key-input" aria-label="Toggle visibility"></button>
+        </div>
+      </div>
+
+      <div class="key-field">
+        <label for="anthropic-key-input">Anthropic</label>
+        <div class="key-field-row">
+          <input id="anthropic-key-input" type="password" placeholder="sk-ant-…" aria-label="Anthropic API key" autocomplete="off" />
+          <button type="button" class="key-visibility-toggle" data-target="anthropic-key-input" aria-label="Toggle visibility"></button>
+        </div>
+      </div>
+
+      <div class="key-field">
+        <label for="google-key-input">Google Gemini</label>
+        <div class="key-field-row">
+          <input id="google-key-input" type="password" placeholder="AIza…" aria-label="Google API key" autocomplete="off" />
+          <button type="button" class="key-visibility-toggle" data-target="google-key-input" aria-label="Toggle visibility"></button>
+        </div>
+      </div>
+
+      <div class="key-field">
+        <label for="rchat-key-input">NIST rchat</label>
+        <div class="key-field-row">
+          <input id="rchat-key-input" type="password" placeholder="rchat key" aria-label="NIST rchat API key" autocomplete="off" />
+          <button type="button" class="key-visibility-toggle" data-target="rchat-key-input" aria-label="Toggle visibility"></button>
+        </div>
+      </div>
+
+      <button id="api-key-save-btn">Save Keys</button>
+      <div id="api-key-save-confirm">Keys saved.</div>
+    </div>
   </div>
 
   <!-- Welcome header — visible only before first message -->
@@ -506,16 +691,82 @@
     };
     const apiKeys = { openai: '', anthropic: '', google: '', rchat: '' };
 
+    /* load persisted keys into state + populate modal inputs (still masked) */
     for (const provider of Object.keys(KEY_INPUT_IDS)) {
       const el = document.getElementById(KEY_INPUT_IDS[provider]);
       const stored = localStorage.getItem(API_KEY_STORAGE[provider]) || '';
       apiKeys[provider] = stored;
       el.value = stored;
-      el.addEventListener('input', () => {
+    }
+
+    /* ── API key status button ── */
+    const apiKeyStatusBtn = document.getElementById('api-key-status-btn');
+
+    function updateApiKeyStatusBtn() {
+      const anySet = Object.values(apiKeys).some(v => v && v.trim());
+      apiKeyStatusBtn.classList.toggle('keys-missing', !anySet);
+      apiKeyStatusBtn.classList.toggle('keys-set', anySet);
+      apiKeyStatusBtn.textContent = anySet ? 'API Key Set' : 'Set API Key';
+    }
+    updateApiKeyStatusBtn();
+
+    /* ── API key modal open/close ── */
+    const apiKeyModalOverlay = document.getElementById('api-key-modal-overlay');
+    const apiKeyModalClose   = document.getElementById('api-key-modal-close');
+    const apiKeySaveBtn      = document.getElementById('api-key-save-btn');
+    const apiKeySaveConfirm  = document.getElementById('api-key-save-confirm');
+
+    function openApiKeyModal() {
+      apiKeyModalOverlay.classList.add('open');
+      apiKeyStatusBtn.setAttribute('aria-expanded', 'true');
+    }
+    function closeApiKeyModal() {
+      apiKeyModalOverlay.classList.remove('open');
+      apiKeyStatusBtn.setAttribute('aria-expanded', 'false');
+    }
+    apiKeyStatusBtn.addEventListener('click', () => {
+      apiKeyModalOverlay.classList.contains('open') ? closeApiKeyModal() : openApiKeyModal();
+    });
+    apiKeyModalClose.addEventListener('click', closeApiKeyModal);
+    apiKeyModalOverlay.addEventListener('click', (e) => {
+      if (e.target === apiKeyModalOverlay) closeApiKeyModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && apiKeyModalOverlay.classList.contains('open')) closeApiKeyModal();
+    });
+
+    /* ── per-field visibility (eye) toggles ── */
+    const EYE_ICON =
+      '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/>';
+    const EYE_OFF_ICON =
+      '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.6 21.6 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 7 11 7a21.6 21.6 0 0 1-2.16 3.19"/>' +
+      '<path d="M14.12 14.12A3 3 0 1 1 9.88 9.88"/><line x1="1" y1="1" x2="23" y2="23"/>';
+
+    document.querySelectorAll('.key-visibility-toggle').forEach((btn) => {
+      const input = document.getElementById(btn.dataset.target);
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${EYE_ICON}</svg>`;
+      btn.addEventListener('click', () => {
+        const showing = input.type === 'text';
+        input.type = showing ? 'password' : 'text';
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${showing ? EYE_ICON : EYE_OFF_ICON}</svg>`;
+      });
+    });
+
+    /* ── Save Keys: commit modal inputs to state + localStorage ── */
+    let saveConfirmTimeout = null;
+    apiKeySaveBtn.addEventListener('click', () => {
+      for (const provider of Object.keys(KEY_INPUT_IDS)) {
+        const el = document.getElementById(KEY_INPUT_IDS[provider]);
         apiKeys[provider] = el.value;
         localStorage.setItem(API_KEY_STORAGE[provider], el.value);
-      });
-    }
+      }
+      updateApiKeyStatusBtn();
+
+      apiKeySaveConfirm.classList.add('show');
+      clearTimeout(saveConfirmTimeout);
+      saveConfirmTimeout = setTimeout(() => apiKeySaveConfirm.classList.remove('show'), 1500);
+      setTimeout(closeApiKeyModal, 500);
+    });
 
     /* ── send/stop button state ── */
     const SEND_ICON = '<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>';
@@ -736,7 +987,7 @@
       if (provider && !apiKeys[provider]?.trim()) {
         addUserTurn(text);
         const refs = createAssistantTurn();
-        finalizeTurn(refs, [], `_Missing ${provider} API key. Enter it in the field at the top right before sending._`, []);
+        finalizeTurn(refs, [], `_Missing ${provider} API key. Click "Set API Key" at the top right to add it._`, []);
         inputEl.value = '';
         inputEl.style.height = 'auto';
         return;

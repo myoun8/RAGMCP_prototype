@@ -21,8 +21,10 @@ See [`PACK_STRUCTURE.md`](PACK_STRUCTURE.md) for the full folder layout and requ
 **Create a `.env` file in the repo root** (loaded automatically by scripts that need it):
 
 ```
-RCHAT_API_KEY=...             # required for full_document_ingestion.py / run_pipeline.py / agent.py
+RCHAT_API_KEY=...             # required for full_document_ingestion.py / run_pipeline.py / agent.py (CLI)
 ```
+
+`app.py` (the web UI) is bring-your-own-key instead: each browser session enters its own API key(s) per provider (OpenAI/Anthropic/Google/RChat) in the UI, so no server-side `.env` key is needed for it.
 
 ## Recommended workflow
 
@@ -50,24 +52,28 @@ Individual steps can also be run directly — see **Scripts** below.
 - [`gen_chunks.py`](scripts/gen_chunks.py) `"<question>"` — retrieval-only script; queries the Chroma vectorstore and prints the top-k matching chunks without calling an LLM. Useful for inspecting raw retrieval results or piping chunk text into another tool. Flags: `[--pack PACK]`, `[--top N]`, `[--max-distance D]`, `[--access-level public|internal|restricted]`.
 - [`test_retrieval_embedding.py`](scripts/test_retrieval_embedding.py) — embedding-based retrieval evaluation against the Chroma collection from [`embed_and_ingest.py`](scripts/embed_and_ingest.py); reports top-1/top-k accuracy and MRR.
 - [`evaluate_retrieval_ragas.py`](scripts/evaluate_retrieval_ragas.py) — embedding-based retrieval evaluation using RAGAS-standard Context Precision@K and Context Recall against each eval question's `expected_sources`.
-- [`mcpServer.py`](scripts/mcpServer.py) — **FastMCP server** exposing eight tools over stdio: `run_pipeline` (full ingestion pipeline), `gen_chunks` (semantic retrieval from the Chroma vectorstore), and six Reductus tools — `list_instruments`, `get_instrument`, `list_datasources`, `list_data_files`, `run_reduction`, `get_reduction_output` — backed by `reductus.web_gui.api`. Run as `python scripts/mcpServer.py`; consumed by [`agent.py`](agent.py), [`app.py`](app.py), and any MCP-compatible client.
+- [`mcpServer.py`](scripts/mcpServer.py) — **FastMCP server** exposing nine tools over stdio: `run_pipeline` (full ingestion pipeline), `gen_chunks` (semantic retrieval from the Chroma vectorstore), and seven Reductus tools backed by `reductus.web_gui.api` — `list_instruments`, `get_instrument`, `list_datasources`, `list_data_files` (browse a data source by path), `find_raw_data_paths` (look up an NCNR experiment's raw files by experiment ID/instrument via the NCNR metadata API, with real path/mtime attached), `list_reduction_templates` (find a template's file-input nodes and their intent), and `reduce_files` (run selected files through a named reduction template without hand-building the module graph). Run as `python scripts/mcpServer.py`; consumed by [`agent.py`](agent.py), [`app.py`](app.py), and any MCP-compatible client.
+- [`test_reductus_tools.py`](scripts/test_reductus_tools.py) — smoke-tests the seven Reductus tools above directly (no MCP transport) against the real reductus API and live NCNR servers. Run as `python scripts/test_reductus_tools.py` (needs network access; importing `mcpServer.py` also starts Ollama if it isn't running).
 - [`_common.py`](scripts/_common.py) — shared helpers (Chroma bootstrap, JSONL loading, Ollama health-check/auto-start, eval CSV writer) imported by the other scripts.
 
 Run any script with `--help` or see [`CLAUDE.md`](CLAUDE.md) for full per-script usage and flags.
 
-[`requirements.txt`](requirements.txt) pins `chromadb`, `paramiko`, `pypdf`, the LangChain integration packages (`langchain-core`, `langchain-ollama`, `langchain-chroma`, `langchain-openai`), and the agent-layer packages (`fastmcp`, `langgraph`, `langchain-mcp-adapters`, `python-dotenv`, `fastapi`, `uvicorn`).
+[`requirements.txt`](requirements.txt) pins `chromadb`, `paramiko`, `pypdf`, `requests`, the LangChain integration packages (`langchain-core`, `langchain-ollama`, `langchain-chroma`, `langchain-openai`, `langchain-anthropic`, `langchain-google-genai`), and the agent-layer packages (`fastmcp`, `reductus`, `langgraph`, `langchain-mcp-adapters`, `python-dotenv`, `fastapi`, `uvicorn`).
 
 ## Agent interfaces
 
-Both interfaces share the same LangGraph agent: structured NCNR API access + local RAG knowledge base + Reductus reduction tools, backed by the NIST RChat LLM (`gpt-oss-120b`, OpenAI-compatible). Set `RCHAT_API_KEY` in `.env`.
+Both interfaces share the same LangGraph tool set — structured NCNR API access + local RAG knowledge base + Reductus reduction tools — but differ in how the underlying LLM is chosen:
 
-> **Model note:** the RChat-hosted `gemma-4-31B-it` model cannot disambiguate between tools under `tool_choice="auto"` once 2+ tools are bound (it returns a blank tool call with no name/id, which crashes `ToolMessage` construction). `gpt-oss-120b` and `NVIDIA-Nemotron-3-Super-120B-A12B-FP8` both handle multi-tool selection correctly; `agent.py`/`app.py` use `gpt-oss-120b`.
+- **`agent.py`** (CLI) is fixed to the NIST RChat `gpt-oss-120b` model. Set `RCHAT_API_KEY` in `.env`.
+- **`app.py`** (web UI) is bring-your-own-key: the browser lets you pick a model from a small per-provider catalog (OpenAI, Anthropic, Google, or RChat) and supply that provider's API key yourself; a fresh agent is built per request from your chosen model/key, sharing the same tools, system prompt, and `MemorySaver`-backed conversation memory.
+
+> **Model note:** the RChat-hosted `gemma-4-31B-it` model cannot disambiguate between tools under `tool_choice="auto"` once 2+ tools are bound (it returns a blank tool call with no name/id, which crashes `ToolMessage` construction). `gpt-oss-120b` and `NVIDIA-Nemotron-3-Super-120B-A12B-FP8` both handle multi-tool selection correctly; `agent.py` uses `gpt-oss-120b`.
 
 The agent connects to three data sources:
 
 - **Structured API** — the NCNR CHRNS metadata REST API ([`openAPI.json`](openAPI.json)) via an OpenAPI MCP server (`@ivotoby/openapi-mcp-server`, invoked automatically via `npx`). Exposes `search-instruments`, `search-experiments`, and `search-datafiles` tools.
 - **RAG knowledge base** — `gen_chunks` (semantic retrieval from Chroma) and `run_pipeline` (ingestion trigger) surfaced as LangChain `StructuredTool`s backed by [`mcpServer.py`](scripts/mcpServer.py).
-- **Reductus reduction service** — `list_instruments`, `get_instrument`, `list_datasources`, `list_data_files`, `run_reduction`, and `get_reduction_output`, also surfaced as `StructuredTool`s backed by [`mcpServer.py`](scripts/mcpServer.py).
+- **Reductus reduction service** — `list_instruments`, `get_instrument`, `list_datasources`, `list_data_files`, `find_raw_data_paths`, `list_reduction_templates`, and `reduce_files`, also surfaced as `StructuredTool`s backed by [`mcpServer.py`](scripts/mcpServer.py). The system prompt requires the agent to confirm which files (and, for multi-node templates, which file-to-node/intent assignment) with the user before calling `reduce_files`.
 
 Conversation memory is maintained within a session via LangGraph's `MemorySaver`. [`openAPI.json`](openAPI.json) contains the OpenAPI 3.0 spec for the NCNR CHRNS metadata search API and is read at agent startup.
 
@@ -77,7 +83,7 @@ Conversation memory is maintained within a session via LangGraph's `MemorySaver`
 python app.py
 ```
 
-Starts a FastAPI server at [http://127.0.0.1:8000](http://127.0.0.1:8000) serving a minimal browser chat interface ([`static/index.html`](static/index.html)). The agent is initialized once on startup and shared across requests; each browser tab gets its own conversation thread.
+Starts a FastAPI server at [http://127.0.0.1:8000](http://127.0.0.1:8000) serving a minimal browser chat interface ([`static/index.html`](static/index.html)). Enter your API key(s) and pick a model in the browser; each tab gets its own conversation thread.
 
 ### CLI ([`agent.py`](agent.py))
 
@@ -85,7 +91,7 @@ Starts a FastAPI server at [http://127.0.0.1:8000](http://127.0.0.1:8000) servin
 python agent.py
 ```
 
-Interactive terminal REPL — identical agent, no browser required.
+Interactive terminal REPL — same tools, fixed to `gpt-oss-120b`, no browser required.
 
 ## Pack folders
 
