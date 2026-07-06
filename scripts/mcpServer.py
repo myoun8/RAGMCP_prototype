@@ -57,7 +57,14 @@ def gen_chunks(input: str) -> str:
 
     if output.returncode != 0:
         return output.stderr or "gen_chunks failed with no error output"
-    return output.stdout
+
+    return (
+        f"<retrieved_chunks query={input!r} source=\"NCNR RAG Chroma vectorstore\">\n"
+        "```text\n"
+        f"{output.stdout}\n"
+        "```\n"
+        "</retrieved_chunks>"
+    )
 
 
 @mcp.tool()
