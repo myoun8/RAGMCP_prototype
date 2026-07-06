@@ -126,6 +126,8 @@ def find_raw_data_paths(experiment_id: str, instrument: str | None = None, limit
     mtimes_by_dir = {}
     results = []
     for d in datafiles:
+        if d["filename"].lower().startswith("fp"):
+            continue
         localdir = d["localdir"]
         if localdir not in mtimes_by_dir:
             metadata = reductus_api.get_file_metadata(source="ncnr", pathlist=localdir.split("/"))
@@ -265,6 +267,8 @@ def reduce_files(
        (e.g. "ncnrdata/<instr>/<cycle>/<experiment>/data/<file>"), "mtime"
        (int, required by reductus), and "source" (e.g. "ncnr"). Extra keys
        (e.g. from find_raw_data_paths' output) are ignored automatically.
+
+    Valid template names and load node indices are instrument-specific; see list_reduction_templates.
 
     If target_node is omitted, every node's output terminal(s) are computed and
     returned; otherwise only the dependency path to target_node/target_terminal
