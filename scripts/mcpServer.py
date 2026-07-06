@@ -91,10 +91,7 @@ def list_datasources() -> list:
 
 @mcp.tool()
 def list_data_files(source: str = "ncnr", pathlist: list[str] | None = None) -> dict:
-    """Browse files/subdirs at a path within a reductus data source.
-       Use this for any requests of finding intent of a file. If 
-       pathlist is omitted from a request of the intent of a file,
-       ask user for pathlist"""
+    """Browse files/subdirs at a path within a reductus data source."""
     return reductus_api.get_file_metadata(source=source, pathlist=pathlist or [])
 
 
