@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import os
 import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -19,6 +20,17 @@ from langchain.agents import create_agent
 from langgraph.checkpoint.memory import MemorySaver
 
 load_dotenv()
+
+# Server-side default keys, loaded once from .env/environment at startup. A
+# caller-supplied key in a request's api_keys still takes precedence; these
+# are only a fallback so the app works out of the box without the frontend
+# modal, for whichever providers the operator has configured on the server.
+SERVER_API_KEYS = {
+    "openai": os.environ.get("OPENAI_API_KEY", "").strip(),
+    "anthropic": os.environ.get("ANTHROPIC_API_KEY", "").strip(),
+    "google": os.environ.get("GOOGLE_API_KEY", "").strip(),
+    "rchat": os.environ.get("RCHAT_API_KEY", "").strip(),
+}
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 MCP_SERVER = REPO_ROOT / "scripts" / "mcpServer.py"
@@ -163,12 +175,18 @@ async def list_models():
     return {"models": MODEL_CATALOG}
 
 
+@app.get("/api/key-status")
+async def key_status():
+    # Booleans only -- never send the actual server-side secret to the client.
+    return {provider: bool(key) for provider, key in SERVER_API_KEYS.items()}
+
+
 def _build_agent(app: FastAPI, model: str, api_keys: dict[str, str]):
     if not model or not model.strip():
         raise HTTPException(status_code=400, detail="Missing model selection.")
 
     provider = _provider_for_model(model)
-    api_key = (api_keys or {}).get(provider, "").strip()
+    api_key = (api_keys or {}).get(provider, "").strip() or SERVER_API_KEYS.get(provider, "")
     if not api_key:
         raise HTTPException(
             status_code=401,
