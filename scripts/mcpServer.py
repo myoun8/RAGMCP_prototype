@@ -187,6 +187,8 @@ def list_reduction_templates(instrument_id: str) -> dict:
     and for each template, which module nodes accept data files (and their role,
     e.g. 'specular'/'background+'/'intensity' for reflectometry).
 
+    Instrument IDs are like 'ncnr.sans' or 'ncnr.refl'. Returns a dict mapping
+
     Use this before reduce_files to find a template_name and the node indices
     to pass in node_files."""
     instrument = reductus_api.get_instrument(instrument_id)
@@ -213,6 +215,34 @@ def _sanitize_fileinfo(file_descriptor: dict) -> dict:
     return sanitized
 
 
+def _all_node_outputs(instrument_id: str, template_def: dict, config: dict, return_type: str) -> dict:
+    """Compute every node's output terminal(s) one at a time via calc_terminal.
+
+    reductus' own calc_template (web_gui/api.py) has a latent bug: dataflow/calc.py's
+    _key() builds "module:terminal" strings, but calc_template unpacks each result
+    key as a 2-tuple, which raises "too many values to unpack" for any real
+    multi-node template. calc_terminal doesn't hit that code path, so we call it
+    once per (node, output terminal) instead of using calc_template; reductus'
+    fingerprint cache means the repeated upstream computation is cheap after the
+    first call.
+    """
+    instrument = reductus_api.get_instrument(instrument_id)
+    registry = {m["id"]: m for m in instrument["modules"]}
+    output = {}
+    for i, node in enumerate(template_def["modules"]):
+        module = registry.get(node["module"])
+        if module is None:
+            continue
+        node_key = str(i)
+        output[node_key] = {
+            terminal["id"]: reductus_api.calc_terminal(
+                template_def, config, i, terminal["id"], return_type=return_type,
+            )
+            for terminal in module.get("outputs", [])
+        }
+    return output
+
+
 @mcp.tool()
 def reduce_files(
     instrument_id: str,
@@ -236,10 +266,10 @@ def reduce_files(
        (int, required by reductus), and "source" (e.g. "ncnr"). Extra keys
        (e.g. from find_raw_data_paths' output) are ignored automatically.
 
-    If target_node is omitted, every node in the template is computed and
-    returned (like run_reduction); otherwise only the dependency path to
-    target_node/target_terminal is computed (like get_reduction_output),
-    with return_type: 'full' | 'plottable' | 'metadata' | 'export'.
+    If target_node is omitted, every node's output terminal(s) are computed and
+    returned; otherwise only the dependency path to target_node/target_terminal
+    is computed (like get_reduction_output). return_type applies in both cases:
+    'full' | 'plottable' | 'metadata' | 'export'.
     """
     template_def, load_nodes = _load_file_nodes(instrument_id, template_name)
     valid_nodes = {str(n["node"]) for n in load_nodes}
@@ -260,7 +290,7 @@ def reduce_files(
     }
 
     if target_node is None:
-        return reductus_api.calc_template(template_def, config)
+        return _all_node_outputs(instrument_id, template_def, config, return_type)
     return reductus_api.calc_terminal(
         template_def, config, target_node, target_terminal, return_type=return_type,
     )

@@ -126,6 +126,20 @@ def _():
     assert output["values"], "expected at least one loaded dataset"
 
 
+@check("reduce_files with target_node=None (calc_template, whole-graph) works")
+def _():
+    # Regression test for a reductus bug: dataflow/calc.py's _key() returns
+    # "module:terminal" strings, but web_gui/api.py's calc_template() used to
+    # unpack each key as a 2-tuple (module_id, terminal_id = rkey), which
+    # blew up with "too many values to unpack" for any multi-character key.
+    # This path (target_node omitted) is exactly what reduce_files uses to
+    # return every node's output, so it must exercise calc_template cleanly.
+    files = mcpServer.find_raw_data_paths(FIXTURE_EXPERIMENT_ID, FIXTURE_INSTRUMENT)
+    sans_file = next(f for f in files if f["filename"] == FIXTURE_FILENAME)
+    output = mcpServer.reduce_files("ncnr.sans", "load", {"0": [sans_file]})
+    assert output["0"]["output"]["datatype"] == "ncnr.sans.raw", output
+
+
 def main() -> int:
     width = max(len(name) for name, _, _ in results)
     failed = 0

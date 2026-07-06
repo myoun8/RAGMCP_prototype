@@ -288,9 +288,62 @@
       text-align: center; font-size: 11px;
       color: #bbb; margin-top: 6px;
     }
+
+    /* ── Model selector + BYOK key bar ── */
+    #model-bar {
+      position: fixed;
+      top: 14px;
+      right: 18px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #model-select,
+    .api-key-input {
+      font-family: inherit;
+      font-size: 13px;
+      color: #555;
+      background: #fff;
+      border: 1px solid #e0ddd7;
+      border-radius: 8px;
+      padding: 6px 10px;
+      outline: none;
+    }
+    #model-select { cursor: pointer; }
+    #model-select:hover { background: #f5f2ed; }
+    .api-key-input {
+      width: 132px;
+    }
+    .api-key-input::placeholder { color: #bbb; }
   </style>
 </head>
 <body>
+
+  <!-- Model selector + per-provider BYOK key inputs — always visible, top of the interface -->
+  <div id="model-bar">
+    <select id="model-select" aria-label="Select model">
+      <optgroup label="OpenAI">
+        <option value="gpt-4o" data-provider="openai">gpt-4o</option>
+      </optgroup>
+      <optgroup label="Anthropic">
+        <option value="claude-3-5-sonnet-20241022" data-provider="anthropic">claude-3-5-sonnet-20241022</option>
+      </optgroup>
+      <optgroup label="Google">
+        <option value="gemini-3.5-flash" data-provider="google">gemini-3.5-flash</option>
+      </optgroup>
+      <optgroup label="NIST rchat">
+        <option value="gpt-oss-120b" data-provider="rchat">gpt-oss-120b</option>
+        <option value="gemma-4-31B-it" data-provider="rchat">gemma-4-31B-it</option>
+        <option value="Llama-4-Maverick-17B-128E-Instruct-FP8" data-provider="rchat">Llama-4-Maverick-17B-128E-Instruct-FP8</option>
+        <option value="NVIDIA-Nemotron-3-Super-120B-A12B-FP8" data-provider="rchat">NVIDIA-Nemotron-3-Super-120B-A12B-FP8</option>
+      </optgroup>
+    </select>
+    <input id="openai-key-input" class="api-key-input" type="password" placeholder="OpenAI key" aria-label="OpenAI API key" autocomplete="off" />
+    <input id="anthropic-key-input" class="api-key-input" type="password" placeholder="Anthropic key" aria-label="Anthropic API key" autocomplete="off" />
+    <input id="google-key-input" class="api-key-input" type="password" placeholder="Google key" aria-label="Google API key" autocomplete="off" />
+    <input id="rchat-key-input" class="api-key-input" type="password" placeholder="rchat key" aria-label="NIST rchat API key" autocomplete="off" />
+  </div>
 
   <!-- Welcome header — visible only before first message -->
   <div id="welcome">
@@ -308,7 +361,7 @@
       <textarea id="user-input" placeholder="Message NCNR Assistant…" rows="1"></textarea>
       <div id="input-footer">
         <button id="send-btn" disabled aria-label="Send">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          <svg id="send-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="19" x2="12" y2="5"/>
             <polyline points="5 12 12 5 19 12"/>
@@ -423,17 +476,66 @@
       return [text, ''];
     }
 
-    const chatEl  = document.getElementById('chat');
-    const inputEl = document.getElementById('user-input');
-    const sendBtn = document.getElementById('send-btn');
+    const chatEl      = document.getElementById('chat');
+    const inputEl     = document.getElementById('user-input');
+    const sendBtn     = document.getElementById('send-btn');
+    const sendIcon    = document.getElementById('send-icon');
+    const modelSelect = document.getElementById('model-select');
 
     const threadId = 'session_' + Math.random().toString(36).slice(2);
+
+    /* ── selected model state, defaults to gpt-4o ── */
+    let selectedModel = 'gpt-4o';
+    modelSelect.value = selectedModel;
+    modelSelect.addEventListener('change', () => {
+      selectedModel = modelSelect.value;
+    });
+
+    /* ── BYOK API keys: one per provider, persisted in localStorage ── */
+    const API_KEY_STORAGE = {
+      openai:    'ncnr_api_key_openai',
+      anthropic: 'ncnr_api_key_anthropic',
+      google:    'ncnr_api_key_google',
+      rchat:     'ncnr_api_key_rchat',
+    };
+    const KEY_INPUT_IDS = {
+      openai:    'openai-key-input',
+      anthropic: 'anthropic-key-input',
+      google:    'google-key-input',
+      rchat:     'rchat-key-input',
+    };
+    const apiKeys = { openai: '', anthropic: '', google: '', rchat: '' };
+
+    for (const provider of Object.keys(KEY_INPUT_IDS)) {
+      const el = document.getElementById(KEY_INPUT_IDS[provider]);
+      const stored = localStorage.getItem(API_KEY_STORAGE[provider]) || '';
+      apiKeys[provider] = stored;
+      el.value = stored;
+      el.addEventListener('input', () => {
+        apiKeys[provider] = el.value;
+        localStorage.setItem(API_KEY_STORAGE[provider], el.value);
+      });
+    }
+
+    /* ── send/stop button state ── */
+    const SEND_ICON = '<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>';
+    const STOP_ICON = '<rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor" stroke="none"/>';
+
+    let isGenerating    = false;
+    let activeController = null;
+
+    function setGeneratingState(generating) {
+      isGenerating = generating;
+      sendIcon.innerHTML = generating ? STOP_ICON : SEND_ICON;
+      sendBtn.setAttribute('aria-label', generating ? 'Stop generating' : 'Send');
+      sendBtn.disabled = generating ? false : !inputEl.value.trim();
+    }
 
     /* ── auto-resize textarea ── */
     inputEl.addEventListener('input', () => {
       inputEl.style.height = 'auto';
       inputEl.style.height = inputEl.scrollHeight + 'px';
-      sendBtn.disabled = !inputEl.value.trim();
+      if (!isGenerating) sendBtn.disabled = !inputEl.value.trim();
     });
 
     function scrollBottom() { chatEl.scrollTop = chatEl.scrollHeight; }
@@ -630,9 +732,22 @@
       const text = inputEl.value.trim();
       if (!text) return;
 
+      const provider = modelSelect.selectedOptions[0]?.dataset.provider;
+      if (provider && !apiKeys[provider]?.trim()) {
+        addUserTurn(text);
+        const refs = createAssistantTurn();
+        finalizeTurn(refs, [], `_Missing ${provider} API key. Enter it in the field at the top right before sending._`, []);
+        inputEl.value = '';
+        inputEl.style.height = 'auto';
+        return;
+      }
+
       inputEl.value = '';
       inputEl.style.height = 'auto';
-      sendBtn.disabled = true;
+      setGeneratingState(true);
+
+      const controller = new AbortController();
+      activeController = controller;
 
       addUserTurn(text);
       const refs = createAssistantTurn();
@@ -732,7 +847,8 @@
             stopStreamInterval();
             removeCursor();
             finalizeTurn(refs, steps, rawText, sources);
-            sendBtn.disabled = false;
+            setGeneratingState(false);
+            activeController = null;
             inputEl.focus();
             break;
         }
@@ -742,7 +858,13 @@
         const response = await fetch('/chat/stream', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: text, thread_id: threadId }),
+          body: JSON.stringify({
+            message: text,
+            thread_id: threadId,
+            model: selectedModel,
+            api_keys: apiKeys,
+          }),
+          signal: controller.signal,
         });
 
         const reader  = response.body.getReader();
@@ -764,16 +886,32 @@
 
         handleEvent({ type: 'done' });
 
-      } catch (_) {
-        finalizeTurn(refs, steps, '_Error reaching the server._', []);
-        sendBtn.disabled = false;
+      } catch (err) {
+        if (!finalized) {
+          finalized = true;
+          stopStreamInterval();
+          removeCursor();
+          if (err && err.name === 'AbortError') {
+            finalizeTurn(refs, steps, rawText || '_Stopped._', sources);
+          } else {
+            finalizeTurn(refs, steps, '_Error reaching the server._', []);
+          }
+        }
+        setGeneratingState(false);
+        activeController = null;
         inputEl.focus();
       }
     }
 
-    sendBtn.addEventListener('click', send);
+    sendBtn.addEventListener('click', () => {
+      if (isGenerating) {
+        activeController?.abort();
+      } else {
+        send();
+      }
+    });
     inputEl.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+      if (e.key === 'Enter' && !e.shiftKey && !isGenerating) { e.preventDefault(); send(); }
     });
   </script>
 </body>

@@ -1,15 +1,17 @@
 chromadb==1.5.9
 paramiko==2.11.0
-langchain>=0.3,<0.4
-langchain-core>=0.3,<0.4
+langchain>=1.3,<2.0
+langchain-core>=1.4,<2.0
 langchain-ollama>=0.3,<0.4
 langchain-chroma>=0.2,<0.3
-langchain-openai>=0.3,<0.4
+langchain-openai>=1.3,<2.0
+langchain-anthropic>=1.4,<2.0      # app.py — ChatAnthropic for Claude models (BYOK routing)
+langchain-google-genai>=4.2,<5.0   # app.py — ChatGoogleGenerativeAI for Gemini models (BYOK routing)
 pypdf>=4.0,<6.0            # full_document_ingestion.py — PDF text extraction (optional)
 fastmcp>=2.0,<3.0          # mcpServer.py — MCP server exposing the pipeline as tools
 reductus==1.0.1            # mcpServer.py — reductus.web_gui.api reduction backend
-langgraph>=0.2,<0.4        # agent.py — create_react_agent, MemorySaver
-langchain-mcp-adapters>=0.1,<0.2  # agent.py — MultiServerMCPClient
+langgraph>=1.2,<2.0        # agent.py — create_react_agent, MemorySaver
+langchain-mcp-adapters>=0.3,<0.4  # agent.py — MultiServerMCPClient
 python-dotenv>=1.0,<2.0    # agent.py — load_dotenv
 fastapi>=0.111,<1.0        # app.py — web server
 uvicorn>=0.29,<1.0         # app.py — ASGI runner
