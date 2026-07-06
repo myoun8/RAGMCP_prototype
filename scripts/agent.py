@@ -12,7 +12,7 @@ from langgraph.checkpoint.memory import MemorySaver
 
 load_dotenv()
 
-REPO_ROOT = Path(__file__).resolve().parent
+REPO_ROOT = Path(__file__).resolve().parent.parent
 MCP_SERVER = REPO_ROOT / "scripts" / "mcpServer.py"
 
 _spec = importlib.util.spec_from_file_location("mcpServer", MCP_SERVER)

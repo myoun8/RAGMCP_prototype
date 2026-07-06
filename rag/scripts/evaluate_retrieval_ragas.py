@@ -25,7 +25,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from _common import PACKS, QUERY_PREFIX, add_eval_cli_args, load_eval_questions, load_pack_chunk_ids, open_vectorstore, write_csv
+from rag.scripts._common import PACKS, QUERY_PREFIX, add_eval_cli_args, load_eval_questions, load_pack_chunk_ids, open_vectorstore, write_csv
 
 EVAL_CSV_FIELDS = ["pack", "top_n", "queries", "mean_context_precision", "mean_context_recall"]
 
@@ -51,7 +51,7 @@ def context_recall(retrieved_source_ids: list[str], expected_sources: set[str]) 
 
 
 def evaluate_pack(pack_name: str, root: Path, vectorstore, embedder, top_n: int) -> dict[str, object]:
-    pack_dir = root / pack_name
+    pack_dir = root / "context_database" / pack_name
     questions = load_eval_questions(pack_dir)
     pack_chunk_ids = load_pack_chunk_ids(pack_dir)
     # over-fetch from the global collection, then filter down to this pack's

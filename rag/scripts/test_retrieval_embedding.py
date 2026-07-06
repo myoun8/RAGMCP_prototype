@@ -25,7 +25,7 @@ EVAL_CSV_FIELDS = [
 
 
 def evaluate_pack(pack_name: str, root: Path, vectorstore, embedder, top_n: int) -> dict[str, object]:
-    pack_dir = root / pack_name
+    pack_dir = root / "context_database" / pack_name
     questions = load_eval_questions(pack_dir)
     pack_chunk_ids = load_pack_chunk_ids(pack_dir)
     # over-fetch from the global collection, then filter down to this pack's

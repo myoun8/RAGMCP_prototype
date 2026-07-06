@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SCRIPTS = REPO_ROOT / "scripts"
+SCRIPTS = REPO_ROOT / "rag" / "scripts"
 
 sys.path.insert(0, str(SCRIPTS))
 from _common import ensure_ollama

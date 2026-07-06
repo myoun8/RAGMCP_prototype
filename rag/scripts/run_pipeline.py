@@ -89,7 +89,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> None:
-    _load_dotenv(REPO_ROOT / ".env")
+    _load_dotenv(REPO_ROOT.parent / ".env")
     args = build_parser().parse_args()
     packs = [args.pack] if args.pack else PACKS
     py = sys.executable
