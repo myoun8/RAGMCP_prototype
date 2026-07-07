@@ -294,10 +294,10 @@ def reduce_files(
     }
 
     if target_node is None:
-        return _all_node_outputs(instrument_id, template_def, config, return_type)
-    return reductus_api.calc_terminal(
+        return _compact_metadata(_all_node_outputs(instrument_id, template_def, config, return_type))
+    return _compact_metadata(reductus_api.calc_terminal(
         template_def, config, target_node, target_terminal, return_type=return_type,
-    )
+    ))
 
 _INTENT_KEYS = ("intent", "analysis.intent")
 _FILENAME_KEYS = ("filename", "run.filename", "name")
@@ -315,6 +315,31 @@ def _first_present(metadata: dict, keys: tuple[str, ...]):
         if value not in (None, ""):
             return value
     return None
+
+
+def _compact_metadata(value, max_items: int = 8, max_str: int = 2000):
+    """Recursively truncate long lists/tuples/strings (e.g. per-detector-channel
+    arrays like x/v/Ld/Li, or column-text export blobs) so a reductus result
+    stays small enough to round-trip through an LLM's context window.
+
+    Reflectometer/CANDOR metadata and reduction outputs are raw Data.todict()/
+    get_export() output, which embed full per-point arrays or column-text --
+    one file can pretty-print to 100KB+. That whole blob used to be dumped
+    verbatim into the tool response and re-sent to the model on every
+    subsequent turn, which was blowing out small context windows (observed as
+    a negative computed max_tokens)."""
+    if isinstance(value, dict):
+        return {k: _compact_metadata(v, max_items, max_str) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        if len(value) > max_items:
+            return {
+                "_truncated_array_length": len(value),
+                "_sample": [_compact_metadata(v, max_items, max_str) for v in value[:max_items]],
+            }
+        return [_compact_metadata(v, max_items, max_str) for v in value]
+    if isinstance(value, str) and len(value) > max_str:
+        return value[:max_str] + f"... [truncated, {len(value)} chars total]"
+    return value
 
 
 @mcp.tool()
@@ -349,8 +374,10 @@ def get_file_intent(
 
     Returns one {"filename", "intent", "metadata"} dict per dataset found in
     the file (usually one, but polarized/multi-part files can yield several).
-    "metadata" is the full raw metadata dict for that dataset, in case the
-    caller needs a field beyond filename/intent.
+    "metadata" is the rest of that dataset's metadata, in case the caller
+    needs a field beyond filename/intent; long per-point arrays inside it
+    (e.g. angle/intensity arrays) are truncated to a short sample so the
+    response stays small.
     """
     instrument = reductus_api.get_instrument(instrument_id)
     templates = instrument.get("templates", {})
@@ -398,7 +425,7 @@ def get_file_intent(
         {
             "filename": _first_present(v, _FILENAME_KEYS),
             "intent": _first_present(v, _INTENT_KEYS),
-            "metadata": v,
+            "metadata": _compact_metadata(v),
         }
         for v in metadata.get("values", [])
     ]

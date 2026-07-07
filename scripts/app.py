@@ -1,9 +1,13 @@
 import importlib.util
 import json
+import logging
 import os
 import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
+
+logger = logging.getLogger("ncnr_agent")
+logging.basicConfig(level=logging.INFO)
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
@@ -222,10 +226,16 @@ def _build_agent(app: FastAPI, model: str, api_keys: dict[str, str]):
 async def chat(req: ChatRequest):
     agent_executor = _build_agent(app, req.model, req.api_keys)
     config = {"configurable": {"thread_id": req.thread_id}}
-    result = await agent_executor.ainvoke(
-        {"messages": [("user", req.message)]},
-        config=config,
-    )
+    try:
+        result = await agent_executor.ainvoke(
+            {"messages": [("user", req.message)]},
+            config=config,
+        )
+    except Exception as exc:
+        logger.exception(
+            "chat failed (thread_id=%s, model=%s)", req.thread_id, req.model
+        )
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
     final_msg = result["messages"][-1]
     content = final_msg.content
     if isinstance(content, list):
@@ -306,6 +316,9 @@ async def chat_stream(req: ChatRequest, request: Request):
             yield emit({"type": "done"})
 
         except Exception as exc:
+            logger.exception(
+                "chat/stream failed (thread_id=%s, model=%s)", req.thread_id, req.model
+            )
             yield emit({"type": "error", "text": str(exc)})
             yield emit({"type": "done"})
 
