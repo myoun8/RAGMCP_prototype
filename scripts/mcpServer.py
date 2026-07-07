@@ -48,7 +48,7 @@ def gen_chunks(input: str) -> str:
     the matching chunk texts (dropping any below a
     configurable distance threshold). You MUST use 
     this tool if the user asks HOW a specific 
-    instrument (like CANDOR or MACS) works."""
+    instrument (like CANDOR or MACS) works. Do NOT use this tool to answer questions about raw data files"""
     output = subprocess.run(
         [sys.executable, str(SCRIPTS / "gen_chunks.py"), input],
         cwd=str(REPO_ROOT),
