@@ -31,7 +31,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = REPO_ROOT / "scripts"
 sys.path.insert(0, str(SCRIPTS))
-from _common import PACKS  # noqa: E402
+from rag.scripts._common import PACKS  # noqa: E402
 
 RCHAT_API_KEY_ENV = "RCHAT_API_KEY"
 DEFAULT_MODEL = "gemma-4-31B-it"

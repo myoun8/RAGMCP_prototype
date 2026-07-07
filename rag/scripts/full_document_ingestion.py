@@ -32,7 +32,7 @@ from openai import OpenAI
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
-from _common import PACKS  # noqa: E402
+from rag.scripts._common import PACKS  # noqa: E402
 
 WORKFLOW_STAGES = [
     "overview",

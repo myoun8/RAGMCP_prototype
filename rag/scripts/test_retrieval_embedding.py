@@ -16,7 +16,7 @@ import argparse
 import time
 from pathlib import Path
 
-from _common import PACKS, QUERY_PREFIX, add_eval_cli_args, load_eval_questions, load_pack_chunk_ids, open_vectorstore, write_csv
+from rag.scripts._common import PACKS, QUERY_PREFIX, add_eval_cli_args, load_eval_questions, load_pack_chunk_ids, open_vectorstore, write_csv
 
 EVAL_CSV_FIELDS = [
     "pack", "top_n", "queries", "top1_accuracy", "topk_accuracy",

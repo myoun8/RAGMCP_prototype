@@ -17,7 +17,7 @@ Usage:
 import argparse
 
 try:
-    from _common import (
+    from rag.scripts._common import (
         CHROMA_PATH, COLLECTION, EMBED_MODEL, EMBED_BASE_URL,
         QUERY_PREFIX, open_vectorstore, ensure_ollama,
     )

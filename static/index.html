@@ -289,7 +289,7 @@
       color: #bbb; margin-top: 6px;
     }
 
-    /* ── Model selector + API key status button ── */
+    /* ── combined model + API key status button ── */
     #model-bar {
       position: fixed;
       top: 14px;
@@ -299,20 +299,11 @@
       align-items: center;
       gap: 8px;
     }
-    #model-select {
-      font-family: inherit;
-      font-size: 13px;
-      color: #555;
-      background: #fff;
-      border: 1px solid #e0ddd7;
-      border-radius: 8px;
-      padding: 6px 10px;
-      outline: none;
-      cursor: pointer;
-    }
-    #model-select:hover { background: #f5f2ed; }
 
-    #api-key-status-btn {
+    #model-key-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
       font-family: inherit;
       font-size: 13px;
       font-weight: 600;
@@ -323,18 +314,46 @@
       transition: background 0.15s, border-color 0.15s, color 0.15s;
       white-space: nowrap;
     }
-    #api-key-status-btn.keys-missing {
+    #model-key-btn .key-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    #model-key-btn .chevron-mini {
+      font-size: 10px;
+      color: #bbb;
+    }
+    #model-key-btn.keys-missing {
       background: #fdecec;
       border: 1px solid #f3b4b4;
       color: #c0392b;
     }
-    #api-key-status-btn.keys-missing:hover { background: #fbdada; }
-    #api-key-status-btn.keys-set {
+    #model-key-btn.keys-missing:hover { background: #fbdada; }
+    #model-key-btn.keys-missing .key-dot { background: #c0392b; }
+    #model-key-btn.keys-set {
       background: #fff;
       border: 1px solid #cfe8d1;
-      color: #2f7d43;
+      color: #444;
     }
-    #api-key-status-btn.keys-set:hover { background: #f2f9f3; }
+    #model-key-btn.keys-set:hover { background: #f2f9f3; }
+    #model-key-btn.keys-set .key-dot { background: #2f7d43; }
+
+    /* model select styled to match the modal's key-field inputs */
+    #model-select {
+      width: 100%;
+      font-family: inherit;
+      font-size: 13.5px;
+      color: #1a1a1a;
+      background: #faf9f7;
+      border: 1px solid #e0ddd7;
+      border-radius: 8px;
+      padding: 9px 12px;
+      outline: none;
+      cursor: pointer;
+    }
+    #model-select:hover, #model-select:focus { border-color: #c9c3b8; background: #fff; }
+    #model-field { margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid #ede9e3; }
 
     /* ── API key modal ── */
     #api-key-modal-overlay {
@@ -552,29 +571,16 @@
 </head>
 <body>
 
-  <!-- Model selector + API key status button — always visible, top of the interface -->
+  <!-- Combined model + API key status button — always visible, top of the interface -->
   <div id="model-bar">
-    <select id="model-select" aria-label="Select model">
-      <optgroup label="OpenAI">
-        <option value="gpt-4o" data-provider="openai">gpt-4o</option>
-      </optgroup>
-      <optgroup label="Anthropic">
-        <option value="claude-3-5-sonnet-20241022" data-provider="anthropic">claude-3-5-sonnet-20241022</option>
-      </optgroup>
-      <optgroup label="Google">
-        <option value="gemini-3.5-flash" data-provider="google">gemini-3.5-flash</option>
-      </optgroup>
-      <optgroup label="NIST rchat">
-        <option value="gpt-oss-120b" data-provider="rchat">gpt-oss-120b</option>
-        <option value="gemma-4-31B-it" data-provider="rchat">gemma-4-31B-it</option>
-        <option value="Llama-4-Maverick-17B-128E-Instruct-FP8" data-provider="rchat">Llama-4-Maverick-17B-128E-Instruct-FP8</option>
-        <option value="NVIDIA-Nemotron-3-Super-120B-A12B-FP8" data-provider="rchat">NVIDIA-Nemotron-3-Super-120B-A12B-FP8</option>
-      </optgroup>
-    </select>
-    <button id="api-key-status-btn" class="keys-missing" aria-haspopup="dialog" aria-expanded="false">Set API Key</button>
+    <button id="model-key-btn" class="keys-missing" aria-haspopup="dialog" aria-expanded="false">
+      <span class="key-dot"></span>
+      <span id="model-key-label">gpt-oss-120b</span>
+      <span class="chevron-mini">▾</span>
+    </button>
   </div>
 
-  <!-- API key modal -->
+  <!-- Model + API key modal -->
   <div id="api-key-modal-overlay" role="presentation">
     <div id="api-key-modal" role="dialog" aria-modal="true" aria-labelledby="api-key-modal-title">
       <button id="api-key-modal-close" aria-label="Close">
@@ -583,8 +589,29 @@
           <line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
-      <h2 id="api-key-modal-title">API Keys</h2>
+      <h2 id="api-key-modal-title">Model &amp; API Keys</h2>
       <p class="modal-subtitle">Keys are stored only in this browser's local storage and sent directly with your requests.</p>
+
+      <div id="model-field" class="key-field">
+        <label for="model-select">Model</label>
+        <select id="model-select" aria-label="Select model">
+          <optgroup label="OpenAI">
+            <option value="gpt-4o" data-provider="openai">gpt-4o</option>
+          </optgroup>
+          <optgroup label="Anthropic">
+            <option value="claude-3-5-sonnet-20241022" data-provider="anthropic">claude-3-5-sonnet-20241022</option>
+          </optgroup>
+          <optgroup label="Google">
+            <option value="gemini-3.5-flash" data-provider="google">gemini-3.5-flash</option>
+          </optgroup>
+          <optgroup label="NIST rchat">
+            <option value="gpt-oss-120b" data-provider="rchat">gpt-oss-120b</option>
+            <option value="gemma-4-31B-it" data-provider="rchat">gemma-4-31B-it</option>
+            <option value="Llama-4-Maverick-17B-128E-Instruct-FP8" data-provider="rchat">Llama-4-Maverick-17B-128E-Instruct-FP8</option>
+            <option value="NVIDIA-Nemotron-3-Super-120B-A12B-FP8" data-provider="rchat">NVIDIA-Nemotron-3-Super-120B-A12B-FP8</option>
+          </optgroup>
+        </select>
+      </div>
 
       <div class="key-field">
         <label for="openai-key-input">OpenAI</label>
@@ -788,6 +815,7 @@
     modelSelect.value = selectedModel;
     modelSelect.addEventListener('change', () => {
       selectedModel = modelSelect.value;
+      updateModelKeyBtn();
     });
 
     /* ── BYOK API keys: one per provider, persisted in localStorage ── */
@@ -823,26 +851,28 @@
       return !!(apiKeys[provider]?.trim()) || !!serverKeys[provider];
     }
 
-    /* ── API key status button ── */
-    const apiKeyStatusBtn = document.getElementById('api-key-status-btn');
+    /* ── combined model + API key status button ── */
+    const modelKeyBtn   = document.getElementById('model-key-btn');
+    const modelKeyLabel = document.getElementById('model-key-label');
 
-    function updateApiKeyStatusBtn() {
-      const anySet = Object.keys(API_KEY_STORAGE).some(hasKey);
-      apiKeyStatusBtn.classList.toggle('keys-missing', !anySet);
-      apiKeyStatusBtn.classList.toggle('keys-set', anySet);
-      apiKeyStatusBtn.textContent = anySet ? 'API Key Set' : 'Set API Key';
+    function updateModelKeyBtn() {
+      const provider = modelSelect.selectedOptions[0]?.dataset.provider;
+      const set = provider ? hasKey(provider) : false;
+      modelKeyBtn.classList.toggle('keys-missing', !set);
+      modelKeyBtn.classList.toggle('keys-set', set);
+      modelKeyLabel.textContent = selectedModel;
     }
-    updateApiKeyStatusBtn();
+    updateModelKeyBtn();
 
     fetch('/api/key-status')
       .then(r => r.json())
       .then(status => {
         Object.assign(serverKeys, status);
-        updateApiKeyStatusBtn();
+        updateModelKeyBtn();
       })
       .catch(() => {});
 
-    /* ── API key modal open/close ── */
+    /* ── model/API key modal open/close ── */
     const apiKeyModalOverlay = document.getElementById('api-key-modal-overlay');
     const apiKeyModalClose   = document.getElementById('api-key-modal-close');
     const apiKeySaveBtn      = document.getElementById('api-key-save-btn');
@@ -850,13 +880,13 @@
 
     function openApiKeyModal() {
       apiKeyModalOverlay.classList.add('open');
-      apiKeyStatusBtn.setAttribute('aria-expanded', 'true');
+      modelKeyBtn.setAttribute('aria-expanded', 'true');
     }
     function closeApiKeyModal() {
       apiKeyModalOverlay.classList.remove('open');
-      apiKeyStatusBtn.setAttribute('aria-expanded', 'false');
+      modelKeyBtn.setAttribute('aria-expanded', 'false');
     }
-    apiKeyStatusBtn.addEventListener('click', () => {
+    modelKeyBtn.addEventListener('click', () => {
       apiKeyModalOverlay.classList.contains('open') ? closeApiKeyModal() : openApiKeyModal();
     });
     apiKeyModalClose.addEventListener('click', closeApiKeyModal);
@@ -867,17 +897,12 @@
       if (e.key === 'Escape' && apiKeyModalOverlay.classList.contains('open')) closeApiKeyModal();
     });
 
-    /* ── Disclaimer modal: blocks the app until accepted on first visit;
+    /* ── Disclaimer modal: blocks the app on every page load;
        re-openable (dismissable) any time via the footer link ── */
-    const DISCLAIMER_STORAGE = 'ncnr_disclaimer_accepted';
     const disclaimerModalOverlay = document.getElementById('disclaimer-modal-overlay');
     const disclaimerModalClose   = document.getElementById('disclaimer-modal-close');
     const disclaimerAcceptBtn    = document.getElementById('disclaimer-accept-btn');
     const disclaimerLink         = document.getElementById('disclaimer-link');
-
-    function disclaimerAccepted() {
-      return localStorage.getItem(DISCLAIMER_STORAGE) === 'true';
-    }
 
     /* blocking === true: no close button, no backdrop/Escape dismissal */
     function openDisclaimerModal(blocking) {
@@ -891,7 +916,6 @@
     }
 
     disclaimerAcceptBtn.addEventListener('click', () => {
-      localStorage.setItem(DISCLAIMER_STORAGE, 'true');
       disclaimerModalOverlay.dataset.blocking = 'false';
       disclaimerModalClose.hidden = false;
       disclaimerModalOverlay.classList.remove('open');
@@ -905,7 +929,7 @@
       if (e.key === 'Escape' && disclaimerModalOverlay.classList.contains('open')) closeDisclaimerModal();
     });
 
-    if (!disclaimerAccepted()) openDisclaimerModal(true);
+    openDisclaimerModal(true);
 
     /* ── per-field visibility (eye) toggles ── */
     const EYE_ICON =
@@ -932,7 +956,7 @@
         apiKeys[provider] = el.value;
         localStorage.setItem(API_KEY_STORAGE[provider], el.value);
       }
-      updateApiKeyStatusBtn();
+      updateModelKeyBtn();
 
       apiKeySaveConfirm.classList.add('show');
       clearTimeout(saveConfirmTimeout);
@@ -1159,7 +1183,7 @@
       if (provider && !hasKey(provider)) {
         addUserTurn(text);
         const refs = createAssistantTurn();
-        finalizeTurn(refs, [], `_Missing ${provider} API key. Click "Set API Key" at the top right to add it._`, []);
+        finalizeTurn(refs, [], `_Missing ${provider} API key. Click the model button at the top right to add it._`, []);
         inputEl.value = '';
         inputEl.style.height = 'auto';
         return;
