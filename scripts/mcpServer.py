@@ -294,10 +294,155 @@ def reduce_files(
     }
 
     if target_node is None:
-        return _all_node_outputs(instrument_id, template_def, config, return_type)
-    return reductus_api.calc_terminal(
+        return _compact_metadata(_all_node_outputs(instrument_id, template_def, config, return_type))
+    return _compact_metadata(reductus_api.calc_terminal(
         template_def, config, target_node, target_terminal, return_type=return_type,
+    ))
+
+_INTENT_KEYS = ("intent", "analysis.intent")
+_FILENAME_KEYS = ("filename", "run.filename", "name")
+
+
+def _first_present(metadata: dict, keys: tuple[str, ...]):
+    """Return the first non-empty value found in metadata under any of keys.
+
+    Different instrument data classes expose the same concept under different
+    keys: reflectometer/CANDOR loaders return a clean {"intent": ...} field,
+    while SANS/VSANS loaders return the raw NeXus metadata dict verbatim,
+    where the equivalent field is "analysis.intent"."""
+    for key in keys:
+        value = metadata.get(key)
+        if value not in (None, ""):
+            return value
+    return None
+
+
+def _compact_metadata(value, max_items: int = 8, max_str: int = 2000):
+    """Recursively truncate long lists/tuples/strings (e.g. per-detector-channel
+    arrays like x/v/Ld/Li, or column-text export blobs) so a reductus result
+    stays small enough to round-trip through an LLM's context window.
+
+    Reflectometer/CANDOR metadata and reduction outputs are raw Data.todict()/
+    get_export() output, which embed full per-point arrays or column-text --
+    one file can pretty-print to 100KB+. That whole blob used to be dumped
+    verbatim into the tool response and re-sent to the model on every
+    subsequent turn, which was blowing out small context windows (observed as
+    a negative computed max_tokens)."""
+    if isinstance(value, dict):
+        return {k: _compact_metadata(v, max_items, max_str) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        if len(value) > max_items:
+            return {
+                "_truncated_array_length": len(value),
+                "_sample": [_compact_metadata(v, max_items, max_str) for v in value[:max_items]],
+            }
+        return [_compact_metadata(v, max_items, max_str) for v in value]
+    if isinstance(value, str) and len(value) > max_str:
+        return value[:max_str] + f"... [truncated, {len(value)} chars total]"
+    return value
+
+
+@mcp.tool()
+def get_file_intent(
+    instrument_id: str,
+    path: str,
+    mtime: int,
+    source: str = "ncnr",
+    template_name: str | None = None,
+) -> list[dict]:
+    """Determine the measurement intent of a single raw data file by loading
+    just its header, without running a full reduction. Intent values are
+    instrument-family specific, e.g. 'specular'/'background+'/'background-'/
+    'intensity'/'rock sample'/'rock detector'/'slit'/'scan' for reflectometers
+    and CANDOR, or 'sample'/'empty'/'open beam'/'blocked beam' for SANS/VSANS.
+
+    Use this to figure out what a raw data file IS -- e.g. to answer "what is
+    the intent of this file?" -- or to decide which reduce_files node/role a
+    file belongs in, before calling reduce_files.
+
+    instrument_id is like 'ncnr.refl' or 'ncnr.sans' (see list_instruments).
+    path/mtime/source identify the file the same way as in
+    find_raw_data_paths/list_data_files output (mtime is required by reductus).
+
+    template_name picks which loader module to use, in case an instrument_id
+    has multiple incompatible raw-file formats/loaders across its templates
+    (e.g. 'ncnr.refl' has a 'candor' template with a CANDOR-specific loader,
+    separate from the generic NeXus loader used by its other templates). If
+    omitted, the first template with a file-loading node is used -- pass an
+    explicit template_name (see list_reduction_templates) if that guess loads
+    the wrong kind of file.
+
+    Returns one {"filename", "intent", "metadata"} dict per dataset found in
+    the file (usually one, but polarized/multi-part files can yield several).
+    "metadata" is the rest of that dataset's metadata, in case the caller
+    needs a field beyond filename/intent; long per-point arrays inside it
+    (e.g. angle/intensity arrays) are truncated to a short sample so the
+    response stays small.
+    """
+    instrument = reductus_api.get_instrument(instrument_id)
+    templates = instrument.get("templates", {})
+    if template_name:
+        candidate_names = [template_name]
+    elif "load" in templates:
+        # Prefer a template literally named "load" (e.g. ncnr.sans, ncnr.vsans):
+        # it does nothing but load raw files, so it's cheaper and less brittle
+        # than reduction templates that happen to have a load node too.
+        candidate_names = ["load"] + [n for n in templates if n != "load"]
+    else:
+        candidate_names = list(templates)
+
+    template_def = load_node = resolved_name = None
+    for name in candidate_names:
+        if name not in templates:
+            raise ValueError(
+                f"Unknown template {name!r} for {instrument_id!r}; "
+                f"available: {sorted(templates)}"
+            )
+        candidate_def, load_nodes = _load_file_nodes(instrument_id, name)
+        if load_nodes:
+            template_def, load_node, resolved_name = candidate_def, load_nodes[0], name
+            break
+
+    if load_node is None:
+        raise ValueError(
+            f"No file-loading module found for instrument {instrument_id!r}"
+            + (f", template {template_name!r}" if template_name else "")
+        )
+
+    template_def["name"] = resolved_name
+    template_def.setdefault("description", resolved_name)
+    template_def["instrument"] = instrument_id
+
+    # Reduction templates bake a fixed intent into each load node's config so
+    # that node reduces one measurement role: e.g. ncnr.refl's 'candor'
+    # template pins node 0 to intent='intensity', and other nodes to
+    # 'specular'/'background+'/'background-'. If we inherit that, the loader
+    # overwrites the file's own intent (from trajectoryData/_scanType) with the
+    # node's role, so every file would just echo the config (all 'intensity').
+    # Reset the resolved load node to intent='auto' so it reports the file's
+    # actual measured intent instead. Only touches nodes that already carry an
+    # intent field, so load-only templates (ncnr.sans/vsans) are unaffected.
+    load_cfg = template_def["modules"][load_node["node"]].setdefault("config", {})
+    if "intent" in load_cfg:
+        load_cfg["intent"] = "auto"
+
+    config = {
+        str(load_node["node"]): {
+            "filelist": [_sanitize_fileinfo({"path": path, "mtime": mtime, "source": source})]
+        }
+    }
+    metadata = reductus_api.calc_terminal(
+        template_def, config, load_node["node"], "output", return_type="metadata",
     )
+    return [
+        {
+            "filename": _first_present(v, _FILENAME_KEYS),
+            "intent": _first_present(v, _INTENT_KEYS),
+            "metadata": _compact_metadata(v),
+        }
+        for v in metadata.get("values", [])
+    ]
+
 
 _INTENT_KEYS = ("intent", "analysis.intent")
 _FILENAME_KEYS = ("filename", "run.filename", "name")
