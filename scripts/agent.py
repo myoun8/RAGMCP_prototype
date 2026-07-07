@@ -1,4 +1,5 @@
 ﻿import asyncio
+import functools
 import importlib.util
 import os
 import sys
@@ -23,6 +24,7 @@ _spec.loader.exec_module(_mod)  # type: ignore[union-attr]
 MCP_TOOL_NAMES = [
     "run_pipeline",
     "gen_chunks",
+    "generate_plot",
     "list_instruments",
     "get_instrument",
     "list_datasources",
@@ -32,9 +34,31 @@ MCP_TOOL_NAMES = [
     "reduce_files",
     "get_file_intent",
 ]
+
+# LangGraph's default recursion_limit of 25 caps a run at ~12 sequential tool
+# calls, which cuts off long multi-item tasks partway through.
+AGENT_RECURSION_LIMIT = 100
+
+
+def _safe_tool(fn):
+    """Return tool exceptions as an error string instead of raising.
+
+    An uncaught exception inside a tool aborts the entire agent run, so one
+    bad item (e.g. a raw data file that isn't valid HDF5) used to kill every
+    remaining step of a multi-file request. Returning the error as the tool
+    result lets the model report that item as failed and continue."""
+    @functools.wraps(fn)
+    def wrapped(*args, **kwargs):
+        try:
+            return fn(*args, **kwargs)
+        except Exception as exc:  # noqa: BLE001 - any tool failure must not kill the run
+            return f"TOOL ERROR in {fn.__name__}: {type(exc).__name__}: {exc}"
+    return wrapped
+
+
 mcp_server_tools = [
     StructuredTool.from_function(
-        func=getattr(_mod, name),
+        func=_safe_tool(getattr(_mod, name)),
         name=name,
         description=getattr(_mod, name).__doc__,
     )
@@ -93,6 +117,18 @@ async def run_agent():
                           "\n"
                           "STYLE: be brief and direct, no preamble; prefer short sentences or lists over prose.\n"
                           "\n"
+                          "VISUALIZATION: to plot or chart numeric data (reduced curves, scans, x/y arrays), "
+                          "call generate_plot with matplotlib code — plt/np/mpl are already imported; do not "
+                          "call plt.show()/savefig(). It returns a Markdown image reference; include that exact "
+                          "reference verbatim in your reply so the plot renders.\n"
+                          "\n"
+                          "MULTI-ITEM TASKS: when asked to repeat an operation over several items (files, "
+                          "questions, experiments), perform it for EVERY item before answering — one tool call "
+                          "per item. Never stop after the first few, never summarize the rest as 'and so on', "
+                          "and never promise to do remaining items later. If a tool call fails for one item "
+                          "(result starts with 'TOOL ERROR'), report that item as failed and continue with the "
+                          "remaining items.\n"
+                          "\n"
                           "If the prompt is asking for the intent of a raw data file, call get_file_intent "
                           "(needs instrument_id, path, mtime, source — use find_raw_data_paths/list_data_files "
                           "first if the user hasn't given these directly). If the user requests the intent of a "
@@ -109,7 +145,10 @@ async def run_agent():
         checkpointer=memory
     )
 
-    config = {"configurable": {"thread_id": "ncnr_session_1"}}
+    config = {
+        "configurable": {"thread_id": "ncnr_session_1"},
+        "recursion_limit": AGENT_RECURSION_LIMIT,
+    }
 
     while True:
         user_query = input("\nYou: ")

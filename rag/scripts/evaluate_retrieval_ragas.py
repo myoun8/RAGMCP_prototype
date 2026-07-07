@@ -25,7 +25,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from rag.scripts._common import PACKS, QUERY_PREFIX, add_eval_cli_args, load_eval_questions, load_pack_chunk_ids, open_vectorstore, write_csv
+from _common import PACKS, QUERY_PREFIX, add_eval_cli_args, load_eval_questions, load_pack_chunk_ids, open_vectorstore, write_csv
 
 EVAL_CSV_FIELDS = ["pack", "top_n", "queries", "mean_context_precision", "mean_context_recall"]
 

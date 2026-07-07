@@ -34,7 +34,7 @@ Adjust the field access in load_chunks() to match your actual schema.
 import json
 import glob
 
-from rag.scripts._common import COLLECTION, open_vectorstore
+from _common import COLLECTION, open_vectorstore
 
 # ---- config ---------------------------------------------------------------
 OLLAMA_BASE_URL = "http://localhost:11434"

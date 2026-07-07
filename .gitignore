@@ -16,6 +16,9 @@ chroma_db/
 # Generated chunk files
 *_chunks.generated.jsonl
 
+# Figures rendered by the generate_plot MCP tool
+static/generated/
+
 # Evaluation output
 retrieval_results.csv
 retrieval_results_*.csv

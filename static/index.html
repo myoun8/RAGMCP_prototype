@@ -199,6 +199,12 @@
       border: 1px solid #ddd; padding: 6px 10px; text-align: left;
     }
     .response-body th { background: #f0ede6; font-weight: 600; }
+    /* generate_plot returns a Markdown image; keep the figure within the column */
+    .response-body img {
+      max-width: 100%; height: auto;
+      border: 1px solid #e8e4de; border-radius: 10px;
+      margin: 8px 0; background: #fff;
+    }
 
     .math-block { text-align: center; margin: 12px 0; overflow-x: auto; }
 
@@ -519,25 +525,6 @@
       text-decoration: underline;
     }
     #disclaimer-modal-body a:hover { color: #123a9e; }
-    #disclaimer-modal-close {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      width: 28px;
-      height: 28px;
-      border: none;
-      background: none;
-      border-radius: 6px;
-      color: #999;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.12s, color 0.12s;
-    }
-    #disclaimer-modal-close:hover { background: #f0ede6; color: #444; }
-    #disclaimer-modal-close svg { width: 16px; height: 16px; }
-
     #disclaimer-accept-btn {
       width: 100%;
       margin-top: 18px;
@@ -653,12 +640,6 @@
   <!-- Disclaimer modal — blocks the app on first visit until accepted -->
   <div id="disclaimer-modal-overlay" role="presentation">
     <div id="disclaimer-modal" role="dialog" aria-modal="true" aria-labelledby="disclaimer-modal-title">
-      <button id="disclaimer-modal-close" aria-label="Close" hidden>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"/>
-          <line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      </button>
       <h2 id="disclaimer-modal-title">Disclaimer</h2>
       <div id="disclaimer-modal-body">
         <p>When using Large Language Models (LLMs) for research purposes, be aware that the output may contain errors or inaccuracies. LLMs can make subtle mistakes that may not be immediately apparent. If you intend to use LLM-generated responses to inform policy or for publication, it is your responsibility to carefully review and validate the output to ensure its accuracy.</p>
@@ -900,15 +881,13 @@
     /* ── Disclaimer modal: blocks the app on every page load;
        re-openable (dismissable) any time via the footer link ── */
     const disclaimerModalOverlay = document.getElementById('disclaimer-modal-overlay');
-    const disclaimerModalClose   = document.getElementById('disclaimer-modal-close');
     const disclaimerAcceptBtn    = document.getElementById('disclaimer-accept-btn');
     const disclaimerLink         = document.getElementById('disclaimer-link');
 
-    /* blocking === true: no close button, no backdrop/Escape dismissal */
+    /* blocking === true: no backdrop/Escape dismissal */
     function openDisclaimerModal(blocking) {
       disclaimerModalOverlay.classList.add('open');
       disclaimerModalOverlay.dataset.blocking = blocking ? 'true' : 'false';
-      disclaimerModalClose.hidden = !!blocking;
     }
     function closeDisclaimerModal() {
       if (disclaimerModalOverlay.dataset.blocking === 'true') return;
@@ -917,10 +896,8 @@
 
     disclaimerAcceptBtn.addEventListener('click', () => {
       disclaimerModalOverlay.dataset.blocking = 'false';
-      disclaimerModalClose.hidden = false;
       disclaimerModalOverlay.classList.remove('open');
     });
-    disclaimerModalClose.addEventListener('click', closeDisclaimerModal);
     disclaimerModalOverlay.addEventListener('click', (e) => {
       if (e.target === disclaimerModalOverlay) closeDisclaimerModal();
     });

@@ -1,6 +1,7 @@
 from fastmcp import FastMCP
 import copy
 import importlib.util
+import json
 import os
 import subprocess
 import sys
@@ -10,6 +11,10 @@ import requests
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = REPO_ROOT / "rag" / "scripts"
+
+# Figures from generate_plot land here; app.py serves REPO_ROOT/static at
+# /static, so a file written here is reachable at /static/generated/<name>.
+GENERATED_DIR = REPO_ROOT / "static" / "generated"
 
 _common_spec = importlib.util.spec_from_file_location("_common", SCRIPTS / "_common.py")
 _common = importlib.util.module_from_spec(_common_spec)  # type: ignore[arg-type]
@@ -29,7 +34,7 @@ mcp = FastMCP("ProtoRAG")
 def run_pipeline() -> bool:
     """Runs the full NCNR RAG ingestion pipeline in four
     sequential steps: normalize raw source documents into
-    Markdown via the Groq API, chunk each pack's Markdown
+    Markdown via the RChat API, chunk each pack's Markdown
     by headings into JSONL, validate pack structure and
     schema, then embed all chunks and load them into a Chroma vectorstore.
     Should be run after the original database is updated or new source documents are added.
@@ -68,6 +73,70 @@ def gen_chunks(input: str) -> str:
         "```\n"
         "</retrieved_chunks>"
     )
+
+
+@mcp.tool()
+def generate_plot(code: str, title: str | None = None) -> str:
+    """Render a matplotlib figure from Python plotting code and save it as a
+    PNG image, returning a Markdown image reference the UI can display. Use
+    this to visualize numeric data — e.g. reduced reflectivity/SANS curves
+    from reduce_files, a scan's intensity vs. angle, or any x/y arrays the
+    user provides or that another tool returned.
+
+    `code` is a snippet of Python that builds ONE matplotlib figure. It runs
+    with these names already imported, so do not re-import them:
+      - `plt`  -> matplotlib.pyplot
+      - `np`   -> numpy
+      - `mpl`  -> matplotlib
+    Put the data to plot inline in the code (as literal lists/arrays). Do NOT
+    call plt.show() or plt.savefig() — the current figure is captured and
+    saved for you. Example:
+
+        x = [0.01, 0.02, 0.03, 0.04]
+        y = [1.0, 0.42, 0.11, 0.03]
+        plt.plot(x, y, marker='o')
+        plt.xlabel('Q (1/Å)')
+        plt.ylabel('Reflectivity')
+        plt.yscale('log')
+
+    `title` (optional) is added as the figure title.
+
+    Returns a Markdown image reference like ![title](/static/generated/<id>.png).
+    Include that exact reference verbatim in your reply so the user sees the plot.
+    """
+    import uuid
+
+    import matplotlib
+    matplotlib.use("Agg")  # headless: never try to open a GUI window
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    GENERATED_DIR.mkdir(parents=True, exist_ok=True)
+
+    plt.close("all")  # start from a clean slate so plt.gcf() is this call's figure
+    namespace = {"plt": plt, "np": np, "mpl": matplotlib}
+    try:
+        exec(code, namespace)  # noqa: S102 - model-authored plotting code, local research tool
+    except Exception as exc:  # noqa: BLE001 - surface the failure to the model, don't crash
+        plt.close("all")
+        raise ValueError(f"matplotlib code failed: {type(exc).__name__}: {exc}") from exc
+
+    fig = plt.gcf()
+    if not fig.get_axes():
+        plt.close("all")
+        raise ValueError(
+            "code produced no plot (the current figure has no axes); "
+            "make sure it draws something, e.g. plt.plot(...)"
+        )
+
+    if title:
+        fig.suptitle(title)
+
+    plot_id = uuid.uuid4().hex
+    fig.savefig(GENERATED_DIR / f"{plot_id}.png", dpi=120, bbox_inches="tight")
+    plt.close("all")
+
+    return f"![{title or 'plot'}](/static/generated/{plot_id}.png)"
 
 
 @mcp.tool()
@@ -227,6 +296,12 @@ def _all_node_outputs(instrument_id: str, template_def: dict, config: dict, retu
     once per (node, output terminal) instead of using calc_template; reductus'
     fingerprint cache means the repeated upstream computation is cheap after the
     first call.
+
+    Metadata results are summarized to one line per dataset (datatype +
+    filename/intent): the full per-node metadata runs ~35KB per dataset even
+    after array compaction (59-key dicts survive it untouched), so a 13-node
+    template returned ~420KB — far past any LLM context budget. Callers who
+    need a node's full metadata pass target_node instead.
     """
     instrument = reductus_api.get_instrument(instrument_id)
     registry = {m["id"]: m for m in instrument["modules"]}
@@ -236,12 +311,14 @@ def _all_node_outputs(instrument_id: str, template_def: dict, config: dict, retu
         if module is None:
             continue
         node_key = str(i)
-        output[node_key] = {
-            terminal["id"]: reductus_api.calc_terminal(
+        output[node_key] = {}
+        for terminal in module.get("outputs", []):
+            result = reductus_api.calc_terminal(
                 template_def, config, i, terminal["id"], return_type=return_type,
             )
-            for terminal in module.get("outputs", [])
-        }
+            if return_type == "metadata":
+                result = _summarize_node_output(result)
+            output[node_key][terminal["id"]] = result
     return output
 
 
@@ -271,9 +348,11 @@ def reduce_files(
     Valid template names and load node indices are instrument-specific; see list_reduction_templates.
 
     If target_node is omitted, every node's output terminal(s) are computed and
-    returned; otherwise only the dependency path to target_node/target_terminal
-    is computed (like get_reduction_output). return_type applies in both cases:
-    'full' | 'plottable' | 'metadata' | 'export'.
+    returned as compact per-node summaries (datatype plus filename/intent per
+    dataset) -- call again with target_node to get a single node's full
+    (compacted) output. return_type applies in both cases:
+    'full' | 'plottable' | 'metadata' | 'export'. Results are always truncated
+    to a fixed size budget so they fit in a model context window.
     """
     template_def, load_nodes = _load_file_nodes(instrument_id, template_name)
     valid_nodes = {str(n["node"]) for n in load_nodes}
@@ -294,8 +373,8 @@ def reduce_files(
     }
 
     if target_node is None:
-        return _compact_metadata(_all_node_outputs(instrument_id, template_def, config, return_type))
-    return _compact_metadata(reductus_api.calc_terminal(
+        return _fit_result(_all_node_outputs(instrument_id, template_def, config, return_type))
+    return _fit_result(reductus_api.calc_terminal(
         template_def, config, target_node, target_terminal, return_type=return_type,
     ))
 
@@ -317,7 +396,16 @@ def _first_present(metadata: dict, keys: tuple[str, ...]):
     return None
 
 
-def _compact_metadata(value, max_items: int = 8, max_str: int = 2000):
+# Keys worth keeping when a dict has to be truncated: identity/role fields
+# first, so a squeezed dataset still says what it is.
+_PRIORITY_KEYS = frozenset(
+    _FILENAME_KEYS + _INTENT_KEYS
+    + ("datatype", "values", "points", "path", "entry", "date", "instrument",
+       "polarization", "description", "duration")
+)
+
+
+def _compact_metadata(value, max_items: int = 8, max_str: int = 2000, max_keys: int | None = None):
     """Recursively truncate long lists/tuples/strings (e.g. per-detector-channel
     arrays like x/v/Ld/Li, or column-text export blobs) so a reductus result
     stays small enough to round-trip through an LLM's context window.
@@ -327,19 +415,86 @@ def _compact_metadata(value, max_items: int = 8, max_str: int = 2000):
     one file can pretty-print to 100KB+. That whole blob used to be dumped
     verbatim into the tool response and re-sent to the model on every
     subsequent turn, which was blowing out small context windows (observed as
-    a negative computed max_tokens)."""
+    a negative computed max_tokens).
+
+    max_keys (when set) also truncates wide dicts: NeXus/Data.todict() dumps
+    carry 59+ keys per dataset, which array truncation alone never shrinks.
+    Keys in _PRIORITY_KEYS are kept first; a "_truncated_dict_keys" marker
+    records how many were dropped."""
     if isinstance(value, dict):
-        return {k: _compact_metadata(v, max_items, max_str) for k, v in value.items()}
+        keys = list(value)
+        if max_keys is not None and len(keys) > max_keys:
+            keys = sorted(keys, key=lambda k: k not in _PRIORITY_KEYS)[:max_keys]
+            compacted = {k: _compact_metadata(value[k], max_items, max_str, max_keys) for k in keys}
+            compacted["_truncated_dict_keys"] = len(value) - len(keys)
+            return compacted
+        return {k: _compact_metadata(v, max_items, max_str, max_keys) for k, v in value.items()}
     if isinstance(value, (list, tuple)):
         if len(value) > max_items:
             return {
                 "_truncated_array_length": len(value),
-                "_sample": [_compact_metadata(v, max_items, max_str) for v in value[:max_items]],
+                "_sample": [_compact_metadata(v, max_items, max_str, max_keys) for v in value[:max_items]],
             }
-        return [_compact_metadata(v, max_items, max_str) for v in value]
+        return [_compact_metadata(v, max_items, max_str, max_keys) for v in value]
     if isinstance(value, str) and len(value) > max_str:
         return value[:max_str] + f"... [truncated, {len(value)} chars total]"
     return value
+
+
+def _summarize_node_output(result):
+    """Collapse one calc_terminal metadata result to datatype + one line per
+    dataset (filename/intent/points), for whole-graph reduce_files responses
+    where per-node full metadata is available separately via target_node."""
+    if not isinstance(result, dict):
+        return _compact_metadata(result)
+    summary = {}
+    for key, val in result.items():
+        if key == "values" and isinstance(val, list):
+            datasets = []
+            for v in val:
+                if isinstance(v, dict):
+                    line = {
+                        "filename": _first_present(v, _FILENAME_KEYS),
+                        "intent": _first_present(v, _INTENT_KEYS),
+                    }
+                    if v.get("points") is not None:
+                        line["points"] = v["points"]
+                    datasets.append(line)
+                else:
+                    datasets.append(_compact_metadata(v))
+            summary["values"] = datasets
+        else:
+            summary[key] = _compact_metadata(val)
+    return summary
+
+
+# ~24KB of JSON is roughly 6k tokens: large enough for a full single-node
+# metadata dump, small enough that a multi-turn conversation re-sending every
+# tool result doesn't drive the backend's computed max_tokens negative.
+_MAX_RESULT_CHARS = 24_000
+
+# Progressively harsher (max_items, max_str, max_keys) compaction settings.
+_COMPACTION_TIERS = ((8, 2000, None), (5, 500, 48), (3, 200, 24), (2, 80, 12))
+
+
+def _fit_result(value, max_chars: int = _MAX_RESULT_CHARS):
+    """Compact a tool result until its JSON fits max_chars, hardening each
+    retry (shorter array samples/strings, then dropping non-priority dict
+    keys). Guarantees a bounded response no matter what reductus returns."""
+    compacted, text = value, None
+    for max_items, max_str, max_keys in _COMPACTION_TIERS:
+        compacted = _compact_metadata(value, max_items, max_str, max_keys)
+        text = json.dumps(compacted, default=str)
+        if len(text) <= max_chars:
+            return compacted
+    return {
+        "_truncated_result": text[:max_chars],
+        "_note": (
+            f"result still {len(text)} chars after maximum compaction; "
+            "shown as truncated JSON. Request a narrower slice (e.g. a "
+            "specific target_node/target_terminal) for full detail."
+        ),
+    }
 
 
 @mcp.tool()
@@ -434,119 +589,16 @@ def get_file_intent(
     metadata = reductus_api.calc_terminal(
         template_def, config, load_node["node"], "output", return_type="metadata",
     )
-    return [
-        {
-            "filename": _first_present(v, _FILENAME_KEYS),
-            "intent": _first_present(v, _INTENT_KEYS),
-            "metadata": _compact_metadata(v),
-        }
-        for v in metadata.get("values", [])
-    ]
-
-
-_INTENT_KEYS = ("intent", "analysis.intent")
-_FILENAME_KEYS = ("filename", "run.filename", "name")
-
-
-def _first_present(metadata: dict, keys: tuple[str, ...]):
-    """Return the first non-empty value found in metadata under any of keys.
-
-    Different instrument data classes expose the same concept under different
-    keys: reflectometer/CANDOR loaders return a clean {"intent": ...} field,
-    while SANS/VSANS loaders return the raw NeXus metadata dict verbatim,
-    where the equivalent field is "analysis.intent"."""
-    for key in keys:
-        value = metadata.get(key)
-        if value not in (None, ""):
-            return value
-    return None
-
-
-@mcp.tool()
-def get_file_intent(
-    instrument_id: str,
-    path: str,
-    mtime: int,
-    source: str = "ncnr",
-    template_name: str | None = None,
-) -> list[dict]:
-    """Determine the measurement intent of a single raw data file by loading
-    just its header, without running a full reduction. Intent values are
-    instrument-family specific, e.g. 'specular'/'background+'/'background-'/
-    'intensity'/'rock sample'/'rock detector'/'slit'/'scan' for reflectometers
-    and CANDOR, or 'sample'/'empty'/'open beam'/'blocked beam' for SANS/VSANS.
-
-    Use this to figure out what a raw data file IS -- e.g. to answer "what is
-    the intent of this file?" -- or to decide which reduce_files node/role a
-    file belongs in, before calling reduce_files.
-
-    instrument_id is like 'ncnr.refl' or 'ncnr.sans' (see list_instruments).
-    path/mtime/source identify the file the same way as in
-    find_raw_data_paths/list_data_files output (mtime is required by reductus).
-
-    template_name picks which loader module to use, in case an instrument_id
-    has multiple incompatible raw-file formats/loaders across its templates
-    (e.g. 'ncnr.refl' has a 'candor' template with a CANDOR-specific loader,
-    separate from the generic NeXus loader used by its other templates). If
-    omitted, the first template with a file-loading node is used -- pass an
-    explicit template_name (see list_reduction_templates) if that guess loads
-    the wrong kind of file.
-
-    Returns one {"filename", "intent", "metadata"} dict per dataset found in
-    the file (usually one, but polarized/multi-part files can yield several).
-    "metadata" is the full raw metadata dict for that dataset, in case the
-    caller needs a field beyond filename/intent.
-    """
-    instrument = reductus_api.get_instrument(instrument_id)
-    templates = instrument.get("templates", {})
-    if template_name:
-        candidate_names = [template_name]
-    elif "load" in templates:
-        # Prefer a template literally named "load" (e.g. ncnr.sans, ncnr.vsans):
-        # it does nothing but load raw files, so it's cheaper and less brittle
-        # than reduction templates that happen to have a load node too.
-        candidate_names = ["load"] + [n for n in templates if n != "load"]
-    else:
-        candidate_names = list(templates)
-
-    template_def = load_node = resolved_name = None
-    for name in candidate_names:
-        if name not in templates:
-            raise ValueError(
-                f"Unknown template {name!r} for {instrument_id!r}; "
-                f"available: {sorted(templates)}"
-            )
-        candidate_def, load_nodes = _load_file_nodes(instrument_id, name)
-        if load_nodes:
-            template_def, load_node, resolved_name = candidate_def, load_nodes[0], name
-            break
-
-    if load_node is None:
-        raise ValueError(
-            f"No file-loading module found for instrument {instrument_id!r}"
-            + (f", template {template_name!r}" if template_name else "")
-        )
-
-    template_def["name"] = resolved_name
-    template_def.setdefault("description", resolved_name)
-    template_def["instrument"] = instrument_id
-
-    config = {
-        str(load_node["node"]): {
-            "filelist": [_sanitize_fileinfo({"path": path, "mtime": mtime, "source": source})]
-        }
-    }
-    metadata = reductus_api.calc_terminal(
-        template_def, config, load_node["node"], "output", return_type="metadata",
-    )
-    return [
+    result = _fit_result([
         {
             "filename": _first_present(v, _FILENAME_KEYS),
             "intent": _first_present(v, _INTENT_KEYS),
             "metadata": v,
         }
         for v in metadata.get("values", [])
-    ]
+    ])
+    # _fit_result's last-resort fallback is a dict; keep the declared list shape.
+    return result if isinstance(result, list) else [result]
 
 
 if __name__ == "__main__":
