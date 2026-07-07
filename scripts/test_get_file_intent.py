@@ -211,7 +211,7 @@ def main() -> int:
         expected_types=(KeyError, ValueError),
     )
 
-    # 3. Unknown explicit template_name should raise ValueError naming the
+    # 4. Unknown explicit template_name should raise ValueError naming the
     #    available templates.
     run_case_expect_error(
         "get_file_intent with bogus template_name",
