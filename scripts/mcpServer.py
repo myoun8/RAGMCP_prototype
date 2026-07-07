@@ -413,6 +413,19 @@ def get_file_intent(
     template_def.setdefault("description", resolved_name)
     template_def["instrument"] = instrument_id
 
+    # Reduction templates bake a fixed intent into each load node's config so
+    # that node reduces one measurement role: e.g. ncnr.refl's 'candor'
+    # template pins node 0 to intent='intensity', and other nodes to
+    # 'specular'/'background+'/'background-'. If we inherit that, the loader
+    # overwrites the file's own intent (from trajectoryData/_scanType) with the
+    # node's role, so every file would just echo the config (all 'intensity').
+    # Reset the resolved load node to intent='auto' so it reports the file's
+    # actual measured intent instead. Only touches nodes that already carry an
+    # intent field, so load-only templates (ncnr.sans/vsans) are unaffected.
+    load_cfg = template_def["modules"][load_node["node"]].setdefault("config", {})
+    if "intent" in load_cfg:
+        load_cfg["intent"] = "auto"
+
     config = {
         str(load_node["node"]): {
             "filelist": [_sanitize_fileinfo({"path": path, "mtime": mtime, "source": source})]
