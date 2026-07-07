@@ -299,5 +299,110 @@ def reduce_files(
         template_def, config, target_node, target_terminal, return_type=return_type,
     )
 
+_INTENT_KEYS = ("intent", "analysis.intent")
+_FILENAME_KEYS = ("filename", "run.filename", "name")
+
+
+def _first_present(metadata: dict, keys: tuple[str, ...]):
+    """Return the first non-empty value found in metadata under any of keys.
+
+    Different instrument data classes expose the same concept under different
+    keys: reflectometer/CANDOR loaders return a clean {"intent": ...} field,
+    while SANS/VSANS loaders return the raw NeXus metadata dict verbatim,
+    where the equivalent field is "analysis.intent"."""
+    for key in keys:
+        value = metadata.get(key)
+        if value not in (None, ""):
+            return value
+    return None
+
+
+@mcp.tool()
+def get_file_intent(
+    instrument_id: str,
+    path: str,
+    mtime: int,
+    source: str = "ncnr",
+    template_name: str | None = None,
+) -> list[dict]:
+    """Determine the measurement intent of a single raw data file by loading
+    just its header, without running a full reduction. Intent values are
+    instrument-family specific, e.g. 'specular'/'background+'/'background-'/
+    'intensity'/'rock sample'/'rock detector'/'slit'/'scan' for reflectometers
+    and CANDOR, or 'sample'/'empty'/'open beam'/'blocked beam' for SANS/VSANS.
+
+    Use this to figure out what a raw data file IS -- e.g. to answer "what is
+    the intent of this file?" -- or to decide which reduce_files node/role a
+    file belongs in, before calling reduce_files.
+
+    instrument_id is like 'ncnr.refl' or 'ncnr.sans' (see list_instruments).
+    path/mtime/source identify the file the same way as in
+    find_raw_data_paths/list_data_files output (mtime is required by reductus).
+
+    template_name picks which loader module to use, in case an instrument_id
+    has multiple incompatible raw-file formats/loaders across its templates
+    (e.g. 'ncnr.refl' has a 'candor' template with a CANDOR-specific loader,
+    separate from the generic NeXus loader used by its other templates). If
+    omitted, the first template with a file-loading node is used -- pass an
+    explicit template_name (see list_reduction_templates) if that guess loads
+    the wrong kind of file.
+
+    Returns one {"filename", "intent", "metadata"} dict per dataset found in
+    the file (usually one, but polarized/multi-part files can yield several).
+    "metadata" is the full raw metadata dict for that dataset, in case the
+    caller needs a field beyond filename/intent.
+    """
+    instrument = reductus_api.get_instrument(instrument_id)
+    templates = instrument.get("templates", {})
+    if template_name:
+        candidate_names = [template_name]
+    elif "load" in templates:
+        # Prefer a template literally named "load" (e.g. ncnr.sans, ncnr.vsans):
+        # it does nothing but load raw files, so it's cheaper and less brittle
+        # than reduction templates that happen to have a load node too.
+        candidate_names = ["load"] + [n for n in templates if n != "load"]
+    else:
+        candidate_names = list(templates)
+
+    template_def = load_node = resolved_name = None
+    for name in candidate_names:
+        if name not in templates:
+            raise ValueError(
+                f"Unknown template {name!r} for {instrument_id!r}; "
+                f"available: {sorted(templates)}"
+            )
+        candidate_def, load_nodes = _load_file_nodes(instrument_id, name)
+        if load_nodes:
+            template_def, load_node, resolved_name = candidate_def, load_nodes[0], name
+            break
+
+    if load_node is None:
+        raise ValueError(
+            f"No file-loading module found for instrument {instrument_id!r}"
+            + (f", template {template_name!r}" if template_name else "")
+        )
+
+    template_def["name"] = resolved_name
+    template_def.setdefault("description", resolved_name)
+    template_def["instrument"] = instrument_id
+
+    config = {
+        str(load_node["node"]): {
+            "filelist": [_sanitize_fileinfo({"path": path, "mtime": mtime, "source": source})]
+        }
+    }
+    metadata = reductus_api.calc_terminal(
+        template_def, config, load_node["node"], "output", return_type="metadata",
+    )
+    return [
+        {
+            "filename": _first_present(v, _FILENAME_KEYS),
+            "intent": _first_present(v, _INTENT_KEYS),
+            "metadata": v,
+        }
+        for v in metadata.get("values", [])
+    ]
+
+
 if __name__ == "__main__":
     mcp.run(transport="stdio")
