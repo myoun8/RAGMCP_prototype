@@ -180,7 +180,13 @@ def find_raw_data_paths(experiment_id: str, instrument: str | None = None, limit
     {"path", "source", "mtime", "filename", "instrument", "rxcycle_id", "start_date"}
     per file, ready to use directly as a file descriptor in reduce_files'
     node_files, or as a pathlist prefix for list_data_files.
+<<<<<<< Updated upstream
     when asking for files in an experiment, use the default limit=500. but still only display top 20 unless user asks for more."""
+=======
+
+    ONE call returns EVERY file for the experiment — call it once, then reuse
+    that list; never call this per file."""
+>>>>>>> Stashed changes
     params = {"experiment_id": experiment_id, "limit": limit}
     if instrument:
         params["instrument"] = instrument
@@ -515,6 +521,11 @@ def get_file_intent(
     Use this to figure out what a raw data file IS -- e.g. to answer "what is
     the intent of this file?" -- or to decide which reduce_files node/role a
     file belongs in, before calling reduce_files.
+
+    Handles ONE file per call. For several files, get all their path/mtime in a
+    single find_raw_data_paths call, then issue one get_file_intent call per
+    file all together in the same turn — the calls are independent and run in
+    parallel, so do not wait for one to return before issuing the next.
 
     instrument_id is like 'ncnr.refl' or 'ncnr.sans' (see list_instruments).
     path/mtime/source identify the file the same way as in

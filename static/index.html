@@ -1184,6 +1184,7 @@
       let cursor         = null;
       let finalized      = false;
       let streamInterval = null;
+      let lastRendered   = null;   // rawText at the previous paint; skip re-parse if unchanged
 
       function ensureCursor() {
         if (!cursor) {
@@ -1194,8 +1195,13 @@
       }
       function removeCursor() { cursor?.remove(); cursor = null; }
 
-      /* Render the safe (complete-delimiter) portion; append the raw tail. */
+      /* Render the safe (complete-delimiter) portion; append the raw tail.
+         The tick runs often (see startStreamInterval) so it can paint tokens
+         as soon as they land; skip the full markdown re-parse when no new
+         token has arrived since the last paint. */
       function renderStream() {
+        if (rawText === lastRendered) return;
+        lastRendered = rawText;
         const [safe, tail] = safeSplit(rawText);
         removeCursor();
         renderFull(responseEl, safe);
@@ -1212,7 +1218,10 @@
         /* pin the avatar to flex-start before any content renders */
         turn.classList.remove('thinking');
         renderStream(); // immediate first paint
-        streamInterval = setInterval(renderStream, 80);
+        /* ~33 ms (≈30fps) so streamed text flows smoothly instead of arriving
+           in chunky 80 ms bursts; the unchanged-text guard in renderStream
+           keeps this from re-parsing markdown on idle ticks. */
+        streamInterval = setInterval(renderStream, 33);
       }
 
       function stopStreamInterval() {
