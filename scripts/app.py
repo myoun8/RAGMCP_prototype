@@ -165,7 +165,7 @@ async def lifespan(app: FastAPI):
         "reuse files across nodes.\n"
         "\n"
         "STYLE: be brief and direct, no preamble; prefer short sentences or lists over prose.\n"
-        "If asked to return lists of items longer than 20, only show the first 20 unless stated otherwise.\n"
+        #"If asked to return lists of items longer than 20, only show the first 20 unless stated otherwise.\n"
         "\n"
         "VISUALIZATION: to plot or chart numeric data (reduced curves, scans, x/y arrays), "
         "call generate_plot with matplotlib code — plt/np/mpl are already imported; do not "
