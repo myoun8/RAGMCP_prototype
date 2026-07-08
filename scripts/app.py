@@ -275,14 +275,7 @@ async def lifespan(app: FastAPI):
         "node/intent (specular/background+/background-/intensity) — never guess or reuse "
         "files across nodes.\n"
         "\n"
-<<<<<<< Updated upstream
         "STYLE: be brief and direct, no preamble; prefer short sentences or lists over prose.\n"
-        #"If asked to return lists of items longer than 20, only show the first 20 unless stated otherwise.\n"
-=======
-        "FILE INTENT: for a raw file's intent call get_file_intent (needs instrument_id, path, "
-        "mtime, source — get these via find_raw_data_paths/list_data_files first). Ask for the "
-        "path if not given.\n"
->>>>>>> Stashed changes
         "\n"
         "PLOTS: to plot numeric data, call generate_plot with matplotlib code — plt/np/mpl are "
         "imported; no plt.show()/savefig(). Include its returned Markdown image reference "

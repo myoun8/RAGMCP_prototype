@@ -180,13 +180,7 @@ def find_raw_data_paths(experiment_id: str, instrument: str | None = None, limit
     {"path", "source", "mtime", "filename", "instrument", "rxcycle_id", "start_date"}
     per file, ready to use directly as a file descriptor in reduce_files'
     node_files, or as a pathlist prefix for list_data_files.
-<<<<<<< Updated upstream
     when asking for files in an experiment, use the default limit=500. but still only display top 20 unless user asks for more."""
-=======
-
-    ONE call returns EVERY file for the experiment — call it once, then reuse
-    that list; never call this per file."""
->>>>>>> Stashed changes
     params = {"experiment_id": experiment_id, "limit": limit}
     if instrument:
         params["instrument"] = instrument
