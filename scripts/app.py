@@ -109,6 +109,7 @@ MCP_TOOL_NAMES = [
     "find_raw_data_paths",
     "list_reduction_templates",
     "reduce_files",
+    "export_reduction",
     "get_file_intent",
 ]
 
@@ -159,7 +160,7 @@ TOOL_GROUPS = {
         "list_data_files", "find_raw_data_paths", "get_file_intent",
         "search-instruments", "search-experiments", "search-datafiles",
     },
-    "reduction": {"list_reduction_templates", "reduce_files"},
+    "reduction": {"list_reduction_templates", "reduce_files", "export_reduction"},
     "plot": {"generate_plot"},
     "admin": {"run_pipeline"},
 }
@@ -190,7 +191,7 @@ GROUP_SIGNALS = {
     ),
     "reduction": (
         "reduce", "reduction", "template", "specular", "background",
-        "reflectivity", "intensity", "node",
+        "reflectivity", "intensity", "node", "export", "orso", ".ort", ".orb",
     ),
     "plot": ("plot", "chart", "graph", "visuali", "figure", "curve"),
     "admin": (
@@ -303,6 +304,12 @@ async def lifespan(app: FastAPI):
         "wants to download raw files, render each as a Markdown link, e.g. [<filename>](<download_url>), so "
         "they can save the original file. Never invent a download_url — only use the one the tool returned.\n"
         "\n"
+        "EXPORT: to let the user download REDUCED data as an ORSO file, call export_reduction with the same "
+        "instrument_id/template_name/node_files you'd pass reduce_files and target_node set to the FINAL reduced "
+        "node — export_format='orso_text' for .ort, 'orso_nexus' for .orb. It returns a 'download_url'; render it "
+        "as a Markdown link [<filename>](<download_url>). Use export_reduction only for saving ORSO files; keep "
+        "using reduce_files to inspect or plot reduced values.\n"
+        "\n"
         "MULTI-ITEM: when one operation applies to many items (e.g. the intent of each of 20 "
         "files), emit ALL its tool calls in a SINGLE turn so they run in parallel — do NOT wait "
         "for one result before issuing the next. When a tool returns every item's inputs at once "
@@ -387,6 +394,43 @@ def download_raw(source: str, path: str):
         media_type=upstream.headers.get("Content-Type", "application/octet-stream"),
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
+
+
+# Where export_reduction writes generated .ort/.orb files (mcpServer owns the
+# dir; we read the same path so the two stay in sync).
+EXPORTS_DIR = _mod.EXPORTS_DIR
+
+
+@app.get("/download/export/{export_id}/{filename}")
+def download_export(export_id: str, filename: str):
+    """Serve a generated ORSO export (.ort/.orb) as a Save-As download.
+
+    export_reduction writes each export under EXPORTS_DIR/<export_id>/<filename>
+    and returns exactly this URL. We serve it with an attachment disposition so
+    the .ort text doesn't just render inline in the browser."""
+    # Reject anything that isn't a plain single path segment so the id/filename
+    # can't traverse out of the exports tree.
+    if not export_id.isalnum() or "/" in filename or "\\" in filename or ".." in filename:
+        raise HTTPException(status_code=400, detail="Invalid export reference.")
+    path = EXPORTS_DIR / export_id / filename
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="Export not found (it may have expired).")
+
+    media_type = "application/x-hdf5" if filename.endswith(".orb") else "text/plain; charset=utf-8"
+    return StreamingResponse(
+        _file_chunks(path),
+        media_type=media_type,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+def _file_chunks(path: Path, chunk_size: int = 65536):
+    with open(path, "rb") as fh:
+        while True:
+            chunk = fh.read(chunk_size)
+            if not chunk:
+                break
+            yield chunk
 
 
 @app.get("/api/key-status")
@@ -524,6 +568,7 @@ TOOL_STATUS = {
     "find_raw_data_paths": "Finding raw data files for experiment…",
     "list_reduction_templates": "Looking up reduction templates…",
     "reduce_files":        "Reducing selected files…",
+    "export_reduction":    "Exporting reduced data to ORSO…",
     "get_file_intent":     "Determining raw data file intent…",
     "search-instruments":  "Searching instruments…",
     "search-experiments":  "Searching experiments…",

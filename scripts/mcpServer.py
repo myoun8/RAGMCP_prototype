@@ -4,6 +4,7 @@ import importlib.util
 import json
 import subprocess
 import sys
+import uuid
 from pathlib import Path
 
 import requests
@@ -489,6 +490,105 @@ def reduce_files(
     return _fit_result(reductus_api.calc_terminal(
         template_def, config, target_node, target_terminal, return_type=return_type,
     ))
+
+
+# Reduction exports (.ort/.orb) are written here for the user to download.
+# The dir lives under the static tree, but files are served through app.py's
+# /download/export endpoint (not StaticFiles) so each comes back as a Save-As
+# attachment with its real filename instead of rendering inline in the browser.
+EXPORTS_DIR = GENERATED_DIR / "exports"
+
+# Map the user-facing export format to reductus' registered refl exporter name
+# (see reflred/refldata.py's exports_ORSO_text / exports_HDF5) plus the file
+# suffix and MIME type used when serving the download.
+_ORSO_EXPORTS = {
+    "orso_text":  ("ORSO_text",  ".ort", "text/plain; charset=utf-8"),
+    "orso_nexus": ("ORSO_nexus", ".orb", "application/x-hdf5"),
+}
+
+
+@mcp.tool()
+def export_reduction(
+    instrument_id: str,
+    template_name: str,
+    node_files: dict[str, list[dict]],
+    target_node: int,
+    target_terminal: str = "output",
+    export_format: str = "orso_text",
+) -> dict:
+    """Export a reduced dataset to a downloadable ORSO file and return its
+    download URL.
+
+    Reduce files exactly as reduce_files does — same instrument_id,
+    template_name, node_files (each load node index as a string mapping to a
+    list of {"path","mtime","source"} descriptors), and target_node /
+    target_terminal — then write that node's reduced output to an ORSO file the
+    user can save:
+
+      - export_format='orso_text'  -> ORSO text  (.ort)
+      - export_format='orso_nexus' -> ORSO Nexus (.orb, HDF5)
+
+    target_node must be the FINAL reduced node (the one whose curve you'd plot),
+    not a raw load node — an ORSO reflectivity file needs the reduced R(Q), not
+    unreduced input. Returns {"download_url", "filename", "format"}; render
+    download_url as a Markdown link, e.g. [<filename>](<download_url>), so the
+    user can download the export. Do not invent the URL — use the one returned."""
+    if export_format not in _ORSO_EXPORTS:
+        raise ValueError(
+            f"Unknown export_format {export_format!r}; "
+            f"choose one of {sorted(_ORSO_EXPORTS)}."
+        )
+    export_type, suffix, _ = _ORSO_EXPORTS[export_format]
+
+    template_def, load_nodes = _load_file_nodes(instrument_id, template_name)
+    valid_nodes = {str(n["node"]) for n in load_nodes}
+    unknown = set(node_files) - valid_nodes
+    if unknown:
+        raise ValueError(
+            f"Node(s) {sorted(unknown)} are not file-input nodes for template "
+            f"{template_name!r}; valid load nodes: {sorted(valid_nodes)}"
+        )
+
+    template_def["name"] = template_name
+    template_def.setdefault("description", template_name)
+    template_def["instrument"] = instrument_id
+
+    config = {
+        node_index: {"filelist": [_sanitize_fileinfo(f) for f in files]}
+        for node_index, files in node_files.items()
+    }
+
+    # concatenate=True merges the terminal's datasets into a single ORSO file
+    # (multiple data blocks in one .ort/.orb), which is what a user expects to
+    # download for one reduced measurement.
+    result = reductus_api.calc_terminal(
+        template_def, config, target_node, target_terminal,
+        return_type="export", export_type=export_type, concatenate=True,
+    )
+    outputs = (result or {}).get("values") or []
+    if not outputs:
+        raise ValueError(
+            f"{export_type} export of node {target_node} produced no output; "
+            "is target_node the reduced-data node?"
+        )
+
+    export = outputs[0]
+    # reductus builds a proper filename with the right extension; fall back to a
+    # generic name and strip to a basename so it can't escape the export dir.
+    filename = Path(export.get("filename") or f"reduction{suffix}").name
+    value = export["value"]  # ORSO_text -> str, ORSO_nexus -> bytes
+    data = value.encode("utf-8") if isinstance(value, str) else bytes(value)
+
+    export_id = uuid.uuid4().hex
+    out_dir = EXPORTS_DIR / export_id
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / filename).write_bytes(data)
+
+    return {
+        "download_url": f"/download/export/{export_id}/{filename}",
+        "filename": filename,
+        "format": export_format,
+    }
 
 _INTENT_KEYS = ("intent", "analysis.intent")
 _FILENAME_KEYS = ("filename", "run.filename", "name")

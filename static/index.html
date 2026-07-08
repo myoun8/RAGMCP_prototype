@@ -340,9 +340,14 @@
     #send-btn:disabled { background: #d8d4cd; cursor: default; }
     #send-btn:not(:disabled):hover { background: #3a3a3a; }
     #send-btn svg { width: 16px; height: 16px; }
+    #footer-row {
+      display: flex; align-items: center; justify-content: center;
+      gap: 6px; margin-top: 6px;
+    }
+    #footer-sep { font-size: 11px; color: #ccc; }
     #footer-note {
       text-align: center; font-size: 11px;
-      color: #bbb; margin-top: 6px;
+      color: #bbb;
     }
 
     /* ── combined model + API key status button ── */
@@ -598,10 +603,10 @@
       color: #999;
       text-decoration: underline;
       cursor: pointer;
-      margin-top: 6px;
       background: none;
       border: none;
       font-family: inherit;
+      padding: 0;
     }
     #disclaimer-link:hover { color: #555; }
   </style>
@@ -725,8 +730,11 @@
         </button>
       </div>
     </div>
-    <div id="footer-note">NCNR RAG · responses may be incomplete</div>
-    <button id="disclaimer-link" type="button">Disclaimer &amp; Policies</button>
+    <div id="footer-row">
+      <button id="disclaimer-link" type="button">Disclaimer &amp; Policies</button>
+      <span id="footer-sep">·</span>
+      <div id="footer-note">NCNR RAG · responses may be incomplete</div>
+    </div>
   </div>
 
   <script>
@@ -1020,6 +1028,9 @@
     function openDisclaimerModal(blocking) {
       disclaimerModalOverlay.classList.add('open');
       disclaimerModalOverlay.dataset.blocking = blocking ? 'true' : 'false';
+      /* start at the top of the text, not wherever it was last scrolled */
+      const modal = document.getElementById('disclaimer-modal');
+      if (modal) modal.scrollTop = 0;
     }
     function closeDisclaimerModal() {
       if (disclaimerModalOverlay.dataset.blocking === 'true') return;
@@ -1183,7 +1194,6 @@
         const open = !reasoningToggle.classList.contains('open');
         reasoningToggle.classList.toggle('open', open);
         reasoningBody.hidden = !open;
-        scrollBottom();
       });
 
       const responseEl = document.createElement('div');
