@@ -168,7 +168,7 @@ NCNR_METADATA_API = "https://ncnr.nist.gov/ncnrdata/metadata/api/v1"
 
 
 @mcp.tool()
-def find_raw_data_paths(experiment_id: str, instrument: str | None = None, limit: int = 500) -> list[dict]:
+def find_raw_data_paths(experiment_id: str, instrument: str | None = None) -> list[dict]:
     """Find the raw data files belonging to an NCNR experiment, given its
     experiment_id (and optionally an instrument alias, e.g. 'candor', 'macs',
     'bt1', to narrow the search if the experiment_id alone is ambiguous).
@@ -179,8 +179,9 @@ def find_raw_data_paths(experiment_id: str, instrument: str | None = None, limit
     descriptor it loads). Returns a list of
     {"path", "source", "mtime", "filename", "instrument", "rxcycle_id", "start_date"}
     per file, ready to use directly as a file descriptor in reduce_files'
-    node_files, or as a pathlist prefix for list_data_files.
-    when asking for files in an experiment, use the default limit=500. but still only display top 20 unless user asks for more."""
+    node_files, or as a pathlist prefix for list_data_files. only display 20 files
+    unless the user specifies otherwise."""
+    limit = 500
     params = {"experiment_id": experiment_id, "limit": limit}
     if instrument:
         params["instrument"] = instrument
