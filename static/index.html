@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -204,6 +205,12 @@
       max-width: 100%; height: auto;
       border: 1px solid #e8e4de; border-radius: 10px;
       margin: 8px 0; background: #fff;
+    }
+    /* generate_plot returns an interactive Plotly figure placeholder */
+    .response-body .plotly-figure {
+      width: 100%; min-height: 400px;
+      border: 1px solid #e8e4de; border-radius: 10px;
+      margin: 8px 0; background: #fff; overflow: hidden;
     }
 
     .math-block { text-align: center; margin: 12px 0; overflow-x: auto; }
@@ -735,6 +742,26 @@
         : '<em style="color:#aaa">No response.</em>';
     }
 
+    /* generate_plot emits <div class="plotly-figure" data-src="…json">; fetch
+       each figure-JSON and draw it as a live Plotly chart. Called once on
+       finalize (not during streaming) so the markdown re-parse doesn't wipe
+       an already-drawn plot. */
+    function renderPlotlyFigures(root) {
+      if (!window.Plotly) return;
+      root.querySelectorAll('.plotly-figure[data-src]:not([data-rendered])').forEach((el) => {
+        el.setAttribute('data-rendered', '1');
+        fetch(el.getAttribute('data-src'))
+          .then(r => r.json())
+          .then((fig) => {
+            Plotly.newPlot(el, fig.data || [], fig.layout || {}, {
+              responsive: true, displaylogo: false,
+            });
+            scrollBottom();
+          })
+          .catch(() => { el.textContent = 'Failed to load plot.'; });
+      });
+    }
+
     /*
      * Split rawText into [safeToRender, pendingTail].
      * Any unclosed math delimiter is held back as plain tail text so KaTeX
@@ -1120,6 +1147,7 @@
       }
 
       renderFull(responseEl, rawText);
+      renderPlotlyFigures(responseEl);
 
       /* render sources if gen_chunks was called */
       if (sources && sources.length > 0) {

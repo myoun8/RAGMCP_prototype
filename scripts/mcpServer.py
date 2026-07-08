@@ -77,66 +77,62 @@ def gen_chunks(input: str) -> str:
 
 @mcp.tool()
 def generate_plot(code: str, title: str | None = None) -> str:
-    """Render a matplotlib figure from Python plotting code and save it as a
-    PNG image, returning a Markdown image reference the UI can display. Use
-    this to visualize numeric data — e.g. reduced reflectivity/SANS curves
-    from reduce_files, a scan's intensity vs. angle, or any x/y arrays the
-    user provides or that another tool returned.
+    """Build an interactive Plotly figure from Python plotting code, save it as
+    a Plotly figure-JSON file, and return an HTML placeholder the UI renders
+    into a live, zoomable chart. Use this to visualize numeric data — e.g.
+    reduced reflectivity/SANS curves from reduce_files, a scan's intensity vs.
+    angle, or any x/y arrays the user provides or that another tool returned.
 
-    `code` is a snippet of Python that builds ONE matplotlib figure. It runs
-    with these names already imported, so do not re-import them:
-      - `plt`  -> matplotlib.pyplot
+    `code` is a snippet of Python that builds ONE Plotly figure and assigns it
+    to a variable named `fig`. It runs with these names already imported, so do
+    not re-import them:
+      - `go`   -> plotly.graph_objects
+      - `px`   -> plotly.express
       - `np`   -> numpy
-      - `mpl`  -> matplotlib
     Put the data to plot inline in the code (as literal lists/arrays). Do NOT
-    call plt.show() or plt.savefig() — the current figure is captured and
-    saved for you. Example:
+    call fig.show() or write any file — the figure is serialized for you.
+    Example:
 
         x = [0.01, 0.02, 0.03, 0.04]
         y = [1.0, 0.42, 0.11, 0.03]
-        plt.plot(x, y, marker='o')
-        plt.xlabel('Q (1/Å)')
-        plt.ylabel('Reflectivity')
-        plt.yscale('log')
+        fig = go.Figure(go.Scatter(x=x, y=y, mode='lines+markers'))
+        fig.update_xaxes(title_text='Q (1/Å)')
+        fig.update_yaxes(title_text='Reflectivity', type='log')
 
-    `title` (optional) is added as the figure title.
+    `title` (optional) is set as the figure title.
 
-    Returns a Markdown image reference like ![title](/static/generated/<id>.png).
-    Include that exact reference verbatim in your reply so the user sees the plot.
+    Returns an HTML placeholder like
+    <div class="plotly-figure" data-src="/static/generated/<id>.json"></div>.
+    Include that exact snippet verbatim in your reply so the user sees the plot.
     """
     import uuid
 
-    import matplotlib
-    matplotlib.use("Agg")  # headless: never try to open a GUI window
-    import matplotlib.pyplot as plt
     import numpy as np
+    import plotly.express as px
+    import plotly.graph_objects as go
 
     GENERATED_DIR.mkdir(parents=True, exist_ok=True)
 
-    plt.close("all")  # start from a clean slate so plt.gcf() is this call's figure
-    namespace = {"plt": plt, "np": np, "mpl": matplotlib}
+    namespace = {"go": go, "px": px, "np": np}
     try:
         exec(code, namespace)  # noqa: S102 - model-authored plotting code, local research tool
     except Exception as exc:  # noqa: BLE001 - surface the failure to the model, don't crash
-        plt.close("all")
-        raise ValueError(f"matplotlib code failed: {type(exc).__name__}: {exc}") from exc
+        raise ValueError(f"plotly code failed: {type(exc).__name__}: {exc}") from exc
 
-    fig = plt.gcf()
-    if not fig.get_axes():
-        plt.close("all")
+    fig = namespace.get("fig")
+    if not isinstance(fig, go.Figure):
         raise ValueError(
-            "code produced no plot (the current figure has no axes); "
-            "make sure it draws something, e.g. plt.plot(...)"
+            "code produced no plot; assign a Plotly figure to a variable named "
+            "`fig`, e.g. fig = go.Figure(go.Scatter(x=..., y=...))"
         )
 
     if title:
-        fig.suptitle(title)
+        fig.update_layout(title_text=title)
 
     plot_id = uuid.uuid4().hex
-    fig.savefig(GENERATED_DIR / f"{plot_id}.png", dpi=120, bbox_inches="tight")
-    plt.close("all")
+    (GENERATED_DIR / f"{plot_id}.json").write_text(fig.to_json(), encoding="utf-8")
 
-    return f"![{title or 'plot'}](/static/generated/{plot_id}.png)"
+    return f'<div class="plotly-figure" data-src="/static/generated/{plot_id}.json"></div>'
 
 
 @mcp.tool()
@@ -166,6 +162,85 @@ def list_data_files(source: str = "ncnr", pathlist: list[str] | None = None) -> 
 
 NCNR_METADATA_API = "https://ncnr.nist.gov/ncnrdata/metadata/api/v1"
 
+# reductus' TRAJECTORY_INTENTS (reflred/nexusref.py): the metadata DB harvests a
+# reflectometer/CANDOR file's raw trajectoryData/_scanType into its "intent"
+# field, so mapping it here reproduces get_file_intent's value without loading
+# the file. VSANS instead exposes "file_purpose" (SCATTERING/TRANSMISSION, =
+# analysis.filepurpose) -- that is a purpose, not the Sample/Empty/Blocked/Open
+# analysis.intent, so it's surfaced separately as a best-effort hint.
+_RAW_INTENT_MAP = {
+    "SPEC": "specular",
+    "SLIT": "intensity",
+    "BGP": "background+",
+    "BGM": "background-",
+    "ROCK": "rock sample",
+}
+
+
+def _intent_from_metadata_blob(blob: str | None) -> str | None:
+    """Read the measurement intent out of a /datafiles record's metadata blob
+    (a JSON string), without loading the file through reductus.
+
+    Returns the mapped reflectometer/CANDOR intent when the DB has harvested the
+    file's scan type, else the lowercased VSANS file_purpose as a fallback hint,
+    else None (e.g. findpeak/alignment scans and instruments whose metadata the
+    DB does not harvest -- fall back to get_file_intent for those)."""
+    if not blob:
+        return None
+    try:
+        metadata = json.loads(blob)
+    except (json.JSONDecodeError, TypeError):
+        return None
+    raw = metadata.get("intent")  # reflectometer/CANDOR: raw _scanType
+    if raw:
+        return _RAW_INTENT_MAP.get(raw, raw)
+    purpose = metadata.get("file_purpose")  # VSANS: filepurpose, not intent
+    return purpose.lower() if purpose else None
+
+
+def _search_intent_via_metadata(path: str, source: str = "ncnr") -> list[dict] | None:
+    """get_file_intent's fast path: look the file up in the NCNR metadata DB by
+    filename and read its harvested intent, avoiding a reductus file load.
+
+    Returns [{"filename", "intent", "metadata"}] (metadata = the DB's harvested
+    fields) when the DB has a non-empty intent for the file, else None so the
+    caller falls back to loading the file. Any failure -- non-ncnr source,
+    network/HTTP error, no matching record, or an empty intent -- returns None to
+    trigger that fallback."""
+    if source != "ncnr":
+        return None
+    normalized = path.strip("/")
+    parts = normalized.split("/")
+    filename = parts[-1]
+    params = {"filename": filename, "limit": 20}
+    # path is ncnrdata/<instrument>/<cycle>/<exp>/data/<filename>; the second
+    # segment is the metadata DB's instrument alias, which narrows the search.
+    if len(parts) > 2 and parts[0] == "ncnrdata":
+        params["instrument"] = parts[1]
+    try:
+        resp = requests.get(f"{NCNR_METADATA_API}/datafiles", params=params, timeout=30)
+        resp.raise_for_status()
+        records = resp.json()
+    except (requests.RequestException, ValueError):
+        return None
+    # Prefer the record whose full reconstructed path matches ours; fall back to
+    # any filename match (names are effectively unique within an instrument).
+    record = next(
+        (r for r in records
+         if f"ncnrdata/{r.get('localdir')}/{r.get('filename')}" == normalized),
+        next((r for r in records if r.get("filename") == filename), None),
+    )
+    if record is None:
+        return None
+    intent = _intent_from_metadata_blob(record.get("metadata"))
+    if not intent:
+        return None
+    try:
+        db_metadata = json.loads(record["metadata"])
+    except (json.JSONDecodeError, TypeError, KeyError):
+        db_metadata = {}
+    return [{"filename": filename, "intent": intent, "metadata": db_metadata}]
+
 
 @mcp.tool()
 def find_raw_data_paths(experiment_id: str, instrument: str | None = None) -> list[dict]:
@@ -177,10 +252,18 @@ def find_raw_data_paths(experiment_id: str, instrument: str | None = None) -> li
     "localdir" for each file, then looks up each directory's real file mtimes
     via list_data_files (reductus requires an exact mtime on every file
     descriptor it loads). Returns a list of
-    {"path", "source", "mtime", "filename", "instrument", "rxcycle_id", "start_date"}
-    per file, ready to use directly as a file descriptor in reduce_files'
-    node_files, or as a pathlist prefix for list_data_files. only display 20 files
-    unless the user specifies otherwise."""
+    {"path", "source", "mtime", "filename", "instrument", "rxcycle_id",
+    "start_date", "intent"} per file, ready to use directly as a file descriptor
+    in reduce_files' node_files, or as a pathlist prefix for list_data_files.
+    only display 20 files unless the user specifies otherwise.
+
+    "intent" is the file's measurement role read straight from the metadata DB
+    (no file load): reflectometer/CANDOR files report a mapped intent like
+    'specular'/'intensity'/'background+'/'background-'/'rock sample'; VSANS files
+    report their file_purpose ('scattering'/'transmission') as a hint. It is null
+    when the DB has not harvested an intent for the file (e.g. findpeak/alignment
+    scans, or instruments like BT1) -- use get_file_intent to load those, and for
+    the true VSANS Sample/Empty/Blocked/Open intent."""
     limit = 500
     params = {"experiment_id": experiment_id, "limit": limit}
     if instrument:
@@ -214,6 +297,7 @@ def find_raw_data_paths(experiment_id: str, instrument: str | None = None) -> li
             "instrument": d["instrument"],
             "rxcycle_id": d["rxcycle_id"],
             "start_date": d.get("start_date"),
+            "intent": _intent_from_metadata_blob(d.get("metadata")),
         })
     return results
 
@@ -540,7 +624,22 @@ def get_file_intent(
     needs a field beyond filename/intent; long per-point arrays inside it
     (e.g. angle/intensity arrays) are truncated to a short sample so the
     response stays small.
+
+    Fast path: the file's intent is first looked up in the NCNR metadata DB
+    (by filename, no file load). If the DB has a non-empty intent, it is
+    returned directly as a single-entry list, with "metadata" being the DB's
+    harvested fields. The DB carries one intent per file, so this path does not
+    split polarized/multi-part files into per-dataset entries (their intent is
+    uniform anyway). When the DB has no intent for the file (e.g. findpeak/
+    alignment scans, un-harvested instruments like BT1, or the true VSANS
+    Sample/Empty/Blocked/Open intent, which the DB does not store), it falls
+    back to loading the file through reductus as described above. template_name
+    only affects that fallback load.
     """
+    fast = _search_intent_via_metadata(path, source)
+    if fast is not None:
+        return fast
+
     instrument = reductus_api.get_instrument(instrument_id)
     templates = instrument.get("templates", {})
     if template_name:
