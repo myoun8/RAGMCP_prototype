@@ -93,8 +93,53 @@ def gen_chunks(input: str) -> str:
     )
 
 
+# Base URL of the reductus web app; deep links append instrument/source/pathlist
+# query params, which its front-end reads (web_gui/webreduce/js/main.js) to open
+# the right instrument and data folder.
+REDUCTUS_APP_URL = "https://reductus.nist.gov/"
+
+
+def _reductus_url(instrument: str | None = None, path: str | None = None,
+                  source: str = "ncnr") -> str:
+    """Build a reductus web-app deep link. With no instrument, returns the app
+    homepage; otherwise encodes instrument/source/pathlist as the reductus
+    front-end reads them from the query string."""
+    if not instrument:
+        return REDUCTUS_APP_URL
+    from urllib.parse import urlencode
+
+    params = {"instrument": instrument, "source": source}
+    if path:
+        params["pathlist"] = str(path).strip("/")
+    return f"{REDUCTUS_APP_URL}?{urlencode(params)}"
+
+
+def _reductus_folder(node_files: dict[str, list[dict]] | None) -> str | None:
+    """Best-effort common data folder for a node_files mapping: the directory
+    the reduced files live in, used as reductus' pathlist. Returns None when no
+    path can be determined."""
+    import posixpath
+    from collections import Counter
+
+    dirs = []
+    for files in (node_files or {}).values():
+        for descriptor in files or []:
+            path = descriptor.get("path") if isinstance(descriptor, dict) else None
+            if path:
+                dirs.append(posixpath.dirname(str(path).replace("\\", "/")))
+    if not dirs:
+        return None
+    return Counter(dirs).most_common(1)[0][0] or None
+
+
 @mcp.tool()
-def generate_plot(code: str, title: str | None = None) -> str:
+def generate_plot(
+    code: str,
+    title: str | None = None,
+    reductus_instrument: str | None = None,
+    reductus_path: str | None = None,
+    reductus_source: str = "ncnr",
+) -> str:
     """Build an interactive Plotly figure from Python plotting code, save it as
     a Plotly figure-JSON file, and return an HTML placeholder the UI renders
     into a live, zoomable chart. Use this to visualize numeric data — e.g.
@@ -118,6 +163,16 @@ def generate_plot(code: str, title: str | None = None) -> str:
         fig.update_yaxes(title_text='Reflectivity', type='log')
 
     `title` (optional) is set as the figure title.
+
+    When the plotted data comes from reduction/raw NCNR data, pass the reductus
+    context so the UI can deep-link the chart to the reductus web app:
+      - `reductus_instrument` — instrument_id like 'ncnr.refl' or 'ncnr.candor'
+        (the same value you passed to reduce_files/find_raw_data_paths).
+      - `reductus_path` — the directory the raw files live in (the parent path
+        from find_raw_data_paths), so reductus opens that folder in its browser.
+      - `reductus_source` — datasource name, defaults to 'ncnr'.
+    Omit these for ad-hoc/user-supplied data; the link then points at the
+    reductus homepage.
 
     Returns an HTML placeholder like
     <div class="plotly-figure" data-src="/static/generated/<id>.json"></div>.
@@ -147,8 +202,18 @@ def generate_plot(code: str, title: str | None = None) -> str:
     if title:
         fig.update_layout(title_text=title)
 
+    # Embed a reductus deep-link URL alongside the figure so the UI can point
+    # the plot's "Open in Reductus" link at the exact instrument/folder. The
+    # reductus web app reads instrument/source/pathlist from the query string.
+    fig_dict = json.loads(fig.to_json())
+    fig_dict["reductus_url"] = _reductus_url(
+        reductus_instrument, reductus_path, reductus_source
+    )
+
     plot_id = uuid.uuid4().hex
-    (GENERATED_DIR / f"{plot_id}.json").write_text(fig.to_json(), encoding="utf-8")
+    (GENERATED_DIR / f"{plot_id}.json").write_text(
+        json.dumps(fig_dict), encoding="utf-8"
+    )
 
     return f'<div class="plotly-figure" data-src="/static/generated/{plot_id}.json"></div>'
 
@@ -466,6 +531,12 @@ def reduce_files(
     (compacted) output. return_type applies in both cases:
     'full' | 'plottable' | 'metadata' | 'export'. Results are always truncated
     to a fixed size budget so they fit in a model context window.
+
+    Returns {"reduction": <node output(s) as described above>, "reductus_url":
+    <deep link>}. `reductus_url` opens this instrument + data folder directly in
+    the reductus web app; when you then plot this data with generate_plot, pass
+    reductus_instrument=instrument_id and reductus_path (the files' folder) so
+    the chart's "Open in Reductus" link matches.
     """
     template_def, load_nodes = _load_file_nodes(instrument_id, template_name)
     valid_nodes = {str(n["node"]) for n in load_nodes}
@@ -486,10 +557,15 @@ def reduce_files(
     }
 
     if target_node is None:
-        return _fit_result(_all_node_outputs(instrument_id, template_def, config, return_type))
-    return _fit_result(reductus_api.calc_terminal(
-        template_def, config, target_node, target_terminal, return_type=return_type,
-    ))
+        reduction = _fit_result(_all_node_outputs(instrument_id, template_def, config, return_type))
+    else:
+        reduction = _fit_result(reductus_api.calc_terminal(
+            template_def, config, target_node, target_terminal, return_type=return_type,
+        ))
+    return {
+        "reduction": reduction,
+        "reductus_url": _reductus_url(instrument_id, _reductus_folder(node_files)),
+    }
 
 
 # Reduction exports (.ort/.orb) are written here for the user to download.
@@ -530,9 +606,11 @@ def export_reduction(
 
     target_node must be the FINAL reduced node (the one whose curve you'd plot),
     not a raw load node — an ORSO reflectivity file needs the reduced R(Q), not
-    unreduced input. Returns {"download_url", "filename", "format"}; render
-    download_url as a Markdown link, e.g. [<filename>](<download_url>), so the
-    user can download the export. Do not invent the URL — use the one returned."""
+    unreduced input. Returns {"download_url", "filename", "format",
+    "reductus_url"}; render download_url as a Markdown link, e.g.
+    [<filename>](<download_url>), so the user can download the export, and offer
+    reductus_url as an "Open in reductus" link so they can inspect/re-reduce the
+    same data in the web app. Do not invent the URLs — use the ones returned."""
     if export_format not in _ORSO_EXPORTS:
         raise ValueError(
             f"Unknown export_format {export_format!r}; "
@@ -588,6 +666,7 @@ def export_reduction(
         "download_url": f"/download/export/{export_id}/{filename}",
         "filename": filename,
         "format": export_format,
+        "reductus_url": _reductus_url(instrument_id, _reductus_folder(node_files)),
     }
 
 _INTENT_KEYS = ("intent", "analysis.intent")
