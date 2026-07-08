@@ -1,8 +1,10 @@
 import functools
 import importlib.util
 import json
+import logging
 import os
 import sys
+import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -22,6 +24,19 @@ from langchain.agents.middleware import ContextEditingMiddleware, ClearToolUsesE
 from langgraph.checkpoint.memory import MemorySaver
 
 load_dotenv()
+
+# Per-turn inference timing. One user message drives an agent loop of several
+# model calls interleaved with tools, so "why is it slow" needs a breakdown of
+# how many model calls ran, each one's time-to-first-token and wall time, the
+# token counts feeding each (context growth), and per-tool durations. Own
+# StreamHandler so INFO lines show even when nothing configured root logging.
+timing_logger = logging.getLogger("ncnr.timing")
+if not timing_logger.handlers:
+    _h = logging.StreamHandler(sys.stdout)
+    _h.setFormatter(logging.Formatter("%(asctime)s [timing] %(message)s", "%H:%M:%S"))
+    timing_logger.addHandler(_h)
+    timing_logger.setLevel(logging.INFO)
+    timing_logger.propagate = False
 
 # Server-side default keys, loaded once from .env/environment at startup. A
 # caller-supplied key in a request's api_keys still takes precedence; these
@@ -379,11 +394,21 @@ async def chat(req: ChatRequest):
         "configurable": {"thread_id": req.thread_id},
         "recursion_limit": AGENT_RECURSION_LIMIT,
     }
+    t0 = time.perf_counter()
     result = await agent_executor.ainvoke(
         {"messages": [("user", req.message)]},
         config=config,
     )
-    final_msg = result["messages"][-1]
+    # ainvoke gives no per-step events, so log a coarse breakdown: wall time and
+    # how many model calls (AIMessages) vs tool results the loop went through.
+    msgs = result["messages"]
+    n_ai = sum(1 for m in msgs if getattr(m, "type", "") == "ai")
+    n_tool = sum(1 for m in msgs if getattr(m, "type", "") == "tool")
+    timing_logger.info(
+        "turn thread=%s model=%s wall=%.2fs | %d model calls, %d tool results",
+        req.thread_id, req.model, time.perf_counter() - t0, n_ai, n_tool,
+    )
+    final_msg = msgs[-1]
     content = final_msg.content
     if isinstance(content, list):
         content = "".join(
@@ -410,6 +435,89 @@ TOOL_STATUS = {
 }
 
 
+class _TurnMetrics:
+    """Accumulates per-model-call and per-tool timings across one agent turn.
+
+    Keyed by each event's run_id so overlapping (parallel) tool calls and the
+    distinct model calls of the agent loop stay separated. ttft is measured
+    from a model call's start to its first streamed chunk (tool-call chunks
+    included) -- i.e. the prefill/queue cost before any output appears."""
+
+    def __init__(self, model: str, thread_id: str):
+        self.model = model
+        self.thread_id = thread_id
+        self.t0 = time.perf_counter()
+        self._model_start: dict = {}   # run_id -> perf_counter at model start
+        self._model_ttft: dict = {}    # run_id -> seconds to first chunk
+        self._tool_start: dict = {}    # run_id -> (name, perf_counter)
+        self.model_calls: list = []    # {ttft_s, total_s, in_tokens, out_tokens}
+        self.tools: list = []          # {name, total_s}
+
+    def model_start(self, run_id):
+        self._model_start[run_id] = time.perf_counter()
+
+    def model_first_token(self, run_id):
+        if run_id in self._model_start and run_id not in self._model_ttft:
+            self._model_ttft[run_id] = time.perf_counter() - self._model_start[run_id]
+
+    def model_end(self, run_id, usage):
+        start = self._model_start.pop(run_id, None)
+        if start is None:
+            return
+        now = time.perf_counter()
+        self.model_calls.append({
+            "ttft_s": round(self._model_ttft.pop(run_id, now - start), 3),
+            "total_s": round(now - start, 3),
+            "in_tokens": (usage or {}).get("input_tokens"),
+            "out_tokens": (usage or {}).get("output_tokens"),
+        })
+
+    def tool_start(self, run_id, name):
+        self._tool_start[run_id] = (name, time.perf_counter())
+
+    def tool_end(self, run_id, name):
+        rec = self._tool_start.pop(run_id, None)
+        start = rec[1] if rec else None
+        self.tools.append({
+            "name": name or (rec[0] if rec else "?"),
+            "total_s": round(time.perf_counter() - start, 3) if start else None,
+        })
+
+    def summary(self) -> dict:
+        sum_model = round(sum(c["total_s"] for c in self.model_calls), 3)
+        sum_tool = round(sum(t["total_s"] for t in self.tools if t["total_s"]), 3)
+        return {
+            "type": "metrics",
+            "model": self.model,
+            "wall_s": round(time.perf_counter() - self.t0, 3),
+            "model_calls": len(self.model_calls),
+            "sum_model_s": sum_model,
+            "tool_calls": len(self.tools),
+            "sum_tool_s": sum_tool,
+            "model_call_detail": self.model_calls,
+            "tool_detail": self.tools,
+        }
+
+    def log(self):
+        s = self.summary()
+        calls = ", ".join(
+            f"#{i+1}(ttft={c['ttft_s']}s tot={c['total_s']}s "
+            f"in={c['in_tokens']} out={c['out_tokens']})"
+            for i, c in enumerate(s["model_call_detail"])
+        ) or "none"
+        tools = ", ".join(
+            f"{t['name']}={t['total_s']}s" for t in s["tool_detail"]
+        ) or "none"
+        timing_logger.info(
+            "turn thread=%s model=%s wall=%.2fs | %d model calls (sum=%.2fs) "
+            "%s | %d tool calls (sum=%.2fs) %s",
+            self.thread_id, s["model"], s["wall_s"],
+            s["model_calls"], s["sum_model_s"], calls,
+            s["tool_calls"], s["sum_tool_s"], tools,
+        )
+        return s
+
+
 @app.post("/chat/stream")
 async def chat_stream(req: ChatRequest, request: Request):
     agent_executor = _build_agent(app, req.model, req.api_keys, req.message)
@@ -419,6 +527,7 @@ async def chat_stream(req: ChatRequest, request: Request):
             "configurable": {"thread_id": req.thread_id},
             "recursion_limit": AGENT_RECURSION_LIMIT,
         }
+        metrics = _TurnMetrics(req.model, req.thread_id)
 
         def emit(obj: dict) -> str:
             return f"data: {json.dumps(obj)}\n\n"
@@ -434,11 +543,18 @@ async def chat_stream(req: ChatRequest, request: Request):
 
                 kind = event["event"]
                 name = event.get("name", "")
+                run_id = event.get("run_id")
 
                 if kind == "on_chat_model_start":
+                    metrics.model_start(run_id)
                     yield emit({"type": "status", "text": "Thinking…"})
 
+                elif kind == "on_chat_model_end":
+                    out = event["data"].get("output")
+                    metrics.model_end(run_id, getattr(out, "usage_metadata", None))
+
                 elif kind == "on_tool_start":
+                    metrics.tool_start(run_id, name)
                     status = TOOL_STATUS.get(name, f"Using {name}…")
                     inp = event["data"].get("input", {})
                     inp_str = (
@@ -448,10 +564,12 @@ async def chat_stream(req: ChatRequest, request: Request):
                     yield emit({"type": "step_start", "name": name, "input": inp_str[:1200]})
 
                 elif kind == "on_tool_end":
+                    metrics.tool_end(run_id, name)
                     out = event["data"].get("output", "")
                     yield emit({"type": "step_end", "name": name, "output": str(out)[:2000]})
 
                 elif kind == "on_chat_model_stream":
+                    metrics.model_first_token(run_id)
                     chunk = event["data"].get("chunk")
                     if chunk and not getattr(chunk, "tool_call_chunks", None):
                         content = getattr(chunk, "content", "")
@@ -464,9 +582,11 @@ async def chat_stream(req: ChatRequest, request: Request):
                                     if t:
                                         yield emit({"type": "token", "text": t})
 
+            yield emit(metrics.log())
             yield emit({"type": "done"})
 
         except Exception as exc:
+            metrics.log()
             yield emit({"type": "error", "text": str(exc)})
             yield emit({"type": "done"})
 

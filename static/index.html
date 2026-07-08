@@ -173,6 +173,11 @@
     .step-code:last-child { margin-bottom: 0; }
     .step-code.pending { color: #aaa; font-style: italic; }
 
+    /* Inference-timing breakdown: distinct tint; keep the columns aligned
+       (no wrap) and let long rows scroll horizontally instead. */
+    .timing-item { background: #f7f5f0; }
+    .timing-item .step-code { white-space: pre; word-break: normal; overflow-x: auto; }
+
     /* ── Response text ── */
     .response-body { font-size: 15px; line-height: 1.7; color: #1a1a1a; }
     .response-body p               { margin: 0 0 10px; }
@@ -1116,8 +1121,41 @@
       return outCode;
     }
 
+    /* Prepend an inference-timing breakdown to the details panel. Reuses the
+       step-item/step-code styling; one monospace block so the numbers align. */
+    function addTimingItem(stepsPanel, m) {
+      const fmt = (x) => (x == null ? '?' : Number(x).toFixed(2));
+      const item = document.createElement('div');
+      item.className = 'step-item timing-item';
+
+      const nameEl = document.createElement('div');
+      nameEl.className = 'step-name';
+      nameEl.textContent = 'Timing';
+
+      const code = document.createElement('div');
+      code.className = 'step-code';
+      const lines = [
+        `wall ${fmt(m.wall_s)}s  ·  ${m.model_calls} model call` +
+        `${m.model_calls === 1 ? '' : 's'} (sum ${fmt(m.sum_model_s)}s)  ·  ` +
+        `${m.tool_calls} tool${m.tool_calls === 1 ? '' : 's'} (sum ${fmt(m.sum_tool_s)}s)`,
+      ];
+      (m.model_call_detail || []).forEach((c, i) => {
+        lines.push(
+          `model #${i + 1}  ttft ${fmt(c.ttft_s)}s  tot ${fmt(c.total_s)}s` +
+          `  in ${c.in_tokens ?? '?'}  out ${c.out_tokens ?? '?'}`
+        );
+      });
+      (m.tool_detail || []).forEach((t) => {
+        lines.push(`tool ${t.name}  ${t.total_s == null ? '?' : fmt(t.total_s) + 's'}`);
+      });
+      code.textContent = lines.join('\n');
+
+      item.append(nameEl, code);
+      stepsPanel.prepend(item);
+    }
+
     /* ── finalize turn after stream ends ── */
-    function finalizeTurn(refs, steps, rawText, sources) {
+    function finalizeTurn(refs, steps, rawText, sources, metrics) {
       const { turn, avImg, body, statusBar, stepsPanel, responseEl } = refs;
 
       /* stop rotation — avatar stays exactly where it is, no layout shift */
@@ -1126,11 +1164,17 @@
 
       statusBar.remove();
 
-      if (steps.length > 0) {
+      if (metrics) addTimingItem(stepsPanel, metrics);
+
+      /* Show the details toggle when there are tool steps OR timing to show. */
+      if (steps.length > 0 || metrics) {
         const summary = document.createElement('button');
         summary.className = 'steps-summary';
-        summary.innerHTML =
-          `<span class="chevron">▶</span> ${steps.length} step${steps.length > 1 ? 's' : ''}`;
+        const label = steps.length > 0
+          ? `${steps.length} step${steps.length > 1 ? 's' : ''}`
+          : 'Timing';
+        const wall = metrics ? ` · ${Number(metrics.wall_s).toFixed(2)}s` : '';
+        summary.innerHTML = `<span class="chevron">▶</span> ${label}${wall}`;
 
         let open = false;
         summary.addEventListener('click', () => {
@@ -1209,6 +1253,7 @@
       let steps          = [];
       let stepPending    = {};
       let sources        = [];   // { num, id, section, url, distance }
+      let metrics        = null; // per-turn inference timing from the 'metrics' event
       let cursor         = null;
       let finalized      = false;
       let streamInterval = null;
@@ -1298,6 +1343,10 @@
             startStreamInterval();
             break;
 
+          case 'metrics':
+            metrics = data;   // rendered into the details panel by finalizeTurn
+            break;
+
           case 'error':
             rawText = `_Error: ${data.text}_`;
             break;
@@ -1307,7 +1356,7 @@
             finalized = true;
             stopStreamInterval();
             removeCursor();
-            finalizeTurn(refs, steps, rawText, sources);
+            finalizeTurn(refs, steps, rawText, sources, metrics);
             setGeneratingState(false);
             activeController = null;
             inputEl.focus();
@@ -1353,9 +1402,9 @@
           stopStreamInterval();
           removeCursor();
           if (err && err.name === 'AbortError') {
-            finalizeTurn(refs, steps, rawText || '_Stopped._', sources);
+            finalizeTurn(refs, steps, rawText || '_Stopped._', sources, metrics);
           } else {
-            finalizeTurn(refs, steps, '_Error reaching the server._', []);
+            finalizeTurn(refs, steps, '_Error reaching the server._', [], metrics);
           }
         }
         setGeneratingState(false);
