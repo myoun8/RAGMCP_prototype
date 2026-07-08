@@ -458,7 +458,7 @@ def reduce_files(
        (e.g. from find_raw_data_paths' output) are ignored automatically.
 
     Valid template names and load node indices are instrument-specific; see list_reduction_templates.
-    Choose template name and node indices that match the files you want to reduce. 
+    Try to not use the general template whenever possible. Prompt the user to provide the template name or instrument.
 
     If target_node is omitted, every node's output terminal(s) are computed and
     returned as compact per-node summaries (datatype plus filename/intent per
