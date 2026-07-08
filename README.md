@@ -30,7 +30,7 @@ RCHAT_API_KEY=...             # required for full_document_ingestion.py / run_pi
 
 1. Add sources to `<pack>/source_inventory.csv`.
 2. Save unmodified source files under `<pack>/originals/`.
-3. Add your API key to `.env`: `RCHAT_API_KEY=...`
+3. Add your API key to `.env`: `RCHAT_API_KEY=...` (Create .env if not present)
 4. Run `python [rag/scripts/run_pipeline.py](rag/scripts/run_pipeline.py) [--pack <pack>]` — this chains all four steps automatically:
    - Converts originals to normalized Markdown via the RChat API (interactive: confirms stage per file)
    - Chunks `normalized/**/*.md` into JSONL

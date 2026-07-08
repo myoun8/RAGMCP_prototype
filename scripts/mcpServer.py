@@ -2,7 +2,6 @@ from fastmcp import FastMCP
 import copy
 import importlib.util
 import json
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -23,6 +22,28 @@ _common_spec.loader.exec_module(_common)  # type: ignore[union-attr]
 ensure_ollama = _common.ensure_ollama
 
 ensure_ollama()
+
+# gen_chunks retrieval runs in-process (not as a per-call subprocess) so the
+# heavy chromadb/langchain imports and the Chroma connection happen once, at
+# startup, instead of on every tool call. The module does `from _common import
+# ...`, which resolves via the _common entry registered in sys.modules above.
+_gc_spec = importlib.util.spec_from_file_location("gen_chunks", SCRIPTS / "gen_chunks.py")
+_gen_chunks = importlib.util.module_from_spec(_gc_spec)  # type: ignore[arg-type]
+sys.modules["gen_chunks"] = _gen_chunks
+_gc_spec.loader.exec_module(_gen_chunks)  # type: ignore[union-attr]
+
+_vectorstore = None
+
+
+def _get_vectorstore():
+    """Open the shared Chroma vectorstore once and reuse the handle across
+    gen_chunks calls. The old subprocess re-imported chromadb/langchain and
+    reconnected on every call; caching the handle keeps that cost to the first
+    retrieval only."""
+    global _vectorstore
+    if _vectorstore is None:
+        _vectorstore, _ = _common.open_vectorstore(base_url=_common.EMBED_BASE_URL)
+    return _vectorstore
 
 from reductus.web_gui import api as reductus_api
 
@@ -54,22 +75,18 @@ def gen_chunks(input: str) -> str:
     configurable distance threshold). You MUST use 
     this tool if the user asks HOW a specific 
     instrument (like CANDOR or MACS) works. Do NOT use this tool to answer questions about raw data files"""
-    output = subprocess.run(
-        [sys.executable, str(SCRIPTS / "gen_chunks.py"), input],
-        cwd=str(REPO_ROOT),
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        env={**os.environ, "PYTHONIOENCODING": "utf-8"},
-    )
-
-    if output.returncode != 0:
-        return output.stderr or "gen_chunks failed with no error output"
+    try:
+        kept = _gen_chunks.retrieve(input, vectorstore=_get_vectorstore())
+        body = _gen_chunks.format_chunks(kept)
+    except _gen_chunks.RetrievalError as exc:
+        return str(exc)
+    except Exception as exc:  # noqa: BLE001 - surface retrieval failure as tool output, don't kill the run
+        return f"gen_chunks failed: {type(exc).__name__}: {exc}"
 
     return (
         f"<retrieved_chunks query={input!r} source=\"NCNR RAG Chroma vectorstore\">\n"
         "```text\n"
-        f"{output.stdout}\n"
+        f"{body}\n"
         "```\n"
         "</retrieved_chunks>"
     )
@@ -253,9 +270,13 @@ def find_raw_data_paths(experiment_id: str, instrument: str | None = None) -> li
     via list_data_files (reductus requires an exact mtime on every file
     descriptor it loads). Returns a list of
     {"path", "source", "mtime", "filename", "instrument", "rxcycle_id",
-    "start_date", "intent"} per file, ready to use directly as a file descriptor
-    in reduce_files' node_files, or as a pathlist prefix for list_data_files.
-    only display 20 files unless the user specifies otherwise.
+    "start_date", "intent", "download_url"} per file, ready to use directly as a
+    file descriptor in reduce_files' node_files, or as a pathlist prefix for
+    list_data_files. only display 20 files unless the user specifies otherwise.
+
+    "download_url" is a relative link (served by the app's /download/raw proxy)
+    that streams the original raw file to the browser as a download. Surface it
+    as a Markdown link when the user wants to download raw data files.
 
     "intent" is the file's measurement role read straight from the metadata DB
     (no file load): reflectometer/CANDOR files report a mapped intent like
@@ -289,8 +310,9 @@ def find_raw_data_paths(experiment_id: str, instrument: str | None = None) -> li
         file_meta = mtimes_by_dir[localdir].get(d["filename"])
         if file_meta is None:
             continue
+        path = f"ncnrdata/{localdir}/{d['filename']}"
         results.append({
-            "path": f"ncnrdata/{localdir}/{d['filename']}",
+            "path": path,
             "source": "ncnr",
             "mtime": file_meta["mtime"],
             "filename": d["filename"],
@@ -298,6 +320,9 @@ def find_raw_data_paths(experiment_id: str, instrument: str | None = None) -> li
             "rxcycle_id": d["rxcycle_id"],
             "start_date": d.get("start_date"),
             "intent": _intent_from_metadata_blob(d.get("metadata")),
+            # Relative link the app's /download/raw proxy streams the original
+            # file through; surface it to let the user download the raw file.
+            "download_url": f"/download/raw/ncnr/{path}",
         })
     return results
 
@@ -432,6 +457,7 @@ def reduce_files(
        (e.g. from find_raw_data_paths' output) are ignored automatically.
 
     Valid template names and load node indices are instrument-specific; see list_reduction_templates.
+    Choose template name and node indices that match the files you want to reduce. 
 
     If target_node is omitted, every node's output terminal(s) are computed and
     returned as compact per-node summaries (datatype plus filename/intent per

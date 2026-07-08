@@ -140,6 +140,32 @@
     }
     .steps-summary.open .chevron { transform: rotate(90deg); }
 
+    /* ── Reasoning (live chain-of-thought) ── */
+    .reasoning { margin-bottom: 12px; }
+    .reasoning[hidden] { display: none; }
+    .reasoning-toggle {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; color: #888; cursor: pointer;
+      border: none; background: none; padding: 0; font-family: inherit;
+      margin-bottom: 6px;
+    }
+    .reasoning-toggle:hover { color: #555; }
+    .reasoning-toggle .chevron {
+      font-size: 10px; transition: transform 0.2s; display: inline-block;
+    }
+    .reasoning-toggle.open .chevron { transform: rotate(90deg); }
+    .reasoning-toggle.streaming .reasoning-label {
+      animation: reasoning-pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes reasoning-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+    .reasoning-body {
+      font-size: 13px; line-height: 1.6; color: #999;
+      white-space: pre-wrap; word-break: break-word;
+      border-left: 2px solid #e8e4de; padding-left: 12px;
+      max-height: 220px; overflow-y: auto;
+    }
+    .reasoning-body[hidden] { display: none; }
+
     /* ── Steps panel ── */
     .steps-panel {
       border: 1px solid #e8e4de;
@@ -215,8 +241,20 @@
     .response-body .plotly-figure {
       width: 100%; min-height: 400px;
       border: 1px solid #e8e4de; border-radius: 10px;
-      margin: 8px 0; background: #fff; overflow: hidden;
+      margin: 8px 0 0; background: #fff; overflow: hidden;
     }
+    /* download bar rendered under each interactive plot */
+    .plot-downloads {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin: 6px 0 8px;
+    }
+    .plot-dl-btn {
+      font-family: inherit; font-size: 12px; color: #555;
+      background: #f0ede6; border: 1px solid #e0ddd7; border-radius: 6px;
+      padding: 4px 11px; cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+    }
+    .plot-dl-btn:hover { background: #e6e0d6; color: #1a1a1a; }
 
     .math-block { text-align: center; margin: 12px 0; overflow-x: auto; }
 
@@ -761,10 +799,72 @@
             Plotly.newPlot(el, fig.data || [], fig.layout || {}, {
               responsive: true, displaylogo: false,
             });
+            addPlotDownloads(el, fig);
             scrollBottom();
           })
           .catch(() => { el.textContent = 'Failed to load plot.'; });
       });
+    }
+
+    /* Serialize a figure's traces to CSV: one x/y column pair per trace
+       (plus its error column when present), padded to the longest trace. */
+    function figureToCsv(fig) {
+      const traces = (fig.data || []).filter(t => Array.isArray(t.x) || Array.isArray(t.y));
+      if (!traces.length) return null;
+      const cols = [], headers = [];
+      traces.forEach((t, i) => {
+        const label = (t.name || `trace_${i + 1}`).replace(/"/g, "'");
+        const err = t.error_y && Array.isArray(t.error_y.array) ? t.error_y.array : null;
+        headers.push(`${label}_x`, `${label}_y`);
+        cols.push(t.x || [], t.y || []);
+        if (err) { headers.push(`${label}_yerr`); cols.push(err); }
+      });
+      const rows = Math.max(...cols.map(c => c.length));
+      const esc = (v) => {
+        if (v == null) return '';
+        const s = String(v);
+        return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+      };
+      const lines = [headers.map(esc).join(',')];
+      for (let r = 0; r < rows; r++) lines.push(cols.map(c => esc(c[r])).join(','));
+      return lines.join('\n');
+    }
+
+    function triggerDownload(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    /* Attach a "PNG / Data (CSV)" download bar under a rendered plot. PNG is the
+       graph image; CSV is the underlying (reduction) plot data from its traces. */
+    function addPlotDownloads(plotEl, fig) {
+      if (plotEl.nextElementSibling?.classList?.contains('plot-downloads')) return;
+      const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+      const bar = document.createElement('div');
+      bar.className = 'plot-downloads';
+
+      const pngBtn = document.createElement('button');
+      pngBtn.className = 'plot-dl-btn';
+      pngBtn.textContent = '⬇ PNG';
+      pngBtn.addEventListener('click', () => {
+        Plotly.downloadImage(plotEl, { format: 'png', scale: 2, filename: `plot-${stamp}` });
+      });
+      bar.appendChild(pngBtn);
+
+      const csv = figureToCsv(fig);
+      if (csv) {
+        const csvBtn = document.createElement('button');
+        csvBtn.className = 'plot-dl-btn';
+        csvBtn.textContent = '⬇ Data (CSV)';
+        csvBtn.addEventListener('click', () => {
+          triggerDownload(new Blob([csv], { type: 'text/csv' }), `plot-data-${stamp}.csv`);
+        });
+        bar.appendChild(csvBtn);
+      }
+      plotEl.insertAdjacentElement('afterend', bar);
     }
 
     /*
@@ -1069,10 +1169,28 @@
       stepsPanel.className = 'steps-panel';
       stepsPanel.hidden = true;
 
+      /* live reasoning (chain-of-thought) — hidden until the model emits any */
+      const reasoningWrap = document.createElement('div');
+      reasoningWrap.className = 'reasoning';
+      reasoningWrap.hidden = true;
+      const reasoningToggle = document.createElement('button');
+      reasoningToggle.className = 'reasoning-toggle streaming open';
+      reasoningToggle.innerHTML = '<span class="chevron">▶</span><span class="reasoning-label">Reasoning…</span>';
+      const reasoningBody = document.createElement('div');
+      reasoningBody.className = 'reasoning-body';
+      reasoningWrap.append(reasoningToggle, reasoningBody);
+      reasoningToggle.addEventListener('click', () => {
+        const open = !reasoningToggle.classList.contains('open');
+        reasoningToggle.classList.toggle('open', open);
+        reasoningBody.hidden = !open;
+        scrollBottom();
+      });
+
       const responseEl = document.createElement('div');
       responseEl.className = 'response-body';
 
       body.appendChild(statusBar);
+      body.appendChild(reasoningWrap);
       body.appendChild(stepsPanel);
       body.appendChild(responseEl);
       turn.appendChild(av);
@@ -1085,10 +1203,10 @@
         detailsOpen = !detailsOpen;
         stepsPanel.hidden = !detailsOpen;
         detailsBtn.textContent = detailsOpen ? 'Details ▴' : 'Details ▾';
-        scrollBottom();
       });
 
-      return { turn, avImg, body, statusBar, statusTxt, detailsBtn, stepsPanel, responseEl };
+      return { turn, avImg, body, statusBar, statusTxt, detailsBtn, stepsPanel, responseEl,
+               reasoningWrap, reasoningToggle, reasoningBody };
     }
 
     /* ── add a step item to the panel ── */
@@ -1181,7 +1299,6 @@
           open = !open;
           stepsPanel.hidden = !open;
           summary.classList.toggle('open', open);
-          scrollBottom();
         });
 
         body.insertBefore(summary, stepsPanel);
@@ -1247,9 +1364,12 @@
 
       addUserTurn(text);
       const refs = createAssistantTurn();
-      const { turn, statusTxt, stepsPanel, responseEl } = refs;
+      const { turn, statusTxt, stepsPanel, responseEl,
+              reasoningWrap, reasoningToggle, reasoningBody } = refs;
 
       let rawText        = '';
+      let reasoningText  = '';
+      let reasoningStart = null;   // performance.now() at first reasoning token
       let steps          = [];
       let stepPending    = {};
       let sources        = [];   // { num, id, section, url, distance }
@@ -1267,6 +1387,16 @@
         }
       }
       function removeCursor() { cursor?.remove(); cursor = null; }
+
+      /* On finish: freeze the live reasoning into a collapsed "Thought for Xs"
+         toggle (or drop it entirely if the model streamed no reasoning). */
+      function collapseReasoning() {
+        if (reasoningStart === null) { reasoningWrap.remove(); return; }
+        const secs = ((performance.now() - reasoningStart) / 1000).toFixed(1);
+        reasoningToggle.classList.remove('streaming', 'open');
+        reasoningToggle.querySelector('.reasoning-label').textContent = `Thought for ${secs}s`;
+        reasoningBody.hidden = true;
+      }
 
       /* Render the safe (complete-delimiter) portion; append the raw tail.
          The tick runs often (see startStreamInterval) so it can paint tokens
@@ -1338,6 +1468,16 @@
             break;
           }
 
+          case 'reasoning':
+            if (reasoningStart === null) reasoningStart = performance.now();
+            reasoningText += data.text;
+            reasoningWrap.hidden = false;
+            turn.classList.remove('thinking');   // pin avatar; content is flowing
+            reasoningBody.textContent = reasoningText;
+            reasoningBody.scrollTop = reasoningBody.scrollHeight;
+            scrollBottom();
+            break;
+
           case 'token':
             rawText += data.text;
             startStreamInterval();
@@ -1356,6 +1496,7 @@
             finalized = true;
             stopStreamInterval();
             removeCursor();
+            collapseReasoning();
             finalizeTurn(refs, steps, rawText, sources, metrics);
             setGeneratingState(false);
             activeController = null;
@@ -1401,6 +1542,7 @@
           finalized = true;
           stopStreamInterval();
           removeCursor();
+          collapseReasoning();
           if (err && err.name === 'AbortError') {
             finalizeTurn(refs, steps, rawText || '_Stopped._', sources, metrics);
           } else {
