@@ -255,13 +255,18 @@
       transition: background 0.12s, color 0.12s;
     }
     .plot-dl-btn:hover { background: #e6e0d6; color: #1a1a1a; }
-    /* link to the reductus web app, pushed to the bottom-right of the bar */
+    /* link to the reductus web app, pushed to the bottom-right of the bar.
+       When the plot carries a reductus_template_id, clicking it instead
+       launches a local browser with the exact reduction template (via
+       reductus_external.py's Playwright injection) loaded into the reductus
+       web editor -- see addPlotDownloads(). */
     .plot-reductus-link {
       margin-left: auto; align-self: center;
       font-size: 12px; color: #555; text-decoration: none;
       display: inline-flex; align-items: center; gap: 4px;
     }
     .plot-reductus-link:hover { color: #1a1a1a; text-decoration: underline; }
+    .plot-reductus-link.launching { pointer-events: none; opacity: 0.6; text-decoration: none; }
 
     .math-block { text-align: center; margin: 12px 0; overflow-x: auto; }
 
@@ -887,7 +892,41 @@
       reductusLink.href = fig.reductus_url || 'https://reductus.nist.gov/';
       reductusLink.target = '_blank';
       reductusLink.rel = 'noopener noreferrer';
-      reductusLink.innerHTML = 'Open in Reductus ↗';
+      const originalLabel = 'Open in Reductus ↗';
+      reductusLink.innerHTML = originalLabel;
+
+      // generate_plot embeds a reductus_template_id when the data came from
+      // reduce_files/export_reduction; when present, clicking this link
+      // instead launches a local browser (server-side, via
+      // reductus_external.py's Playwright injection) with the exact
+      // reduction template -- same modules/wires/files -- loaded into the
+      // reductus web editor, rather than just opening reductus_url.
+      if (fig.reductus_template_id) {
+        reductusLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (reductusLink.classList.contains('launching')) return;
+          reductusLink.classList.add('launching');
+          reductusLink.innerHTML = 'Launching…';
+          fetch('/reductus/open-editor', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ template_id: fig.reductus_template_id }),
+          })
+            .then(async (r) => {
+              if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
+              reductusLink.innerHTML = 'Launched — check your desktop';
+              setTimeout(() => {
+                reductusLink.classList.remove('launching');
+                reductusLink.innerHTML = originalLabel;
+              }, 4000);
+            })
+            .catch((err) => {
+              reductusLink.classList.remove('launching');
+              reductusLink.innerHTML = originalLabel;
+              alert(`Could not open reductus editor: ${err.message}`);
+            });
+        });
+      }
       bar.appendChild(reductusLink);
 
       plotEl.insertAdjacentElement('afterend', bar);

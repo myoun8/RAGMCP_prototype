@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import sys
+import threading
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -334,7 +335,10 @@ async def lifespan(app: FastAPI):
         "the graph image and its underlying (reduction) data — do not build separate download links for those. "
         "When the plotted data came from reduce_files, also pass reductus_instrument=instrument_id and "
         "reductus_path (the reduced files' folder, e.g. reduce_files' reductus_url shows it) to generate_plot so "
-        "the plot's 'Open in Reductus' link deep-links to that instrument and data folder.\n"
+        "the plot's 'Open in Reductus' link deep-links to that instrument and data folder. Also pass "
+        "reductus_template_id verbatim from reduce_files'/export_reduction's returned "
+        "\"reductus_template_id\" so the same 'Open in Reductus' link, instead of just navigating to "
+        "reductus_url, loads the exact reduction template (same modules/files) into the reductus web editor.\n"
         "\n"
         "DOWNLOADS: find_raw_data_paths returns a 'download_url' for every raw data file. When the user "
         "wants to download raw files, render each as a Markdown link, e.g. [<filename>](<download_url>), so "
@@ -467,6 +471,73 @@ def _file_chunks(path: Path, chunk_size: int = 65536):
             if not chunk:
                 break
             yield chunk
+
+
+# Where reduce_files/export_reduction write editor-ready template payloads
+# (mcpServer owns the dir; we read the same path so the two stay in sync).
+TEMPLATES_DIR = _mod.TEMPLATES_DIR
+
+REDUCTUS_EXTERNAL_PATH = REPO_ROOT / "scripts" / "reductus_external.py"
+_reductus_external_mod = None
+
+
+def _load_reductus_external():
+    # Lazy + cached: reductus_external.py imports playwright at module scope,
+    # which is an optional dependency for this one feature -- importing it
+    # eagerly at app startup would crash the whole server for everyone else
+    # if playwright isn't installed.
+    global _reductus_external_mod
+    if _reductus_external_mod is None:
+        spec = importlib.util.spec_from_file_location("reductus_external", REDUCTUS_EXTERNAL_PATH)
+        mod = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
+        spec.loader.exec_module(mod)  # type: ignore[union-attr]
+        _reductus_external_mod = mod
+    return _reductus_external_mod
+
+
+class OpenReductusEditorRequest(BaseModel):
+    template_id: str
+
+
+@app.post("/reductus/open-editor")
+def open_reductus_editor(req: OpenReductusEditorRequest):
+    """Launch a local browser (via Playwright) with the exact reduction
+    template reduce_files/export_reduction built -- same modules/wires and the
+    same files loaded into each node -- open in the reductus web editor.
+
+    Runs the injection in a background thread and returns immediately: it's a
+    blocking call that opens a GUI browser window and waits for the user to
+    close it, which only makes sense because this server runs on the user's
+    own machine (not a shared multi-user host)."""
+    template_id = req.template_id
+    if not template_id.isalnum():
+        raise HTTPException(status_code=400, detail="Invalid template_id.")
+    path = TEMPLATES_DIR / f"{template_id}.json"
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="Template not found (it may have expired).")
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    instrument_id = payload.get("instrument")
+    if not instrument_id:
+        raise HTTPException(status_code=500, detail="Template payload is missing its instrument id.")
+
+    try:
+        reductus_external = _load_reductus_external()
+    except ModuleNotFoundError as exc:
+        raise HTTPException(
+            status_code=501,
+            detail=f"Playwright is not installed on the server ({exc}); run "
+                   "'pip install playwright && playwright install chromium'.",
+        ) from exc
+
+    def _run():
+        try:
+            reductus_external.inject_template_with_open_browser(instrument_id, json.dumps(payload))
+        except Exception:
+            timing_logger.exception("open-in-reductus-editor failed for template_id=%s", template_id)
+
+    threading.Thread(target=_run, daemon=True).start()
+    return {"status": "launching"}
 
 
 @app.get("/api/key-status")

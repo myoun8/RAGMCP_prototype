@@ -111,7 +111,41 @@ def _reductus_url(instrument: str | None = None, path: str | None = None,
     params = {"instrument": instrument, "source": source}
     if path:
         params["pathlist"] = str(path).strip("/")
-    return f"{REDUCTUS_APP_URL}?{urlencode(params)}"
+    # safe="/" keeps pathlist's slashes literal (e.g. ...&pathlist=ncnrdata/candor/202011/27839/data)
+    # rather than percent-encoded, matching the reductus front-end's expected link format.
+    return f"{REDUCTUS_APP_URL}?{urlencode(params, safe='/')}"
+
+
+# Template payloads from reduce_files/export_reduction land here, keyed by a
+# uuid, so generate_plot/the UI can reference one by a short id instead of
+# round-tripping the full template JSON through the model's context window.
+TEMPLATES_DIR = GENERATED_DIR / "templates"
+
+
+def _template_payload(template_def: dict, config: dict) -> dict:
+    """Merge per-node file-selection config into a template_def's modules,
+    producing the exact shape reductus' web editor's `editor.load_template`
+    expects: each module carries its own `config` dict (reductus' Template/
+    calc_terminal API instead takes template_def and config as two separate
+    arguments)."""
+    payload = copy.deepcopy(template_def)
+    for node_index, node_config in config.items():
+        module = payload["modules"][int(node_index)]
+        module["config"] = {**module.get("config", {}), **node_config}
+    return payload
+
+
+def _save_template_payload(template_def: dict, config: dict) -> str:
+    """Save a reduce_files/export_reduction template+config as an editor-ready
+    payload and return its id (the file basename), for generate_plot's
+    reductus_template_id and the UI's 'open in reductus editor' button."""
+    TEMPLATES_DIR.mkdir(parents=True, exist_ok=True)
+    template_id = uuid.uuid4().hex
+    payload = _template_payload(template_def, config)
+    (TEMPLATES_DIR / f"{template_id}.json").write_text(
+        json.dumps(payload), encoding="utf-8"
+    )
+    return template_id
 
 
 def _reductus_folder(node_files: dict[str, list[dict]] | None) -> str | None:
@@ -139,6 +173,7 @@ def generate_plot(
     reductus_instrument: str | None = None,
     reductus_path: str | None = None,
     reductus_source: str = "ncnr",
+    reductus_template_id: str | None = None,
 ) -> str:
     """Build an interactive Plotly figure from Python plotting code, save it as
     a Plotly figure-JSON file, and return an HTML placeholder the UI renders
@@ -171,6 +206,11 @@ def generate_plot(
       - `reductus_path` — the directory the raw files live in (the parent path
         from find_raw_data_paths), so reductus opens that folder in its browser.
       - `reductus_source` — datasource name, defaults to 'ncnr'.
+      - `reductus_template_id` — pass reduce_files'/export_reduction's returned
+        "reductus_template_id" verbatim so the UI can offer an "open the exact
+        reduction template" button (loads the actual module graph, with the
+        same files, into the reductus web editor) next to the plain reductus
+        link. Omit when the plot didn't come from reduce_files/export_reduction.
     Omit these for ad-hoc/user-supplied data; the link then points at the
     reductus homepage.
 
@@ -209,6 +249,8 @@ def generate_plot(
     fig_dict["reductus_url"] = _reductus_url(
         reductus_instrument, reductus_path, reductus_source
     )
+    if reductus_template_id:
+        fig_dict["reductus_template_id"] = reductus_template_id
 
     plot_id = uuid.uuid4().hex
     (GENERATED_DIR / f"{plot_id}.json").write_text(
@@ -533,10 +575,13 @@ def reduce_files(
     to a fixed size budget so they fit in a model context window.
 
     Returns {"reduction": <node output(s) as described above>, "reductus_url":
-    <deep link>}. `reductus_url` opens this instrument + data folder directly in
-    the reductus web app; when you then plot this data with generate_plot, pass
-    reductus_instrument=instrument_id and reductus_path (the files' folder) so
-    the chart's "Open in Reductus" link matches.
+    <deep link>, "reductus_template_id": <id>}. `reductus_url` opens this
+    instrument + data folder directly in the reductus web app; when you then
+    plot this data with generate_plot, pass reductus_instrument=instrument_id,
+    reductus_path (the files' folder), and reductus_template_id (verbatim) so
+    the chart offers both the plain "Open in Reductus" link and a button that
+    loads this exact reduction template (same modules/wires/files) into the
+    reductus web editor.
     """
     template_def, load_nodes = _load_file_nodes(instrument_id, template_name)
     valid_nodes = {str(n["node"]) for n in load_nodes}
@@ -565,6 +610,7 @@ def reduce_files(
     return {
         "reduction": reduction,
         "reductus_url": _reductus_url(instrument_id, _reductus_folder(node_files)),
+        "reductus_template_id": _save_template_payload(template_def, config),
     }
 
 
@@ -607,10 +653,11 @@ def export_reduction(
     target_node must be the FINAL reduced node (the one whose curve you'd plot),
     not a raw load node — an ORSO reflectivity file needs the reduced R(Q), not
     unreduced input. Returns {"download_url", "filename", "format",
-    "reductus_url"}; render download_url as a Markdown link, e.g.
-    [<filename>](<download_url>), so the user can download the export, and offer
-    reductus_url as an "Open in reductus" link so they can inspect/re-reduce the
-    same data in the web app. Do not invent the URLs — use the ones returned."""
+    "reductus_url", "reductus_template_id"}; render download_url as a Markdown
+    link, e.g. [<filename>](<download_url>), so the user can download the
+    export, and offer reductus_url as an "Open in reductus" link so they can
+    inspect/re-reduce the same data in the web app. Do not invent the URLs —
+    use the ones returned."""
     if export_format not in _ORSO_EXPORTS:
         raise ValueError(
             f"Unknown export_format {export_format!r}; "
@@ -667,6 +714,7 @@ def export_reduction(
         "filename": filename,
         "format": export_format,
         "reductus_url": _reductus_url(instrument_id, _reductus_folder(node_files)),
+        "reductus_template_id": _save_template_payload(template_def, config),
     }
 
 _INTENT_KEYS = ("intent", "analysis.intent")
