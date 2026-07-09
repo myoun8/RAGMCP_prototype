@@ -189,6 +189,9 @@ def generate_plot(
       - `np`   -> numpy
     Put the data to plot inline in the code (as literal lists/arrays). Do NOT
     call fig.show() or write any file — the figure is serialized for you.
+
+    Default to an intensity vs Q(q-range) graph when generating the plot.
+
     Example:
 
         x = [0.01, 0.02, 0.03, 0.04]
