@@ -8,7 +8,7 @@ langchain-anthropic>=1.4,<2.0      # app.py — ChatAnthropic for Claude models 
 langchain-google-genai>=4.2,<5.0   # app.py — ChatGoogleGenerativeAI for Gemini models (BYOK routing)
 openai>=1.0,<3.0          # full_document_ingestion.py — OpenAI SDK against the RChat endpoint
 pypdf>=4.0,<6.0            # full_document_ingestion.py — PDF text extraction (optional)
-fastmcp>=2.0,<3.0          # mcpServer.py — MCP server exposing the pipeline as tools
+fastmcp==3.4.2         # mcpServer.py — MCP server exposing the pipeline as tools
 reductus==1.0.1            # mcpServer.py — reductus.web_gui.api reduction backend
 plotly>=5.20,<6.0          # mcpServer.py — generate_plot builds interactive figures serialized to JSON
 numpy>=1.24                # mcpServer.py — generate_plot exposes np to plotting code (plotly does not pull it in)
