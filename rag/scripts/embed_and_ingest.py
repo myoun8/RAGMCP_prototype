@@ -38,7 +38,7 @@ from _common import COLLECTION, open_vectorstore
 
 # ---- config ---------------------------------------------------------------
 OLLAMA_BASE_URL = "http://localhost:11434"
-CHUNK_GLOB   = "context_database/*/chunks/*_chunks.jsonl"   # adjust to where your JSONL live
+CHUNK_GLOB   = "rag/context_database/*/chunks/*_chunks.jsonl"   # adjust to where your JSONL live
 BATCH        = 64
 # ---------------------------------------------------------------------------
 
