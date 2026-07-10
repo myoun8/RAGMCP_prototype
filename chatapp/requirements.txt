@@ -1,0 +1,13 @@
+# Part 1 — storage layer
+sqlalchemy>=2.0
+pydantic>=2.7
+chromadb>=0.5
+
+# Part 2 — orchestration engine (Llama 3.2 via Ollama's OpenAI-compatible API)
+openai>=1.40
+
+# Part 3 — HTTP/SSE surface for the frontend
+fastapi>=0.110
+uvicorn>=0.29
+# Production relational backend (SQLite fallback needs nothing extra):
+# psycopg2-binary>=2.9

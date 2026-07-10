@@ -1,0 +1,7 @@
+# Local dev storage artifacts
+chatapp.db
+vector_db/
+
+# Frontend build artifacts
+frontend/node_modules/
+frontend/dist/
