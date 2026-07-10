@@ -617,6 +617,153 @@ def reduce_files(
     }
 
 
+def _plottable_traces(plottable: dict) -> list[dict]:
+    """Extract drawable (x, y[, errorbars], axis labels) traces from a reductus
+    return_type='plottable' result.
+
+    calc_terminal(..., return_type='plottable') returns
+    {'datatype': ..., 'values': [<per-dataset plottable>, ...]}. Reflectometry/
+    CANDOR reduced curves serialize as type 'nd' (see refldata.ReflData.
+    get_plottable): options.xcol/ycol name the Q and intensity columns,
+    datas[col]['values'] holds the full arrays, datas[col]['errorbars'] the
+    uncertainties, and options.axes.{xaxis,yaxis}.label the axis titles.
+
+    This pulls the arrays out whole -- unlike reduce_files, which compacts every
+    array down to an 8-element sample so the result fits an LLM context window
+    (which is exactly why a reduce_files result can't be plotted directly)."""
+    traces: list[dict] = []
+    values = plottable.get("values") if isinstance(plottable, dict) else None
+    for dataset in values or []:
+        if not isinstance(dataset, dict):
+            continue
+        datas = dataset.get("datas")
+        options = dataset.get("options") or {}
+        if not isinstance(datas, dict):
+            continue
+        xcol, ycol = options.get("xcol"), options.get("ycol")
+        xseries = datas.get(xcol) if isinstance(datas.get(xcol), dict) else None
+        yseries = datas.get(ycol) if isinstance(datas.get(ycol), dict) else None
+        if not xseries or not yseries:
+            continue
+        x, y = xseries.get("values"), yseries.get("values")
+        if not x or not y:
+            continue
+        axes = options.get("axes") or {}
+        traces.append({
+            "label": dataset.get("title") or dataset.get("entry") or ycol,
+            "x": x,
+            "y": y,
+            "dy": yseries.get("errorbars"),
+            "xlabel": (axes.get("xaxis") or {}).get("label") or xcol,
+            "ylabel": (axes.get("yaxis") or {}).get("label") or ycol,
+        })
+    return traces
+
+
+@mcp.tool()
+def plot_reduction(
+    instrument_id: str,
+    template_name: str,
+    node_files: dict[str, list[dict]],
+    target_node: int = 12,
+    target_terminal: str = "output",
+    title: str | None = None,
+) -> str:
+    """Reduce files with a standard template and plot the reduced curve
+    (intensity/reflectivity vs Q) in one step, returning the same HTML
+    placeholder generate_plot does.
+
+    Use this -- NOT reduce_files followed by generate_plot -- to plot a reduced
+    dataset. It pulls the FULL Q/intensity arrays straight from reductus and
+    draws them server-side, so the chart always contains the real reduced data.
+    reduce_files only returns compact summaries (its arrays are truncated to a
+    handful of samples to fit the context window), so a figure built from its
+    output comes out empty or wrong.
+
+    Arguments mirror reduce_files/export_reduction:
+      - instrument_id, template_name: from list_reduction_templates.
+      - node_files: each load node index (as a string) -> list of file
+        descriptors, each with "path", "mtime" (int), and "source".
+      - target_node: the FINAL reduced node (the one whose curve you'd plot),
+        not a raw load node.
+      - target_terminal: defaults to "output".
+      - title: optional figure title.
+
+    Use target node = 12 as the default
+      
+    Returns the HTML placeholder
+    <div class="plotly-figure" data-src="/static/generated/<id>.json"></div>;
+    include it verbatim in your reply so the plot renders. The figure carries
+    the same reductus deep-link / editor button as generate_plot."""
+    import plotly.graph_objects as go
+
+    template_def, load_nodes = _load_file_nodes(instrument_id, template_name)
+    valid_nodes = {str(n["node"]) for n in load_nodes}
+    unknown = set(node_files) - valid_nodes
+    if unknown:
+        raise ValueError(
+            f"Node(s) {sorted(unknown)} are not file-input nodes for template "
+            f"{template_name!r}; valid load nodes: {sorted(valid_nodes)}"
+        )
+
+    template_def["name"] = template_name
+    template_def.setdefault("description", template_name)
+    template_def["instrument"] = instrument_id
+
+    config = {
+        node_index: {"filelist": [_sanitize_fileinfo(f) for f in files]}
+        for node_index, files in node_files.items()
+    }
+
+    plottable = reductus_api.calc_terminal(
+        template_def, config, target_node, target_terminal, return_type="plottable",
+    )
+    traces = _plottable_traces(plottable)
+    if not traces:
+        raise ValueError(
+            f"node {target_node} terminal {target_terminal!r} produced no "
+            "plottable x/y data; make sure target_node is the reduced-curve "
+            "node (the final reduction step)."
+        )
+
+    fig = go.Figure()
+    xlabel = ylabel = None
+    all_positive = True
+    for trace in traces:
+        scatter = {
+            "x": trace["x"],
+            "y": trace["y"],
+            "mode": "markers+lines",
+            "name": trace["label"],
+        }
+        if trace["dy"]:
+            scatter["error_y"] = {"type": "data", "array": trace["dy"], "visible": True}
+        fig.add_trace(go.Scatter(**scatter))
+        xlabel = xlabel or trace["xlabel"]
+        ylabel = ylabel or trace["ylabel"]
+        all_positive = all_positive and all(
+            isinstance(v, (int, float)) and v > 0 for v in trace["y"]
+        )
+
+    fig.update_xaxes(title_text=xlabel or "Q (1/Å)")
+    # Reflectivity/intensity span orders of magnitude and are conventionally
+    # shown on a log y-axis; fall back to linear if any value is <= 0 (e.g.
+    # background-subtracted points can go negative), which log can't render.
+    fig.update_yaxes(title_text=ylabel or "Intensity", type="log" if all_positive else "linear")
+    fig.update_layout(title_text=title or f"{template_name} — {instrument_id}")
+
+    GENERATED_DIR.mkdir(parents=True, exist_ok=True)
+    fig_dict = json.loads(fig.to_json())
+    fig_dict["reductus_url"] = _reductus_url(instrument_id, _reductus_folder(node_files))
+    fig_dict["reductus_template_id"] = _save_template_payload(template_def, config)
+
+    plot_id = uuid.uuid4().hex
+    (GENERATED_DIR / f"{plot_id}.json").write_text(
+        json.dumps(fig_dict), encoding="utf-8"
+    )
+    return f'<div class="plotly-figure" data-src="/static/generated/{plot_id}.json"></div>'
+
+
 # Reduction exports (.ort/.orb) are written here for the user to download.
 # The dir lives under the static tree, but files are served through app.py's
 # /download/export endpoint (not StaticFiles) so each comes back as a Save-As

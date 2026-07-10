@@ -39,10 +39,11 @@ The embedding/vectorstore layer is built on LangChain (`langchain-core`, `langch
 
 ## Agent & serving layer (`scripts/`)
 
-- `mcpServer.py` — **FastMCP server** (`python scripts/mcpServer.py`, stdio transport) exposing twelve tools. `gen_chunks` runs retrieval in-process (reusing a single cached Chroma handle, opened once at startup) rather than as a per-call subprocess. The tools:
+- `mcpServer.py` — **FastMCP server** (`python scripts/mcpServer.py`, stdio transport) exposing thirteen tools. `gen_chunks` runs retrieval in-process (reusing a single cached Chroma handle, opened once at startup) rather than as a per-call subprocess. The tools:
   - `run_pipeline` — runs the full ingestion pipeline as a subprocess.
   - `gen_chunks` — semantic retrieval from the `ncnr_rag` Chroma vectorstore; wraps results in `<retrieved_chunks>` tags.
-  - `generate_plot` — `exec`s model-authored Plotly code (with `go`/`px`/`np` pre-imported; figure assigned to `fig`), serializes the figure JSON under `static/generated/`, and returns a `<div class="plotly-figure" data-src=...>` placeholder the UI renders.
+  - `generate_plot` — `exec`s model-authored Plotly code (with `go`/`px`/`np` pre-imported; figure assigned to `fig`), serializes the figure JSON under `static/generated/`, and returns a `<div class="plotly-figure" data-src=...>` placeholder the UI renders. For **ad-hoc/user-supplied** x/y data only — not reduced curves (see `plot_reduction`).
+  - `plot_reduction` — reduces files exactly as `reduce_files` (same instrument/template/node_files/target_node), then fetches the target node's `return_type="plottable"` output and builds the Plotly figure server-side from the **full** Q/intensity arrays (via `_plottable_traces`, which reads reductus' type-`nd` plottable: `options.xcol/ycol` → `datas[col]["values"]` + errorbars + axis labels). Returns the same `<div class="plotly-figure">` placeholder as `generate_plot`. This is the correct way to plot a reduced curve: `reduce_files` truncates arrays to an ~8-sample summary to fit the context window, so plotting its output via `generate_plot` yields an empty chart.
   - `list_instruments`, `get_instrument`, `list_datasources`, `list_data_files` — thin wrappers over `reductus.web_gui.api`.
   - `find_raw_data_paths` — looks up an NCNR experiment's raw files by experiment_id/instrument via the NCNR metadata API (`/datafiles`), attaches each file's real mtime (required by reductus) and a `download_url` (served by `app.py`'s `/download/raw` proxy), plus a best-effort `intent` read straight from the metadata DB.
   - `list_reduction_templates` — lists an instrument's reduction templates and their file-input nodes/intents.

@@ -25,6 +25,7 @@ MCP_TOOL_NAMES = [
     "run_pipeline",
     "gen_chunks",
     "generate_plot",
+    "plot_reduction",
     "list_instruments",
     "get_instrument",
     "list_datasources",
@@ -117,13 +118,15 @@ async def run_agent():
                           "\n"
                           "STYLE: be brief and direct, no preamble; prefer short sentences or lists over prose.\n"
                           "\n"
-                          "VISUALIZATION: to plot or chart numeric data (reduced curves, scans, x/y arrays), "
-                          "call generate_plot with Plotly code — go/px/np are already imported; assign your "
-                          "figure to a variable named `fig` and do not call fig.show(). It returns an HTML "
-                          "<div class=\"plotly-figure\" …> snippet; include that exact snippet verbatim in your "
-                          "reply so the plot renders. When the data came from reduce_files, also pass "
-                          "reductus_instrument=instrument_id and reductus_path (the reduced files' folder) to "
-                          "generate_plot so the plot's 'Open in Reductus' link deep-links to that data.\n"
+                          "VISUALIZATION: to plot a REDUCED dataset (intensity/reflectivity vs Q), call "
+                          "plot_reduction with the same instrument_id/template_name/node_files you'd pass "
+                          "reduce_files and target_node set to the FINAL reduced node — it reduces and draws "
+                          "the real curve in one step. Do NOT plot reduce_files output with generate_plot: "
+                          "reduce_files returns truncated summaries, so that plot comes out empty. Use "
+                          "generate_plot only for ad-hoc/user-supplied x/y arrays: pass Plotly code — go/px/np "
+                          "are already imported; assign your figure to a variable named `fig` and do not call "
+                          "fig.show(). Both tools return an HTML <div class=\"plotly-figure\" …> snippet; "
+                          "include that exact snippet verbatim in your reply so the plot renders.\n"
                           "\n"
                           "MULTI-ITEM TASKS: when asked to repeat an operation over several items (files, "
                           "questions, experiments), perform it for EVERY item before answering — one tool call "

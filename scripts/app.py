@@ -20,10 +20,9 @@ from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.tools import StructuredTool
-from langchain_core.messages import ToolMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain.agents import create_agent
-from langchain.agents.middleware import ContextEditingMiddleware, ClearToolUsesEdit, after_agent
+from langchain.agents.middleware import ContextEditingMiddleware, ClearToolUsesEdit
 from langgraph.checkpoint.memory import MemorySaver
 
 load_dotenv()
@@ -104,6 +103,7 @@ MCP_TOOL_NAMES = [
     "run_pipeline",
     "gen_chunks",
     "generate_plot",
+    "plot_reduction",
     "list_instruments",
     "get_instrument",
     "list_datasources",
@@ -146,39 +146,6 @@ CONTEXT_EDITING_MIDDLEWARE = ContextEditingMiddleware(
     edits=[ClearToolUsesEdit(trigger=16000, keep=4)],
 )
 
-# --- Persistent tool-output stripping ---------------------------------------
-# ContextEditingMiddleware above only trims the THROWAWAY copy sent to the model;
-# MemorySaver still checkpoints the full message history, tool outputs and all,
-# so persisted per-thread memory grows without bound. This after_agent hook runs
-# once at the very END of a turn -- after the answer has already been generated
-# with full working context -- and overwrites every stored tool output with a
-# small placeholder before it is checkpointed. Only FUTURE turns are affected;
-# the in-progress run is untouched. Returning ToolMessages that reuse each id +
-# tool_call_id makes the `add_messages` reducer overwrite the record in place
-# rather than append. Same rationale as the context-editing middleware: by
-# end-of-turn every retrieved chunk / reduction blob has been consumed and
-# reported per the MULTI-ITEM prompt, so a superseded output carries no value.
-_TOOL_OUTPUT_PLACEHOLDER = "[tool output cleared from memory]"
-
-
-@after_agent
-def strip_tool_outputs_from_memory(state, runtime):
-    cleared = []
-    for msg in state["messages"]:
-        if isinstance(msg, ToolMessage) and msg.content != _TOOL_OUTPUT_PLACEHOLDER:
-            cleared.append(
-                ToolMessage(
-                    content=_TOOL_OUTPUT_PLACEHOLDER,
-                    tool_call_id=msg.tool_call_id,
-                    name=msg.name,
-                    id=msg.id,
-                )
-            )
-    if cleared:
-        return {"messages": cleared}
-    return None
-
-
 # --- Per-request tool scoping ----------------------------------------------
 # Every model step re-sends the full JSON schema of every bound tool, so
 # exposing all 14 tools on every request is fixed input-token overhead on the
@@ -195,7 +162,7 @@ TOOL_GROUPS = {
         "search-instruments", "search-experiments", "search-datafiles",
     },
     "reduction": {"list_reduction_templates", "reduce_files", "export_reduction"},
-    "plot": {"generate_plot"},
+    "plot": {"generate_plot", "plot_reduction"},
     "admin": {"run_pipeline"},
 }
 
@@ -328,12 +295,17 @@ async def lifespan(app: FastAPI):
         "\n"
         "STYLE: be brief and direct, no preamble; prefer short sentences or lists over prose.\n"
         "\n"
-        "PLOTS: to plot numeric data, call generate_plot with Plotly code — go/px/np are "
+        "PLOTS: to plot a REDUCED dataset (intensity/reflectivity vs Q), call plot_reduction with the same "
+        "instrument_id/template_name/node_files you'd pass reduce_files and target_node set to the FINAL "
+        "reduced node — it reduces and draws the real curve in one step and returns the plot placeholder. Do "
+        "NOT try to plot reduce_files output with generate_plot: reduce_files returns compact summaries with "
+        "truncated arrays, so that plot comes out empty. Use generate_plot only for ad-hoc/user-supplied x/y "
+        "arrays: pass Plotly code — go/px/np are "
         "imported; assign your figure to a variable named `fig` and do not call fig.show(). "
-        "Include its returned HTML <div class=\"plotly-figure\" …> snippet verbatim so the plot renders. "
+        "Include the returned HTML <div class=\"plotly-figure\" …> snippet verbatim so the plot renders. "
         "Each rendered plot already carries its own PNG / CSV download buttons, so the user can save "
         "the graph image and its underlying (reduction) data — do not build separate download links for those. "
-        "When the plotted data came from reduce_files, also pass reductus_instrument=instrument_id and "
+        "When plotting ad-hoc data that came from reduce_files, also pass reductus_instrument=instrument_id and "
         "reductus_path (the reduced files' folder, e.g. reduce_files' reductus_url shows it) to generate_plot so "
         "the plot's 'Open in Reductus' link deep-links to that instrument and data folder. Also pass "
         "reductus_template_id verbatim from reduce_files'/export_reduction's returned "
@@ -630,7 +602,7 @@ def _build_agent(app: FastAPI, model: str, api_keys: dict[str, str], message: st
         tools=_scoped_tools(app.state.tools, message),
         system_prompt=app.state.system_instruction,
         checkpointer=app.state.memory,
-        middleware=[CONTEXT_EDITING_MIDDLEWARE, strip_tool_outputs_from_memory],
+        middleware=[CONTEXT_EDITING_MIDDLEWARE],
     )
 
 
@@ -667,6 +639,7 @@ async def chat(req: ChatRequest):
 TOOL_STATUS = {
     "gen_chunks":          "Searching knowledge base…",
     "generate_plot":       "Generating plot…",
+    "plot_reduction":      "Reducing and plotting…",
     "run_pipeline":        "Running ingestion pipeline…",
     "list_instruments":    "Listing instruments…",
     "get_instrument":      "Looking up instrument definition…",
