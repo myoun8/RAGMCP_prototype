@@ -20,9 +20,10 @@ from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.tools import StructuredTool
+from langchain_core.messages import ToolMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain.agents import create_agent
-from langchain.agents.middleware import ContextEditingMiddleware, ClearToolUsesEdit
+from langchain.agents.middleware import ContextEditingMiddleware, ClearToolUsesEdit, after_agent
 from langgraph.checkpoint.memory import MemorySaver
 
 load_dotenv()
@@ -145,6 +146,39 @@ AGENT_RECURSION_LIMIT = 100
 CONTEXT_EDITING_MIDDLEWARE = ContextEditingMiddleware(
     edits=[ClearToolUsesEdit(trigger=16000, keep=4)],
 )
+
+# --- Persistent tool-output stripping ---------------------------------------
+# ContextEditingMiddleware above only trims the THROWAWAY copy sent to the model;
+# MemorySaver still checkpoints the full message history, tool outputs and all,
+# so persisted per-thread memory grows without bound. This after_agent hook runs
+# once at the very END of a turn -- after the answer has already been generated
+# with full working context -- and overwrites every stored tool output with a
+# small placeholder before it is checkpointed. Only FUTURE turns are affected;
+# the in-progress run is untouched. Returning ToolMessages that reuse each id +
+# tool_call_id makes the `add_messages` reducer overwrite the record in place
+# rather than append. Same rationale as the context-editing middleware: by
+# end-of-turn every retrieved chunk / reduction blob has been consumed and
+# reported per the MULTI-ITEM prompt, so a superseded output carries no value.
+_TOOL_OUTPUT_PLACEHOLDER = "[tool output cleared from memory]"
+
+
+@after_agent
+def strip_tool_outputs_from_memory(state, runtime):
+    cleared = []
+    for msg in state["messages"]:
+        if isinstance(msg, ToolMessage) and msg.content != _TOOL_OUTPUT_PLACEHOLDER:
+            cleared.append(
+                ToolMessage(
+                    content=_TOOL_OUTPUT_PLACEHOLDER,
+                    tool_call_id=msg.tool_call_id,
+                    name=msg.name,
+                    id=msg.id,
+                )
+            )
+    if cleared:
+        return {"messages": cleared}
+    return None
+
 
 # --- Per-request tool scoping ----------------------------------------------
 # Every model step re-sends the full JSON schema of every bound tool, so
@@ -294,7 +328,7 @@ async def lifespan(app: FastAPI):
         "list_data_files), ask which files to reduce before calling reduce_files. For "
         "multi-node templates (list_reduction_templates), confirm which files map to which "
         "node/intent (specular/background+/background-/intensity) — never guess or reuse "
-        "files across nodes.\n"
+        "files across nodes. Always plot the reduced data using plot_reduction\n"
         "\n"
         "PLOTS: render any tool-returned <div class=\"plotly-figure\"> snippet verbatim. Each "
         "rendered plot already carries its own PNG / CSV download buttons — do not build "
@@ -580,7 +614,7 @@ def _build_agent(app: FastAPI, model: str, api_keys: dict[str, str], message: st
         tools=_scoped_tools(app.state.tools, message),
         system_prompt=app.state.system_instruction,
         checkpointer=app.state.memory,
-        middleware=[CONTEXT_EDITING_MIDDLEWARE],
+        middleware=[CONTEXT_EDITING_MIDDLEWARE, strip_tool_outputs_from_memory],
     )
 
 

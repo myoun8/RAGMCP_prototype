@@ -497,7 +497,8 @@ def reduce_files(
     target_terminal: str = "output",
     return_type: str = "metadata",
 ) -> dict:
-    """Reduce data files with an instrument's reduction template. Call
+    """Reduce data files with an instrument's reduction template. Always 
+    attempt to use the template relating the given instrument. Call
     list_reduction_templates for a template_name and its load node indices, then
     pass node_files mapping each load node index (string) to descriptors with
     "path", "mtime" (int) and "source". Prefer a specific template. Omit
