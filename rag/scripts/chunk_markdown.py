@@ -140,7 +140,7 @@ def main() -> int:
         return 2
     root = Path.cwd()
     pack = sys.argv[1]
-    pack_dir = root / 'rag' / 'context_database' / pack
+    pack_dir = root / 'context_database' / pack
     norm_dir = pack_dir / 'normalized'
     if not norm_dir.is_dir():
         print(f'ERROR: normalized directory not found: {norm_dir}')
@@ -178,7 +178,7 @@ def main() -> int:
 
     out_dir = pack_dir / 'chunks'
     out_dir.mkdir(exist_ok=True)
-    out_path = out_dir / f'{pack}_chunks.generated.jsonl'
+    out_path = out_dir / f'{pack}_chunks.jsonl'
     with out_path.open('w', encoding='utf-8') as f:
         for row in rows:
             f.write(json.dumps(row, ensure_ascii=False) + '\n')

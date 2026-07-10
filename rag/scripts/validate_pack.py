@@ -97,7 +97,7 @@ def main() -> int:
         print(__doc__.strip())
         return 2
     root = Path.cwd()
-    pack_dir = root / 'rag' / 'context_database' / sys.argv[1]
+    pack_dir = root /'context_database' / sys.argv[1]
     if not pack_dir.exists():
         print(f'ERROR: pack folder not found: {pack_dir}')
         return 1
