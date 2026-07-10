@@ -25,14 +25,110 @@
       color: #1a1a1a;
       height: 100dvh;
       display: flex;
+      flex-direction: row;
+    }
+
+    /* Main column (everything to the right of the sidebar): holds the welcome
+       header, the message list and the input box. Centered within whatever
+       width is left beside the sidebar. */
+    #main {
+      flex: 1;
+      min-width: 0;
+      height: 100dvh;
+      display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
     }
+
+    /* ══════════════════════════════════════
+       SIDEBAR  (chat list)
+       ══════════════════════════════════════ */
+    #sidebar {
+      width: 260px;
+      flex-shrink: 0;
+      height: 100dvh;
+      background: #f3f0ea;
+      border-right: 1px solid #e8e4de;
+      display: flex;
+      flex-direction: column;
+      transition: margin-left 0.22s ease;
+    }
+    body.sidebar-collapsed #sidebar { margin-left: -260px; }
+    #sidebar.busy { pointer-events: none; opacity: 0.55; }
+
+    #sidebar-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 14px 12px;
+    }
+    #sidebar-collapse-btn {
+      flex-shrink: 0; width: 34px; height: 34px;
+      border: 1px solid #e0ddd7; background: #fff; border-radius: 9px;
+      cursor: pointer; color: #666;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.14s;
+    }
+    #sidebar-collapse-btn:hover { background: #ede9e3; }
+    #sidebar-collapse-btn svg { width: 16px; height: 16px; }
+
+    #new-chat-btn {
+      flex: 1;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      font-family: inherit; font-size: 13.5px; font-weight: 600;
+      color: #1a1a1a; background: #fff;
+      border: 1px solid #e0ddd7; border-radius: 10px;
+      padding: 10px 12px; cursor: pointer;
+      transition: background 0.14s, border-color 0.14s;
+    }
+    #new-chat-btn:hover { background: #ede9e3; border-color: #d5cfc4; }
+    #new-chat-btn svg { width: 15px; height: 15px; }
+
+    #chat-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px 8px 16px;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .chat-item {
+      display: flex; align-items: center; gap: 6px;
+      padding: 9px 10px; border-radius: 9px;
+      cursor: pointer; color: #4a463f; font-size: 13.5px;
+      transition: background 0.12s;
+    }
+    .chat-item:hover { background: #ece7df; }
+    .chat-item.active { background: #e4ded3; color: #1a1a1a; font-weight: 600; }
+    .chat-item-title {
+      flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .chat-item-delete {
+      flex-shrink: 0; width: 22px; height: 22px;
+      border: none; background: none; color: #999; cursor: pointer;
+      border-radius: 6px; opacity: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.12s, background 0.12s, color 0.12s;
+    }
+    .chat-item:hover .chat-item-delete,
+    .chat-item.active .chat-item-delete { opacity: 1; }
+    .chat-item-delete:hover { background: #dcd5c8; color: #c0392b; }
+    .chat-item-delete svg { width: 13px; height: 13px; }
+
+    /* Floating button that reopens the sidebar once it's collapsed. */
+    #sidebar-open-btn {
+      position: fixed; top: 14px; left: 14px; z-index: 20;
+      width: 34px; height: 34px;
+      border: 1px solid #e0ddd7; background: #fff; border-radius: 9px;
+      cursor: pointer; color: #555;
+      display: none; align-items: center; justify-content: center;
+      transition: background 0.14s;
+    }
+    #sidebar-open-btn:hover { background: #ede9e3; }
+    #sidebar-open-btn svg { width: 17px; height: 17px; }
+    body.sidebar-collapsed #sidebar-open-btn { display: flex; }
 
     /* ══════════════════════════════════════
        WELCOME STATE  (body has no .chatting)
        ══════════════════════════════════════ */
-    body:not(.chatting) {
+    body:not(.chatting) #main {
       justify-content: center;
       gap: 28px;
     }
@@ -451,7 +547,20 @@
       padding: 28px;
       width: 380px;
       max-width: 90vw;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
       box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+    }
+    /* Scrolls when the content is taller than the modal; the close button is a
+       sibling of this wrapper, so it stays pinned to the modal's corner. */
+    #api-key-modal-body {
+      overflow-y: auto;
+      /* min-height:0 lets this flex child shrink below its content height so it
+         actually scrolls instead of overflowing the modal. */
+      min-height: 0;
+      /* keep the heading clear of the pinned close button */
+      padding-right: 4px;
     }
     #api-key-modal h2 {
       font-size: 17px;
@@ -552,6 +661,48 @@
     }
     #api-key-save-confirm.show { opacity: 1; }
 
+    #memory-field {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid #eceae4;
+    }
+    #memory-field .memory-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 2px;
+    }
+    #memory-field .memory-hint {
+      font-size: 12px;
+      color: #8a8578;
+      margin-bottom: 10px;
+    }
+    #clear-memory-btn {
+      width: 100%;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      color: #c0392b;
+      background: #fff;
+      border: 1px solid #e6c9c4;
+      border-radius: 10px;
+      padding: 11px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    #clear-memory-btn:hover { background: #fbdada; border-color: #c0392b; }
+    #clear-memory-btn:disabled { opacity: 0.6; cursor: default; }
+    #clear-memory-confirm {
+      text-align: center;
+      font-size: 12px;
+      color: #2f7d43;
+      margin-top: 10px;
+      height: 14px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    #clear-memory-confirm.show { opacity: 1; }
+
     /* ── Disclaimer modal ── */
     #disclaimer-modal-overlay {
       display: none;
@@ -629,6 +780,33 @@
 </head>
 <body>
 
+  <!-- Sidebar: list of chats -->
+  <aside id="sidebar">
+    <div id="sidebar-header">
+      <button id="sidebar-collapse-btn" title="Hide sidebar" aria-label="Hide sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/>
+        </svg>
+      </button>
+      <button id="new-chat-btn" title="New chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        New chat
+      </button>
+    </div>
+    <div id="chat-list"></div>
+  </aside>
+
+  <!-- Floating button to reopen the sidebar when it's collapsed -->
+  <button id="sidebar-open-btn" title="Show chats" aria-label="Show chats">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+
+  <div id="main">
+
   <!-- Combined model + API key status button — always visible, top of the interface -->
   <div id="model-bar">
     <button id="model-key-btn" class="keys-missing" aria-haspopup="dialog" aria-expanded="false">
@@ -647,6 +825,7 @@
           <line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
+      <div id="api-key-modal-body">
       <h2 id="api-key-modal-title">Model &amp; API Keys</h2>
       <p class="modal-subtitle">Keys are stored only in this browser's local storage and sent directly with your requests.</p>
 
@@ -705,6 +884,14 @@
 
       <button id="api-key-save-btn">Save Keys</button>
       <div id="api-key-save-confirm">Keys saved.</div>
+
+      <div id="memory-field">
+        <div class="memory-label">Long-term memory</div>
+        <div class="memory-hint">The assistant remembers durable facts and past conversations for this browser. Clearing is permanent.</div>
+        <button id="clear-memory-btn" type="button">Clear my memory</button>
+        <div id="clear-memory-confirm">Memory cleared.</div>
+      </div>
+      </div>
     </div>
   </div>
 
@@ -752,6 +939,8 @@
       <div id="footer-note">NCNR RAG · responses may be incomplete</div>
     </div>
   </div>
+
+  </div><!-- /#main -->
 
   <script>
     marked.setOptions({ breaks: true });
@@ -990,7 +1179,40 @@
     const sendIcon    = document.getElementById('send-icon');
     const modelSelect = document.getElementById('model-select');
 
-    const threadId = 'session_' + Math.random().toString(36).slice(2);
+    /* ── Multi-chat store ─────────────────────────────────────────────────
+       Each chat is one backend thread (its id is the thread_id sent to
+       /chat/stream, which the server's MemorySaver keys working context by).
+       The rendered messages are also persisted client-side in localStorage so
+       chats survive reloads and switching between them. ── */
+    const CHATS_KEY   = 'ncnr_chats';
+    const ACTIVE_KEY  = 'ncnr_active_chat';
+    const MSGS_PREFIX = 'ncnr_chat_msgs_';
+
+    const newChatId  = () => 'session_' + Math.random().toString(36).slice(2);
+    const loadChats  = () => { try { return JSON.parse(localStorage.getItem(CHATS_KEY)) || []; } catch { return []; } };
+    const saveChats  = (c) => localStorage.setItem(CHATS_KEY, JSON.stringify(c));
+    const loadMsgs   = (id) => { try { return JSON.parse(localStorage.getItem(MSGS_PREFIX + id)) || []; } catch { return []; } };
+    const saveMsgs   = (id, m) => localStorage.setItem(MSGS_PREFIX + id, JSON.stringify(m));
+    const deleteMsgs = (id) => localStorage.removeItem(MSGS_PREFIX + id);
+
+    let chats = loadChats();
+    let activeChatId = localStorage.getItem(ACTIVE_KEY);
+    if (!chats.length) {
+      const c = { id: newChatId(), title: 'New chat', createdAt: Date.now(), updatedAt: Date.now() };
+      chats = [c];
+      saveChats(chats);
+      activeChatId = c.id;
+    }
+    if (!chats.find(c => c.id === activeChatId)) activeChatId = chats[0].id;
+    localStorage.setItem(ACTIVE_KEY, activeChatId);
+
+    /* ── stable per-browser user id: keys durable long-term memory across
+       threads and page reloads (persisted in localStorage, generated once) ── */
+    let userId = localStorage.getItem('ncnr_user_id');
+    if (!userId) {
+      userId = (crypto.randomUUID?.() || 'user_' + Math.random().toString(36).slice(2));
+      localStorage.setItem('ncnr_user_id', userId);
+    }
 
     /* ── selected model state, defaults to gpt-oss-120b (rchat) ── */
     let selectedModel = 'gpt-oss-120b';
@@ -1145,6 +1367,36 @@
       setTimeout(closeApiKeyModal, 500);
     });
 
+    /* ── Clear long-term memory for this browser's user_id ── */
+    const clearMemoryBtn     = document.getElementById('clear-memory-btn');
+    const clearMemoryConfirm = document.getElementById('clear-memory-confirm');
+    let clearConfirmTimeout = null;
+    clearMemoryBtn.addEventListener('click', async () => {
+      if (!confirm('Permanently delete everything the assistant has learned about you on this browser?')) return;
+      clearMemoryBtn.disabled = true;
+      const original = clearMemoryBtn.textContent;
+      clearMemoryBtn.textContent = 'Clearing…';
+      try {
+        const resp = await fetch('/api/memory/clear', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userId }),
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        clearMemoryConfirm.textContent = 'Memory cleared.';
+        clearMemoryConfirm.style.color = '#2f7d43';
+      } catch (err) {
+        clearMemoryConfirm.textContent = 'Could not clear memory.';
+        clearMemoryConfirm.style.color = '#c0392b';
+      } finally {
+        clearMemoryBtn.disabled = false;
+        clearMemoryBtn.textContent = original;
+        clearMemoryConfirm.classList.add('show');
+        clearTimeout(clearConfirmTimeout);
+        clearConfirmTimeout = setTimeout(() => clearMemoryConfirm.classList.remove('show'), 2000);
+      }
+    });
+
     /* ── send/stop button state ── */
     const SEND_ICON = '<line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>';
     const STOP_ICON = '<rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor" stroke="none"/>';
@@ -1157,6 +1409,8 @@
       sendIcon.innerHTML = generating ? STOP_ICON : SEND_ICON;
       sendBtn.setAttribute('aria-label', generating ? 'Stop generating' : 'Send');
       sendBtn.disabled = generating ? false : !inputEl.value.trim();
+      /* lock chat switching / creation / deletion while a turn is streaming */
+      document.getElementById('sidebar')?.classList.toggle('busy', generating);
     }
 
     /* ── auto-resize textarea ── */
@@ -1411,10 +1665,147 @@
       scrollBottom();
     }
 
+    /* ── Sidebar / chat management ─────────────────────────────────────── */
+    const sidebarEl  = document.getElementById('sidebar');
+    const chatListEl = document.getElementById('chat-list');
+
+    /* Short title derived from the first user message. */
+    function chatTitle(text) {
+      const t = (text || '').trim().replace(/\s+/g, ' ');
+      return t ? (t.length > 42 ? t.slice(0, 42) + '…' : t) : 'New chat';
+    }
+
+    function appendMsg(chatId, msg) {
+      const m = loadMsgs(chatId);
+      m.push(msg);
+      saveMsgs(chatId, m);
+    }
+
+    /* Bump a chat to the top of the list, optionally renaming it. */
+    function touchChat(chatId, title) {
+      const c = chats.find(x => x.id === chatId);
+      if (!c) return;
+      c.updatedAt = Date.now();
+      if (title !== undefined) c.title = title;
+      chats.sort((a, b) => b.updatedAt - a.updatedAt);
+      saveChats(chats);
+      renderSidebar();
+    }
+
+    function renderSidebar() {
+      chatListEl.innerHTML = '';
+      for (const c of chats) {
+        const item = document.createElement('div');
+        item.className = 'chat-item' + (c.id === activeChatId ? ' active' : '');
+
+        const title = document.createElement('span');
+        title.className = 'chat-item-title';
+        title.textContent = c.title || 'New chat';
+
+        const del = document.createElement('button');
+        del.className = 'chat-item-delete';
+        del.title = 'Delete chat';
+        del.setAttribute('aria-label', 'Delete chat');
+        del.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+        del.addEventListener('click', (e) => { e.stopPropagation(); deleteChat(c.id); });
+
+        item.addEventListener('click', () => switchChat(c.id));
+        item.append(title, del);
+        chatListEl.appendChild(item);
+      }
+    }
+
+    /* Rebuild the message list for a chat from its stored messages. Reuses the
+       same turn shells the live stream builds, finalized immediately (no live
+       steps/metrics are persisted — only the final answer text and sources). */
+    function renderMessages(id) {
+      chatEl.innerHTML = '';
+      const msgs = loadMsgs(id);
+      document.body.classList.toggle('chatting', msgs.length > 0);
+      for (const m of msgs) {
+        if (m.role === 'user') {
+          const turn = document.createElement('div');
+          turn.className = 'turn user-turn';
+          const bubble = document.createElement('div');
+          bubble.className = 'user-bubble';
+          bubble.textContent = m.text;
+          turn.appendChild(bubble);
+          chatEl.appendChild(turn);
+        } else {
+          const refs = createAssistantTurn();
+          finalizeTurn(refs, [], m.text, m.sources || [], null);
+        }
+      }
+      scrollBottom();
+    }
+
+    function switchChat(id) {
+      if (isGenerating || id === activeChatId) return;
+      activeChatId = id;
+      localStorage.setItem(ACTIVE_KEY, id);
+      renderSidebar();
+      renderMessages(id);
+    }
+
+    function createChat() {
+      if (isGenerating) return;
+      /* Reuse an existing empty chat instead of piling up blank ones. */
+      const empty = chats.find(c => loadMsgs(c.id).length === 0);
+      let id;
+      if (empty) {
+        id = empty.id;
+      } else {
+        const c = { id: newChatId(), title: 'New chat', createdAt: Date.now(), updatedAt: Date.now() };
+        chats.unshift(c);
+        saveChats(chats);
+        id = c.id;
+      }
+      activeChatId = id;
+      localStorage.setItem(ACTIVE_KEY, id);
+      renderSidebar();
+      renderMessages(id);
+      inputEl.focus();
+    }
+
+    function deleteChat(id) {
+      if (isGenerating) return;
+      if (!confirm('Delete this chat? This cannot be undone.')) return;
+      deleteMsgs(id);
+      chats = chats.filter(c => c.id !== id);
+      if (!chats.length) {
+        const c = { id: newChatId(), title: 'New chat', createdAt: Date.now(), updatedAt: Date.now() };
+        chats = [c];
+        activeChatId = c.id;
+      } else if (id === activeChatId) {
+        activeChatId = chats[0].id;
+      }
+      saveChats(chats);
+      localStorage.setItem(ACTIVE_KEY, activeChatId);
+      renderSidebar();
+      renderMessages(activeChatId);
+    }
+
+    /* ── sidebar collapse/expand (persisted) ── */
+    function setSidebarCollapsed(collapsed) {
+      document.body.classList.toggle('sidebar-collapsed', collapsed);
+      localStorage.setItem('ncnr_sidebar_collapsed', collapsed ? '1' : '0');
+    }
+    document.getElementById('new-chat-btn').addEventListener('click', createChat);
+    document.getElementById('sidebar-collapse-btn').addEventListener('click', () => setSidebarCollapsed(true));
+    document.getElementById('sidebar-open-btn').addEventListener('click', () => setSidebarCollapsed(false));
+    setSidebarCollapsed(localStorage.getItem('ncnr_sidebar_collapsed') === '1');
+
+    renderSidebar();
+    renderMessages(activeChatId);
+
     /* ── main send ── */
     async function send() {
       const text = inputEl.value.trim();
       if (!text) return;
+
+      /* Pin the target chat now: persistence and thread_id must stay bound to
+         this chat even though switching is locked during generation anyway. */
+      const sendChatId = activeChatId;
 
       const provider = modelSelect.selectedOptions[0]?.dataset.provider;
       if (provider && !hasKey(provider)) {
@@ -1434,6 +1825,11 @@
       activeController = controller;
 
       addUserTurn(text);
+      /* persist the user turn; name the chat from its first message */
+      const wasEmpty = loadMsgs(sendChatId).length === 0;
+      appendMsg(sendChatId, { role: 'user', text });
+      touchChat(sendChatId, wasEmpty ? chatTitle(text) : undefined);
+
       const refs = createAssistantTurn();
       const { turn, statusTxt, stepsPanel, responseEl,
               reasoningWrap, reasoningToggle, reasoningBody } = refs;
@@ -1569,6 +1965,8 @@
             removeCursor();
             collapseReasoning();
             finalizeTurn(refs, steps, rawText, sources, metrics);
+            /* persist the completed assistant turn so it survives reloads */
+            appendMsg(sendChatId, { role: 'assistant', text: rawText, sources });
             setGeneratingState(false);
             activeController = null;
             inputEl.focus();
@@ -1582,9 +1980,10 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             message: text,
-            thread_id: threadId,
+            thread_id: sendChatId,
             model: selectedModel,
             api_keys: apiKeys,
+            user_id: userId,
           }),
           signal: controller.signal,
         });

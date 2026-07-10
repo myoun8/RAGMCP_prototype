@@ -1,3 +1,4 @@
+import asyncio
 import functools
 import importlib.util
 import json
@@ -59,6 +60,14 @@ _spec = importlib.util.spec_from_file_location("mcpServer", MCP_SERVER)
 _mod = importlib.util.module_from_spec(_spec)  # type: ignore[arg-type]
 sys.modules["mcpServer"] = _mod
 _spec.loader.exec_module(_mod)  # type: ignore[union-attr]
+
+# Durable per-user memory subsystem (chatapp-style Layer 2 facts + Layer 3
+# compacted history). Loaded after mcpServer so it reuses the _common/Ollama
+# handle mcpServer already registered.
+_am_spec = importlib.util.spec_from_file_location("agent_memory", REPO_ROOT / "scripts" / "agent_memory.py")
+agent_memory = importlib.util.module_from_spec(_am_spec)  # type: ignore[arg-type]
+sys.modules["agent_memory"] = agent_memory
+_am_spec.loader.exec_module(agent_memory)  # type: ignore[union-attr]
 
 RCHAT_BASE_URL = "https://rchat.nist.gov/api/v1"
 
@@ -349,6 +358,10 @@ async def lifespan(app: FastAPI):
 
     app.state.memory = MemorySaver()
 
+    # Durable cross-conversation memory (SQLite Layer 2 + Chroma Layer 3),
+    # separate from the volatile per-thread MemorySaver above.
+    agent_memory.init_memory_db()
+
     print("Agent ready at http://127.0.0.1:8000")
     yield
 
@@ -362,6 +375,10 @@ class ChatRequest(BaseModel):
     thread_id: str = "default"
     model: str
     api_keys: dict[str, str] = {}
+    # Stable per-browser id (localStorage) that keys durable memory across
+    # threads and page reloads. Distinct from thread_id, which scopes one
+    # conversation's working context.
+    user_id: str = "anonymous"
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -377,6 +394,20 @@ async def root():
 @app.get("/api/models")
 async def list_models():
     return {"models": MODEL_CATALOG}
+
+
+class ClearMemoryRequest(BaseModel):
+    user_id: str
+
+
+@app.post("/api/memory/clear")
+async def clear_memory(req: ClearMemoryRequest):
+    """Forget everything the agent has learned about one user (Layer 2 facts +
+    Layer 3 history). Scoped to the caller's own user_id."""
+    if not req.user_id or not req.user_id.strip():
+        raise HTTPException(status_code=400, detail="Missing user_id.")
+    # Off-loop: sync SQLite + Chroma deletes.
+    return await asyncio.to_thread(agent_memory.clear_user_memory, req.user_id.strip())
 
 
 # Base URLs of the reductus "ncnr"-family data sources (see reductus
@@ -580,7 +611,7 @@ def _extract_reasoning(chunk) -> str:
     return ""
 
 
-def _build_agent(app: FastAPI, model: str, api_keys: dict[str, str], message: str = ""):
+def _build_agent(app: FastAPI, model: str, api_keys: dict[str, str], message: str = "", memory_block: str = ""):
     if not model or not model.strip():
         raise HTTPException(status_code=400, detail="Missing model selection.")
 
@@ -610,10 +641,14 @@ def _build_agent(app: FastAPI, model: str, api_keys: dict[str, str], message: st
     else:
         raise HTTPException(status_code=400, detail=f"Unsupported provider '{provider}'.")
 
+    system_prompt = app.state.system_instruction
+    if memory_block:
+        system_prompt = f"{system_prompt}\n\n---\n\n{memory_block}"
+
     return create_agent(
         model=llm,
         tools=_scoped_tools(app.state.tools, message),
-        system_prompt=app.state.system_instruction,
+        system_prompt=system_prompt,
         checkpointer=app.state.memory,
         middleware=[CONTEXT_EDITING_MIDDLEWARE, strip_tool_outputs_from_memory],
     )
@@ -621,7 +656,11 @@ def _build_agent(app: FastAPI, model: str, api_keys: dict[str, str], message: st
 
 @app.post("/chat")
 async def chat(req: ChatRequest):
-    agent_executor = _build_agent(app, req.model, req.api_keys, req.message)
+    # Off-loop so the per-turn Layer-3 embedding lookup doesn't block the loop.
+    memory_block = await asyncio.to_thread(
+        agent_memory.memory_prompt_block, req.user_id, req.message
+    )
+    agent_executor = _build_agent(app, req.model, req.api_keys, req.message, memory_block)
     config = {
         "configurable": {"thread_id": req.thread_id},
         "recursion_limit": AGENT_RECURSION_LIMIT,
@@ -646,6 +685,10 @@ async def chat(req: ChatRequest):
         content = "".join(
             block.get("text", "") for block in content if isinstance(block, dict)
         )
+    # Mine this exchange for durable facts / compact the thread, without blocking.
+    agent_memory.schedule_post_turn(
+        req.user_id, req.thread_id, req.message, content, app.state.memory
+    )
     return {"response": content}
 
 
@@ -754,7 +797,10 @@ class _TurnMetrics:
 
 @app.post("/chat/stream")
 async def chat_stream(req: ChatRequest, request: Request):
-    agent_executor = _build_agent(app, req.model, req.api_keys, req.message)
+    memory_block = await asyncio.to_thread(
+        agent_memory.memory_prompt_block, req.user_id, req.message
+    )
+    agent_executor = _build_agent(app, req.model, req.api_keys, req.message, memory_block)
 
     async def generate():
         config = {
@@ -762,6 +808,7 @@ async def chat_stream(req: ChatRequest, request: Request):
             "recursion_limit": AGENT_RECURSION_LIMIT,
         }
         metrics = _TurnMetrics(req.model, req.thread_id)
+        answer_parts: list[str] = []  # accumulate the reply for post-turn memory
 
         def emit(obj: dict) -> str:
             return f"data: {json.dumps(obj)}\n\n"
@@ -813,14 +860,21 @@ async def chat_stream(req: ChatRequest, request: Request):
                     if chunk and not getattr(chunk, "tool_call_chunks", None):
                         content = getattr(chunk, "content", "")
                         if isinstance(content, str) and content:
+                            answer_parts.append(content)
                             yield emit({"type": "token", "text": content})
                         elif isinstance(content, list):
                             for block in content:
                                 if isinstance(block, dict) and block.get("type") == "text":
                                     t = block.get("text", "")
                                     if t:
+                                        answer_parts.append(t)
                                         yield emit({"type": "token", "text": t})
 
+            # Turn finished cleanly: mine the exchange for durable facts / compact
+            # the thread, without blocking the stream close.
+            agent_memory.schedule_post_turn(
+                req.user_id, req.thread_id, req.message, "".join(answer_parts), app.state.memory
+            )
             yield emit(metrics.log())
             yield emit({"type": "done"})
 

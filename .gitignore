@@ -13,6 +13,9 @@ test.py
 chroma_db/
 *.index
 
+# Agent durable-memory store (Layer 2 SQLite; runtime artifact)
+scripts/agent_memory.db
+
 # Generated chunk files
 *_chunks.generated.jsonl
 
