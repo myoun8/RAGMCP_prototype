@@ -175,52 +175,13 @@ def generate_plot(
     reductus_source: str = "ncnr",
     reductus_template_id: str | None = None,
 ) -> str:
-    """Build an interactive Plotly figure from Python plotting code, save it as
-    a Plotly figure-JSON file, and return an HTML placeholder the UI renders
-    into a live, zoomable chart. Use this to visualize numeric data — e.g.
-    reduced reflectivity/SANS curves from reduce_files, a scan's intensity vs.
-    angle, or any x/y arrays the user provides or that another tool returned.
-
-    `code` is a snippet of Python that builds ONE Plotly figure and assigns it
-    to a variable named `fig`. It runs with these names already imported, so do
-    not re-import them:
-      - `go`   -> plotly.graph_objects
-      - `px`   -> plotly.express
-      - `np`   -> numpy
-    Put the data to plot inline in the code (as literal lists/arrays). Do NOT
-    call fig.show() or write any file — the figure is serialized for you.
-
-    Default to an intensity vs Q(q-range) graph when generating the plot.
-
-    Example:
-
-        x = [0.01, 0.02, 0.03, 0.04]
-        y = [1.0, 0.42, 0.11, 0.03]
-        fig = go.Figure(go.Scatter(x=x, y=y, mode='lines+markers'))
-        fig.update_xaxes(title_text='Q (1/Å)')
-        fig.update_yaxes(title_text='Reflectivity', type='log')
-
-    `title` (optional) is set as the figure title.
-
-    When the plotted data comes from reduction/raw NCNR data, pass the reductus
-    context so the UI can deep-link the chart to the reductus web app:
-      - `reductus_instrument` — instrument_id like 'ncnr.refl' or 'ncnr.candor'
-        (the same value you passed to reduce_files/find_raw_data_paths).
-      - `reductus_path` — the directory the raw files live in (the parent path
-        from find_raw_data_paths), so reductus opens that folder in its browser.
-      - `reductus_source` — datasource name, defaults to 'ncnr'.
-      - `reductus_template_id` — pass reduce_files'/export_reduction's returned
-        "reductus_template_id" verbatim so the UI can offer an "open the exact
-        reduction template" button (loads the actual module graph, with the
-        same files, into the reductus web editor) next to the plain reductus
-        link. Omit when the plot didn't come from reduce_files/export_reduction.
-    Omit these for ad-hoc/user-supplied data; the link then points at the
-    reductus homepage.
-
-    Returns an HTML placeholder like
-    <div class="plotly-figure" data-src="/static/generated/<id>.json"></div>.
-    Include that exact snippet verbatim in your reply so the user sees the plot.
-    """
+    """Build an interactive Plotly figure from Python code and return an HTML
+    placeholder the UI renders. For ad-hoc x/y data; to plot a REDUCED curve use
+    plot_reduction. `code`: Python building ONE figure assigned to `fig`; `go`,
+    `px`, `np` are pre-imported (don't re-import or call fig.show()). Put data
+    inline; default to intensity vs Q. Optionally pass reductus_instrument/path/
+    source/template_id (from reduce_files) to deep-link. Return the
+    <div class="plotly-figure"> verbatim."""
     import uuid
 
     import numpy as np
@@ -372,30 +333,13 @@ def _search_intent_via_metadata(path: str, source: str = "ncnr") -> list[dict] |
 
 @mcp.tool()
 def find_raw_data_paths(experiment_id: str, instrument: str | None = None) -> list[dict]:
-    """Find the raw data files belonging to an NCNR experiment, given its
-    experiment_id (and optionally an instrument alias, e.g. 'candor', 'macs',
-    'bt1', to narrow the search if the experiment_id alone is ambiguous).
-
-    Queries the NCNR metadata API (/datafiles), which reports the authoritative
-    "localdir" for each file, then looks up each directory's real file mtimes
-    via list_data_files (reductus requires an exact mtime on every file
-    descriptor it loads). Returns a list of
-    {"path", "source", "mtime", "filename", "instrument", "rxcycle_id",
-    "start_date", "intent", "download_url"} per file, ready to use directly as a
-    file descriptor in reduce_files' node_files, or as a pathlist prefix for
-    list_data_files. only display 20 files unless the user specifies otherwise.
-
-    "download_url" is a relative link (served by the app's /download/raw proxy)
-    that streams the original raw file to the browser as a download. Surface it
-    as a Markdown link when the user wants to download raw data files.
-
-    "intent" is the file's measurement role read straight from the metadata DB
-    (no file load): reflectometer/CANDOR files report a mapped intent like
-    'specular'/'intensity'/'background+'/'background-'/'rock sample'; VSANS files
-    report their file_purpose ('scattering'/'transmission') as a hint. It is null
-    when the DB has not harvested an intent for the file (e.g. findpeak/alignment
-    scans, or instruments like BT1) -- use get_file_intent to load those, and for
-    the true VSANS Sample/Empty/Blocked/Open intent."""
+    """Find an NCNR experiment's raw data files by experiment_id (optionally an
+    instrument alias like 'candor'/'macs' to disambiguate). Returns one dict per
+    file with "path", "source", "mtime", "filename", "instrument", "rxcycle_id",
+    "start_date", "intent" and "download_url" — usable directly as a reduce_files
+    node_files descriptor. Show 20 files unless asked. Surface "download_url" as
+    a Markdown link. "intent" is null for un-harvested files — use get_file_intent
+    for those and true VSANS intent."""
     limit = 500
     params = {"experiment_id": experiment_id, "limit": limit}
     if instrument:
@@ -553,39 +497,13 @@ def reduce_files(
     target_terminal: str = "output",
     return_type: str = "metadata",
 ) -> dict:
-    """Pick specific data files and reduce them using one of an instrument's
-    standard reduction templates, without hand-building the module graph.
-
-    Workflow:
-    1. list_reduction_templates(instrument_id) to get a template_name and the
-       load node indices (and their intent, e.g. specular/background+/intensity).
-    2. list_data_files(source, pathlist) to browse an experiment's files and get
-       their filenames/mtimes.
-    3. Call this tool with node_files mapping each load node index (as a string,
-       e.g. "0") to a list of file descriptors, each needing at least "path"
-       (e.g. "ncnrdata/<instr>/<cycle>/<experiment>/data/<file>"), "mtime"
-       (int, required by reductus), and "source" (e.g. "ncnr"). Extra keys
-       (e.g. from find_raw_data_paths' output) are ignored automatically.
-
-    Valid template names and load node indices are instrument-specific; see list_reduction_templates.
-    Try to not use the general template whenever possible. Prompt the user to provide the template name or instrument.
-
-    If target_node is omitted, every node's output terminal(s) are computed and
-    returned as compact per-node summaries (datatype plus filename/intent per
-    dataset) -- call again with target_node to get a single node's full
-    (compacted) output. return_type applies in both cases:
-    'full' | 'plottable' | 'metadata' | 'export'. Results are always truncated
-    to a fixed size budget so they fit in a model context window.
-
-    Returns {"reduction": <node output(s) as described above>, "reductus_url":
-    <deep link>, "reductus_template_id": <id>}. `reductus_url` opens this
-    instrument + data folder directly in the reductus web app; when you then
-    plot this data with generate_plot, pass reductus_instrument=instrument_id,
-    reductus_path (the files' folder), and reductus_template_id (verbatim) so
-    the chart offers both the plain "Open in Reductus" link and a button that
-    loads this exact reduction template (same modules/wires/files) into the
-    reductus web editor.
-    """
+    """Reduce data files with an instrument's reduction template. Call
+    list_reduction_templates for a template_name and its load node indices, then
+    pass node_files mapping each load node index (string) to descriptors with
+    "path", "mtime" (int) and "source". Prefer a specific template. Omit
+    target_node for per-node summaries, or pass it for one node's full output
+    (return_type: full/plottable/metadata/export). Returns {"reduction",
+    "reductus_url", "reductus_template_id"}; to plot use plot_reduction."""
     template_def, load_nodes = _load_file_nodes(instrument_id, template_name)
     valid_nodes = {str(n["node"]) for n in load_nodes}
     unknown = set(node_files) - valid_nodes
@@ -670,31 +588,12 @@ def plot_reduction(
     title: str | None = None,
 ) -> str:
     """Reduce files with a standard template and plot the reduced curve
-    (intensity/reflectivity vs Q) in one step, returning the same HTML
-    placeholder generate_plot does.
-
-    Use this -- NOT reduce_files followed by generate_plot -- to plot a reduced
-    dataset. It pulls the FULL Q/intensity arrays straight from reductus and
-    draws them server-side, so the chart always contains the real reduced data.
-    reduce_files only returns compact summaries (its arrays are truncated to a
-    handful of samples to fit the context window), so a figure built from its
-    output comes out empty or wrong.
-
-    Arguments mirror reduce_files/export_reduction:
-      - instrument_id, template_name: from list_reduction_templates.
-      - node_files: each load node index (as a string) -> list of file
-        descriptors, each with "path", "mtime" (int), and "source".
-      - target_node: the FINAL reduced node (the one whose curve you'd plot),
-        not a raw load node.
-      - target_terminal: defaults to "output".
-      - title: optional figure title.
-
-    Use target node = 12 as the default
-      
-    Returns the HTML placeholder
-    <div class="plotly-figure" data-src="/static/generated/<id>.json"></div>;
-    include it verbatim in your reply so the plot renders. The figure carries
-    the same reductus deep-link / editor button as generate_plot."""
+    (intensity/reflectivity vs Q) in one step. Use this — NOT reduce_files then
+    generate_plot — for a reduced dataset: it draws the FULL arrays server-side,
+    whereas reduce_files returns truncated summaries that plot empty. Arguments
+    mirror reduce_files (instrument_id/template_name, node_files of "path"/
+    "mtime"/"source" descriptors); target_node = FINAL reduced node (default 12).
+    Return the <div class="plotly-figure"> verbatim."""
     import plotly.graph_objects as go
 
     template_def, load_nodes = _load_file_nodes(instrument_id, template_name)
@@ -788,26 +687,13 @@ def export_reduction(
     target_terminal: str = "output",
     export_format: str = "orso_text",
 ) -> dict:
-    """Export a reduced dataset to a downloadable ORSO file and return its
-    download URL.
-
-    Reduce files exactly as reduce_files does — same instrument_id,
-    template_name, node_files (each load node index as a string mapping to a
-    list of {"path","mtime","source"} descriptors), and target_node /
-    target_terminal — then write that node's reduced output to an ORSO file the
-    user can save:
-
-      - export_format='orso_text'  -> ORSO text  (.ort)
-      - export_format='orso_nexus' -> ORSO Nexus (.orb, HDF5)
-
-    target_node must be the FINAL reduced node (the one whose curve you'd plot),
-    not a raw load node — an ORSO reflectivity file needs the reduced R(Q), not
-    unreduced input. Returns {"download_url", "filename", "format",
-    "reductus_url", "reductus_template_id"}; render download_url as a Markdown
-    link, e.g. [<filename>](<download_url>), so the user can download the
-    export, and offer reductus_url as an "Open in reductus" link so they can
-    inspect/re-reduce the same data in the web app. Do not invent the URLs —
-    use the ones returned."""
+    """Export a reduced dataset to a downloadable ORSO file. Reduces files
+    exactly as reduce_files (same instrument_id, template_name, node_files,
+    target_node), then writes that node's output: export_format='orso_text' ->
+    .ort, 'orso_nexus' -> .orb. target_node must be the FINAL reduced node — an
+    ORSO file needs reduced R(Q). Returns {"download_url", "filename", "format",
+    "reductus_url", "reductus_template_id"}; render download_url and reductus_url
+    as Markdown links; use the returned URLs."""
     if export_format not in _ORSO_EXPORTS:
         raise ValueError(
             f"Unknown export_format {export_format!r}; "
@@ -994,51 +880,13 @@ def get_file_intent(
     source: str = "ncnr",
     template_name: str | None = None,
 ) -> list[dict]:
-    """Determine the measurement intent of a single raw data file by loading
-    just its header, without running a full reduction. Intent values are
-    instrument-family specific, e.g. 'specular'/'background+'/'background-'/
-    'intensity'/'rock sample'/'rock detector'/'slit'/'scan' for reflectometers
-    and CANDOR, or 'sample'/'empty'/'open beam'/'blocked beam' for SANS/VSANS.
-
-    Use this to figure out what a raw data file IS -- e.g. to answer "what is
-    the intent of this file?" -- or to decide which reduce_files node/role a
-    file belongs in, before calling reduce_files.
-
-    Handles ONE file per call. For several files, get all their path/mtime in a
-    single find_raw_data_paths call, then issue one get_file_intent call per
-    file all together in the same turn — the calls are independent and run in
-    parallel, so do not wait for one to return before issuing the next.
-
-    instrument_id is like 'ncnr.refl' or 'ncnr.sans' (see list_instruments).
-    path/mtime/source identify the file the same way as in
-    find_raw_data_paths/list_data_files output (mtime is required by reductus).
-
-    template_name picks which loader module to use, in case an instrument_id
-    has multiple incompatible raw-file formats/loaders across its templates
-    (e.g. 'ncnr.refl' has a 'candor' template with a CANDOR-specific loader,
-    separate from the generic NeXus loader used by its other templates). If
-    omitted, the first template with a file-loading node is used -- pass an
-    explicit template_name (see list_reduction_templates) if that guess loads
-    the wrong kind of file.
-
-    Returns one {"filename", "intent", "metadata"} dict per dataset found in
-    the file (usually one, but polarized/multi-part files can yield several).
-    "metadata" is the rest of that dataset's metadata, in case the caller
-    needs a field beyond filename/intent; long per-point arrays inside it
-    (e.g. angle/intensity arrays) are truncated to a short sample so the
-    response stays small.
-
-    Fast path: the file's intent is first looked up in the NCNR metadata DB
-    (by filename, no file load). If the DB has a non-empty intent, it is
-    returned directly as a single-entry list, with "metadata" being the DB's
-    harvested fields. The DB carries one intent per file, so this path does not
-    split polarized/multi-part files into per-dataset entries (their intent is
-    uniform anyway). When the DB has no intent for the file (e.g. findpeak/
-    alignment scans, un-harvested instruments like BT1, or the true VSANS
-    Sample/Empty/Blocked/Open intent, which the DB does not store), it falls
-    back to loading the file through reductus as described above. template_name
-    only affects that fallback load.
-    """
+    """Determine the measurement intent of a single raw data file without a full
+    reduction. Intents are instrument-specific, e.g. 'specular'/'background+'/
+    'intensity'/'rock sample' for reflectometers/CANDOR, or 'sample'/'empty'/
+    'blocked beam' for SANS/VSANS. Handles ONE file per call — for several, issue
+    calls in parallel. path/mtime/source come from find_raw_data_paths;
+    template_name picks the loader when an instrument has multiple raw formats.
+    Returns {"filename","intent","metadata"} per dataset."""
     fast = _search_intent_via_metadata(path, source)
     if fast is not None:
         return fast
