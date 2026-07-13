@@ -4,7 +4,9 @@ from turtle import pd
 from fastmcp import FastMCP
 import copy
 import importlib.util
+import io
 import json
+import os
 import subprocess
 import sys
 import uuid
@@ -51,6 +53,8 @@ def _get_vectorstore():
     return _vectorstore
 
 from reductus.web_gui import api as reductus_api
+from reductus.dataflow import fetch as reductus_fetch
+from reductus.dataflow.lib.h5_open import h5_open_zip
 
 reductus_api.initialize()  # loads reductus/configurations/config.py once at startup
 
@@ -1023,6 +1027,226 @@ def get_file_intent(
         }
         for v in metadata.get("values", [])
     ])
+    # _fit_result's last-resort fallback is a dict; keep the declared list shape.
+    return result if isinstance(result, list) else [result]
+
+
+# NeXus/NCNR paths that commonly hold human-readable "what is this trial" info.
+# Only those present in a given file are kept (layouts vary by instrument).
+_CURATED_PATHS = (
+    "title", "experiment_description", "experiment_identifier",
+    "start_time", "end_time", "duration", "program_name",
+    "sample/name", "sample/description", "sample/chemical_formula",
+    "user/name", "user/email", "user/facility_user_id",
+    "DAS_logs/trajectoryData/fileName",
+    "DAS_logs/trajectoryData/experimentTitle",
+    "DAS_logs/trajectoryData/experiment",
+    "DAS_logs/trajectoryData/_scanType",
+    "DAS_logs/trajectoryData/annotation",
+    "DAS_logs/trajectoryData/description",
+    "DAS_logs/experiment/title",
+    "DAS_logs/experiment/proposalId",
+    "DAS_logs/sample/name",
+    "DAS_logs/sample/description",
+)
+
+# Dataset-name substrings that flag a free-text descriptive field, so the
+# keyword scan captures descriptions whose exact path isn't in _CURATED_PATHS.
+_H5_DESC_KEYWORDS = (
+    "title", "description", "comment", "annotation", "note", "purpose",
+    "identifier", "proposal", "sample", "user", "experiment",
+)
+
+_H5_MAX_STR = 2000            # cap a single decoded string
+_H5_STRUCT_MAX_DEPTH = 4      # structure-outline depth cap
+_H5_STRUCT_MAX_NODES = 400    # structure-outline node-count cap
+_H5_SCAN_MAX_NODES = 2000     # keyword-scan node-count cap
+
+
+def _h5_scalar(x):
+    """Decode a single h5py element (bytes/str/number) to a JSON-friendly value."""
+    import numpy as np
+    if isinstance(x, bytes):
+        return x.decode("utf-8", "replace")[:_H5_MAX_STR]
+    if isinstance(x, np.bytes_):
+        return bytes(x).decode("utf-8", "replace")[:_H5_MAX_STR]
+    if isinstance(x, (str, np.str_)):
+        return str(x)[:_H5_MAX_STR]
+    if isinstance(x, np.generic):
+        return x.item()
+    if isinstance(x, (int, float, bool)):
+        return x
+    return None
+
+
+def _h5_read_value(node):
+    """Decode an h5py dataset into a JSON-friendly scalar/string/short list.
+    Length-1 arrays are unwrapped, longer arrays truncated to 8 items, and
+    unreadable values return None. Used for curated fields and `fields` reads."""
+    import numpy as np
+    try:
+        val = node[()] if hasattr(node, "shape") else node
+    except Exception:
+        return None
+    if isinstance(val, np.ndarray):
+        flat = val.ravel()
+        if flat.size == 0:
+            return None
+        if flat.size == 1:
+            return _h5_scalar(flat[0])
+        items = [_h5_scalar(x) for x in flat[:8].tolist()]
+        items = [i for i in items if i is not None]
+        if flat.size > 8:
+            items.append(f"...(+{int(flat.size) - 8} more)")
+        return items or None
+    return _h5_scalar(val)
+
+
+def _h5_structure(root):
+    """Compact outline of an h5py group, walked breadth-first so shallow (more
+    useful) nodes are shown before deep ones -- otherwise one huge group like
+    DAS_logs starves its top-level siblings. Bounded by a global node cap and a
+    depth cap; datasets report only shape+dtype, never bulk values."""
+    out = {}
+    queue = [(root, out, 0)]  # (h5py group, dict to populate, depth)
+    budget = _H5_STRUCT_MAX_NODES
+    while queue and budget > 0:
+        group, target, depth = queue.pop(0)
+        for name in group.keys():
+            if budget <= 0:
+                target["..."] = "truncated"
+                break
+            budget -= 1
+            child = group[name]
+            if hasattr(child, "items"):  # group
+                if depth + 1 >= _H5_STRUCT_MAX_DEPTH:
+                    target[name] = f"<group: {len(child)} children>"
+                else:
+                    sub = {}
+                    target[name] = sub
+                    queue.append((child, sub, depth + 1))
+            else:  # dataset
+                shape = tuple(getattr(child, "shape", ()) or ())
+                target[name] = f"dataset {shape} {child.dtype}"
+    return out
+
+
+def _h5_scan_descriptions(group, prefix="", found=None, budget=None, seen=None):
+    """Walk a group collecting string-valued datasets whose name looks
+    descriptive (title/comment/sample/...), so free-text fields are captured
+    even when their NeXus path varies by instrument. Keeps strings only and
+    dedupes by value, so repeated boilerplate (e.g. identical DAS error-log
+    descriptions) is recorded once."""
+    if found is None:
+        found = {}
+    if budget is None:
+        budget = [_H5_SCAN_MAX_NODES]
+    if seen is None:
+        seen = set()
+    for name, child in group.items():
+        if budget[0] <= 0:
+            break
+        budget[0] -= 1
+        path = f"{prefix}{name}"
+        if hasattr(child, "items"):
+            _h5_scan_descriptions(child, path + "/", found, budget, seen)
+        elif any(k in name.lower() for k in _H5_DESC_KEYWORDS):
+            val = _h5_read_value(child)
+            if isinstance(val, str) and val.strip() and val not in seen:
+                seen.add(val)
+                found[path] = val
+    return found
+
+
+def _h5_curated(entry):
+    """Curated dict of human-readable trial fields: hardcoded NeXus/NCNR paths
+    that are present, supplemented by the keyword scan for anything missed."""
+    desc = {}
+    for path in _CURATED_PATHS:
+        try:
+            node = entry.get(path)
+        except Exception:
+            node = None
+        if node is None or hasattr(node, "items"):  # missing, or a group
+            continue
+        val = _h5_read_value(node)
+        if val is not None and val != "":
+            desc[path] = val
+    for path, val in _h5_scan_descriptions(entry).items():
+        desc.setdefault(path, val)
+    return desc
+
+
+@mcp.tool()
+def inspect_raw_file(
+    path: str,
+    mtime: int,
+    source: str = "ncnr",
+    fields: list[str] | None = None,
+) -> list[dict]:
+    """Read information from INSIDE a raw NeXus/HDF5 data file -- the free-text
+    descriptions, run comments/annotations, sample name/description, user and
+    proposal, and any logged field -- that the harvested NCNR metadata DB does
+    not expose (find_raw_data_paths/get_file_intent only see the DB's subset).
+
+    path/mtime/source come straight from find_raw_data_paths. Handles ONE file
+    per call -- for several, issue calls in parallel. Returns one dict per NeXus
+    entry with "entry", a curated "description" of human-readable trial fields,
+    and a compact "structure" outline of the file's groups/datasets. Pass
+    `fields` with NeXus paths (e.g. from a prior structure, like
+    "DAS_logs/trajectoryData/_scanType") to read those exact values back under
+    "requested_fields"."""
+    fileinfo = _sanitize_fileinfo({"path": path, "mtime": mtime, "source": source})
+    raw = reductus_fetch.url_get(fileinfo)
+    handle = h5_open_zip(os.path.basename(path), io.BytesIO(raw))
+    try:
+        # NeXus files hold one or more NXentry groups at the top level; when the
+        # NX_class attr is present, keep only those, else treat every top-level
+        # group as an entry (mirrors reflred/nexusref.py's load_nexus_entries).
+        entries = []
+        for name, group in handle.items():
+            if not hasattr(group, "items"):
+                continue
+            nxclass = group.attrs.get("NX_class")
+            if isinstance(nxclass, bytes):
+                nxclass = nxclass.decode("utf-8", "replace")
+            if nxclass and nxclass != "NXentry":
+                continue
+            entries.append((name, group))
+        if not entries:
+            entries = [(n, g) for n, g in handle.items() if hasattr(g, "items")]
+
+        results = []
+        for name, group in entries:
+            record = {
+                "entry": name,
+                "description": _h5_curated(group),
+                "structure": _h5_structure(group),
+            }
+            if fields:
+                requested = {}
+                for fpath in fields:
+                    try:
+                        node = group.get(fpath)
+                        if node is None:
+                            node = handle.get(fpath)
+                    except Exception:
+                        node = None
+                    if node is None:
+                        requested[fpath] = None
+                    elif hasattr(node, "items"):
+                        requested[fpath] = _h5_structure(node)
+                    else:
+                        requested[fpath] = _h5_read_value(node)
+                record["requested_fields"] = requested
+            results.append(record)
+    finally:
+        try:
+            handle.close()
+        except Exception:
+            pass
+
+    result = _fit_result(results)
     # _fit_result's last-resort fallback is a dict; keep the declared list shape.
     return result if isinstance(result, list) else [result]
 
