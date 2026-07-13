@@ -1,3 +1,6 @@
+import os
+from turtle import pd
+
 from fastmcp import FastMCP
 import copy
 import importlib.util
@@ -7,6 +10,7 @@ import sys
 import uuid
 from pathlib import Path
 
+import pandas
 import requests
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -551,8 +555,13 @@ def search_ng7_schedule(
     You can provide one or multiple parameters to filter the results.
     """
     try:
-        # Load the database
-        df = pd.read_csv("NG7_SANS_Mega_Schedule_Database.csv")
+        script_dir = Path(__file__).resolve().parent
+
+        # 2. Go UP one level to 'rawdataRAG/', then DOWN into 'rag/scraping/'
+        csv_path = script_dir.parent / "rag" / "scraping" / "NG7_SANS_Mega_Schedule_Database.csv"
+
+        # 3. Load the database using the dynamic path
+        df = pandas.read_csv(csv_path)
         
         # Fill empty cells with empty strings so text search doesn't crash on NaNs
         df = df.fillna("")

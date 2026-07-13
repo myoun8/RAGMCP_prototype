@@ -123,6 +123,7 @@ MCP_TOOL_NAMES = [
     "reduce_files",
     "export_reduction",
     "get_file_intent",
+    "search_ng7_schedule",
 ]
 
 # LangGraph's default recursion_limit of 25 caps an agent run at ~12
@@ -203,6 +204,7 @@ TOOL_GROUPS = {
         "list_instruments", "get_instrument", "list_datasources",
         "list_data_files", "find_raw_data_paths", "get_file_intent",
         "search-instruments", "search-experiments", "search-datafiles",
+        "search_ng7_schedule",
     },
     "reduction": {"list_reduction_templates", "reduce_files", "export_reduction"},
     "plot": {"generate_plot", "plot_reduction"},
