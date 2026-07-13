@@ -123,7 +123,7 @@ MCP_TOOL_NAMES = [
     "reduce_files",
     "export_reduction",
     "get_file_intent",
-    "search_ng7_schedule",
+    "search_instrument_schedule",
     "inspect_raw_file",
 ]
 
