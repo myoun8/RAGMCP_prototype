@@ -133,7 +133,7 @@ async def run_compaction(
 EXTRACTOR_SYSTEM = (
     "You mine chat exchanges for durable facts about THE USER AS A PERSON "
     "that would still matter in future, unrelated conversations: their "
-    "identity, job, long-term preferences, constraints.\n"
+    "identity, job, long-term preferences related to AI responses.\n"
     "Do NOT extract: knowledge about the topic being discussed, technical "
     "explanations, design decisions, small talk, one-off requests, or "
     "anything the assistant said.\n"
