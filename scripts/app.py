@@ -123,13 +123,8 @@ MCP_TOOL_NAMES = [
     "reduce_files",
     "export_reduction",
     "get_file_intent",
-<<<<<<< HEAD
     "search_ng7_schedule",
     "inspect_raw_file",
-=======
-    "inspect_raw_file",
-    "search_instrument_schedule",
->>>>>>> 8130599aa85b3614a38c9635f5a49fb5cd8c9bfc
 ]
 
 # LangGraph's default recursion_limit of 25 caps an agent run at ~12
