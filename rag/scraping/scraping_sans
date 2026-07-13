@@ -1,0 +1,146 @@
+import csv
+import re
+import requests
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
+
+# 1. Setup Data Extraction Slices and Headers
+SLICES = {
+    "start_date": (0, 7),
+    "num_days": (7, 13),
+    "users": (13, 33),
+    "raw_id_col": (33, 41),
+    "experiments": (41, 66),
+    "equip": (66, 72),
+    "contact": (72, 90)
+}
+
+CSV_HEADERS = [
+    "year", "start_date", "num_days", "users", 
+    "uniq_id", "s_no", 
+    "experiments", "equip", "contact"
+]
+
+EQUIPMENT_MAP = {
+    "9P": "9-Position ambient sample changer",
+    "10CB": "10 Position sample changer (-10 to 100 C)",
+    "VF": "Vacuum Furnace",
+    "7H": "7 Position Heating Block (up to 200 deg C)",
+    "7HB": "7 Position Heating Block with BN (up to 300 deg C)",
+    "HM1": "Horizontal High-Field Electromagnet (2 Tesla)",
+    "HM2": "Horizontal Low-Field Electromagnet (0.5 Tesla)",
+    "DI": "Closed Cycle, Displex, refrigerator (10K to 330K)",
+    "MSC": "Minnesota Sliding Plate Shear Cell",
+    "BSC": "Boulder Couette Flow Shear Cell",
+    "SE": "Special Environment",
+    "NPC": "NIST Pressure Cell",
+    "SCM": "Superconducting Magnet (7 Tesla)",
+    "2H": "2 Position Heating Block",
+    "VR": "Vertical Rotation Stage"
+}
+
+def parse_schedule_text(text_data, schedule_year):
+    """Runs our slicing logic on a single text file's contents"""
+    rows = []
+    current_row = None
+
+    for line in text_data.strip().split('\n'):
+        if "-------" in line:
+            if current_row is not None:
+                break # Bottom border reached
+            else:
+                continue # Top border
+                
+        if not line.strip() or "Start" in line or "Date" in line or "-----" in line or "Instrument Schedule" in line or "@" in line:
+            continue
+
+        extracted = {k: line[start:end].strip() for k, (start, end) in SLICES.items()}
+        is_new_entry = re.match(r'^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)', extracted["start_date"])
+        
+        if is_new_entry:
+            if current_row:
+                # NEW MAP LOGIC: Clean and map the equipment before saving!
+                raw_equip = current_row["equip"].strip()
+                clean_equip = raw_equip.replace("?", "").strip() # Handle things like "NPC?"
+                # Replace with long-form, or keep the raw text if it's not in the dictionary
+                current_row["equip"] = EQUIPMENT_MAP.get(clean_equip, raw_equip)
+                rows.append(current_row)
+            
+            # Add the 'year' field right at the beginning of the row
+            current_row = {
+                "year": schedule_year,
+                "start_date": extracted["start_date"],
+                "num_days": extracted["num_days"],
+                "users": extracted["users"],
+                "uniq_id": extracted["raw_id_col"], 
+                "s_no": "",                 
+                "experiments": extracted["experiments"],
+                "equip": extracted["equip"],
+                "contact": extracted["contact"]
+            }
+        elif current_row:
+            if extracted["users"]:
+                current_row["users"] += " " + extracted["users"]
+            if extracted["raw_id_col"]:
+                if not current_row["s_no"]:
+                    current_row["s_no"] = extracted["raw_id_col"]
+                else:
+                    current_row["s_no"] += " " + extracted["raw_id_col"]
+            if extracted["experiments"]:
+                current_row["experiments"] += " " + extracted["experiments"]
+            if extracted["equip"]:
+                current_row["equip"] += " " + extracted["equip"]
+            if extracted["contact"]:
+                current_row["contact"] += " " + extracted["contact"]
+
+    if current_row:
+        raw_equip = current_row["equip"].strip()
+        clean_equip = raw_equip.replace("?", "").strip()
+        current_row["equip"] = EQUIPMENT_MAP.get(clean_equip, raw_equip)
+        rows.append(current_row)
+        
+    return rows
+
+# 2. Scrape the Main Page for Links
+MAIN_URL = "https://www.ncnr.nist.gov/programs/sans/schedule/ng7/"
+print("Fetching index page...")
+response = requests.get(MAIN_URL)
+soup = BeautifulSoup(response.text, "html.parser")
+
+all_mega_rows = []
+
+# 3. Loop through every link
+links = soup.find_all("a", href=True)
+for link in links:
+    raw_url = link['href']
+    link_text = link.get_text().strip()
+    
+    url = urljoin(MAIN_URL, raw_url)
+    # Only process links that point to the text schedule files
+    if "prsanssched" in url and "txt" in url:
+        
+        # Extract the year from the link text (e.g., "April-May 2012")
+        year_match = re.search(r'\b(199\d|20\d\d)\b', link_text)
+        current_year = year_match.group(1) if year_match else "Unknown"
+        
+        print(f"Downloading schedule for: {link_text} (Year: {current_year})...")
+        
+        try:
+            # Download the actual text file content
+            txt_response = requests.get(url)
+            txt_response.raise_for_status() # Ensure download succeeded
+            
+            # Pass the text and the year into our parser
+            parsed_rows = parse_schedule_text(txt_response.text, current_year)
+            all_mega_rows.extend(parsed_rows)
+            
+        except Exception as e:
+            print(f"Failed to process {url}: {e}")
+
+# 4. Save the Mega Database
+with open("NG7_SANS_Mega_Schedule_Database.csv", "w", newline="", encoding="utf-8") as f:
+    writer = csv.DictWriter(f, fieldnames=CSV_HEADERS)
+    writer.writeheader()
+    writer.writerows(all_mega_rows)
+
+print(f"\nDone! Successfully merged {len(all_mega_rows)} experiments into one mega CSV.")
