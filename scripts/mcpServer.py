@@ -539,6 +539,65 @@ def reduce_files(
         "reductus_template_id": _save_template_payload(template_def, config),
     }
 
+@mcp.tool()
+def search_ng7_schedule(
+    year: str = None,
+    users: str = None,
+    experiments: str = None,
+    equip: str = None,
+    uniq_id: str = None,
+    s_no: str = None,
+    contact: str = None,
+    limit: int = 5
+) -> str:
+    """
+    Search the NG7 SANS historical schedule database by any metric.
+    You can provide one or multiple parameters to filter the results.
+    """
+    try:
+        # Load the database
+        df = pd.read_csv("NG7_SANS_Mega_Schedule_Database.csv")
+        
+        # Fill empty cells with empty strings so text search doesn't crash on NaNs
+        df = df.fillna("")
+
+        # 3. Apply dynamic filters (case-insensitive substring matching)
+        if year:
+            df = df[df['year'].astype(str).str.contains(year, case=False)]
+        if users:
+            df = df[df['users'].astype(str).str.contains(users, case=False)]
+        if experiments:
+            df = df[df['experiments'].astype(str).str.contains(experiments, case=False)]
+        if equip:
+            df = df[df['equip'].astype(str).str.contains(equip, case=False)]
+        if uniq_id:
+            df = df[df['uniq_id'].astype(str).str.contains(uniq_id, case=False)]
+        if s_no:
+            df = df[df['s_no'].astype(str).str.contains(s_no, case=False)]
+        if contact:
+            df = df[df['contact'].astype(str).str.contains(contact, case=False)]
+
+        # 4. Format the output for the LLM
+        if df.empty:
+            return "No matching schedules found for those parameters."
+
+        # Grab the top 'limit' results
+        results = df.head(limit).to_dict(orient="records")
+        
+        output = f"Found {len(df)} total matches. Showing top {len(results)}:\n\n"
+        for i, row in enumerate(results, 1):
+            output += f"--- Result {i} ---\n"
+            for key, val in row.items():
+                if str(val).strip():  # Only show fields that actually have data
+                    output += f"  {key.capitalize()}: {val}\n"
+            output += "\n"
+
+        return output
+
+    except FileNotFoundError:
+        return "Error: Could not find 'NG7_SANS_Mega_Schedule_Database.csv'. Make sure it is in the same directory as this script."
+    except Exception as e:
+        return f"An error occurred during search: {str(e)}"
 
 def _plottable_traces(plottable: dict) -> list[dict]:
     """Extract drawable (x, y[, errorbars], axis labels) traces from a reductus
