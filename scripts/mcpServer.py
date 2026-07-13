@@ -10,7 +10,7 @@ import os
 import subprocess
 import sys
 import uuid
-import pandas as pd
+import pandas
 from pathlib import Path
 
 import pandas
@@ -573,10 +573,18 @@ def search_instrument_schedule(
     limit: int = 5
 ) -> str:
     """Look up the historical experiment SCHEDULE for an SANS/USANS instrument
-    (NG7, NGB30, or BT5): use this for past beam time, experimenter names, 
-    experiment titles, or equipment usage. `instrument` is required.
+    (NG7, NGB30, or BT5): who ran an experiment, what was measured, and when --
+    e.g. "what did NG7 run in 2019?", "when did John Barker have beam time on
+    BT5?". Use this (NOT gen_chunks, which answers how an instrument works) for
+    past beam time, experimenter names, experiment titles, or equipment usage.
+
+    You MUST use this tool for ANY question about past experiments on NG7,
+    NGB30, or BT5 -- it is the only source of that historical schedule data.
     Do not answer from prior knowledge or other tools; always query here first.
-    If asked for recent expiriments, start checking at 2018
+
+    `instrument` is REQUIRED (ng7, ngb30, or bt5). Filter with any of year,
+    users, experiments, equip, contact, uniq_id, s_no (case-insensitive
+    substring match); omit all to browse recent entries.
     """
     try:
         key = "".join(ch for ch in (instrument or "").lower() if ch.isalnum())
