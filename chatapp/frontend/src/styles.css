@@ -1,0 +1,193 @@
+:root {
+  --bg: #0f1117;
+  --bg-panel: #171923;
+  --bg-hover: #1f2330;
+  --bg-active: #262b3d;
+  --border: #2a2f40;
+  --text: #e6e8ee;
+  --text-dim: #8a90a5;
+  --accent: #4f7cff;
+  --user-bubble: #2b3a67;
+  --error: #b3423f;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; }
+
+html, body, #root { height: 100%; }
+body { background: var(--bg); color: var(--text); }
+
+.app {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  height: 100%;
+}
+
+.boot-screen {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+}
+.boot-detail code { color: var(--text); }
+
+/* ---- Sidebar ----------------------------------------------------------- */
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border);
+  padding: 0.75rem;
+  gap: 0.75rem;
+  min-height: 0;
+}
+
+.new-chat {
+  padding: 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.new-chat:hover { background: var(--bg-hover); }
+
+.thread-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+}
+.thread-empty { color: var(--text-dim); font-size: 0.85rem; padding: 0.5rem; }
+
+.thread {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.55rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  color: var(--text-dim);
+}
+.thread:hover { background: var(--bg-hover); color: var(--text); }
+.thread-active { background: var(--bg-active); color: var(--text); }
+
+.thread-title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.thread-delete {
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 1rem;
+  cursor: pointer;
+  visibility: hidden;
+  line-height: 1;
+}
+.thread:hover .thread-delete { visibility: visible; }
+.thread-delete:hover { color: var(--error); }
+
+.profile-panel {
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+  font-size: 0.8rem;
+}
+.profile-name { font-weight: 600; font-size: 0.9rem; }
+.profile-meta { color: var(--text-dim); margin-top: 2px; }
+.profile-facts {
+  margin: 0.5rem 0 0;
+  padding-left: 1rem;
+  color: var(--text-dim);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* ---- Chat area ---------------------------------------------------------- */
+
+.chat-area {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.message-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem clamp(1rem, 8vw, 6rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.chat-placeholder {
+  margin: auto;
+  color: var(--text-dim);
+}
+.chat-error { color: var(--error); font-size: 0.85rem; }
+
+.bubble-row { display: flex; }
+.from-user { justify-content: flex-end; }
+.from-assistant { justify-content: flex-start; }
+
+.bubble {
+  max-width: 72ch;
+  padding: 0.7rem 0.95rem;
+  border-radius: 12px;
+  font-size: 0.93rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+}
+.from-user .bubble { background: var(--user-bubble); border-color: transparent; }
+.bubble-error { border-color: var(--error); color: var(--error); }
+
+.cursor { animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ---- Composer ------------------------------------------------------------ */
+
+.composer {
+  display: flex;
+  gap: 0.6rem;
+  padding: 1rem clamp(1rem, 8vw, 6rem) 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.composer textarea {
+  flex: 1;
+  resize: none;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.93rem;
+}
+.composer textarea:focus { outline: 1px solid var(--accent); }
+
+.composer button {
+  padding: 0 1.2rem;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.composer button:disabled { opacity: 0.45; cursor: default; }
