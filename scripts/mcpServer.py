@@ -10,6 +10,7 @@ import os
 import subprocess
 import sys
 import uuid
+import pandas as pd
 from pathlib import Path
 
 import pandas
@@ -543,8 +544,25 @@ def reduce_files(
         "reductus_template_id": _save_template_payload(template_def, config),
     }
 
+# Historical schedule databases live under rag/scraping/, one CSV per
+# instrument. All three share the same columns (year, start_date, num_days,
+# users, uniq_id, s_no, experiments, equip, contact), so a single search can
+# serve any of them just by picking the right file. Keys are lowercased and
+# stripped of separators before lookup, so "ng7", "NG7-SANS", "ngb30",
+# "bt5", "BT5 USANS", etc. all resolve.
+_SCHEDULE_CSVS = {
+    "ng7": "NG7_SANS_Mega_Schedule_Database.csv",
+    "ng7sans": "NG7_SANS_Mega_Schedule_Database.csv",
+    "ngb30": "NGB30_SANS_Mega_Schedule_Database.csv",
+    "ngb30sans": "NGB30_SANS_Mega_Schedule_Database.csv",
+    "bt5": "BT5_USANS_Mega_Schedule_Database.csv",
+    "bt5usans": "BT5_USANS_Mega_Schedule_Database.csv",
+}
+
+
 @mcp.tool()
-def search_ng7_schedule(
+def search_instrument_schedule(
+    instrument: str,
     year: str = None,
     users: str = None,
     experiments: str = None,
@@ -554,19 +572,37 @@ def search_ng7_schedule(
     contact: str = None,
     limit: int = 5
 ) -> str:
-    """
-    Search the NG7 SANS historical schedule database by any metric.
-    You can provide one or multiple parameters to filter the results.
+    """Look up the historical experiment SCHEDULE for an SANS/USANS instrument
+    (NG7, NGB30, or BT5): who ran an experiment, what was measured, and when --
+    e.g. "what did NG7 run in 2019?", "when did John Barker have beam time on
+    BT5?". Use this (NOT gen_chunks, which answers how an instrument works) for
+    past beam time, experimenter names, experiment titles, or equipment usage.
+
+    You MUST use this tool for ANY question about past experiments on NG7,
+    NGB30, or BT5 -- it is the only source of that historical schedule data.
+    Do not answer from prior knowledge or other tools; always query here first.
+
+    `instrument` is REQUIRED (ng7, ngb30, or bt5). Filter with any of year,
+    users, experiments, equip, contact, uniq_id, s_no (case-insensitive
+    substring match); omit all to browse recent entries.
     """
     try:
+        key = "".join(ch for ch in (instrument or "").lower() if ch.isalnum())
+        csv_name = _SCHEDULE_CSVS.get(key)
+        if csv_name is None:
+            return (
+                f"Unknown instrument {instrument!r}. "
+                "Choose one of: ng7, ngb30, bt5."
+            )
+
         script_dir = Path(__file__).resolve().parent
 
-        # 2. Go UP one level to 'rawdataRAG/', then DOWN into 'rag/scraping/'
-        csv_path = script_dir.parent / "rag" / "scraping" / "NG7_SANS_Mega_Schedule_Database.csv"
+        # Go UP one level to 'rawdataRAG/', then DOWN into 'rag/scraping/'
+        csv_path = script_dir.parent / "rag" / "scraping" / csv_name
 
-        # 3. Load the database using the dynamic path
+        # Load the selected instrument's database
         df = pandas.read_csv(csv_path)
-        
+
         # Fill empty cells with empty strings so text search doesn't crash on NaNs
         df = df.fillna("")
 
@@ -604,7 +640,7 @@ def search_ng7_schedule(
         return output
 
     except FileNotFoundError:
-        return "Error: Could not find 'NG7_SANS_Mega_Schedule_Database.csv'. Make sure it is in the same directory as this script."
+        return f"Error: Could not find '{csv_name}' under rag/scraping/."
     except Exception as e:
         return f"An error occurred during search: {str(e)}"
 

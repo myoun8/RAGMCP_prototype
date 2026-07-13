@@ -123,8 +123,13 @@ MCP_TOOL_NAMES = [
     "reduce_files",
     "export_reduction",
     "get_file_intent",
+<<<<<<< HEAD
     "search_ng7_schedule",
     "inspect_raw_file",
+=======
+    "inspect_raw_file",
+    "search_instrument_schedule",
+>>>>>>> 8130599aa85b3614a38c9635f5a49fb5cd8c9bfc
 ]
 
 # LangGraph's default recursion_limit of 25 caps an agent run at ~12
@@ -221,7 +226,7 @@ TOOL_GROUPS = {
         "list_data_files", "find_raw_data_paths", "get_file_intent",
         "inspect_raw_file",
         "search-instruments", "search-experiments", "search-datafiles",
-        "search_ng7_schedule",
+        "search_instrument_schedule",
     },
     "reduction": {"list_reduction_templates", "reduce_files", "export_reduction"},
     "plot": {"generate_plot", "plot_reduction"},
@@ -251,7 +256,7 @@ GROUP_SIGNALS = {
         "experiment", "raw data", "data file", "datafile", "files", "file ",
         "path", "list ", "datasource", "intent", "find ", "search",
         "instrument", "metadata", "description", "inside the file", "hdf5",
-        "nexus", "comment", "details", "about the",
+        "nexus", "comment", "details", "about the", "schedule",
     ),
     "reduction": (
         "reduce", "reduction", "template", "specular", "background",

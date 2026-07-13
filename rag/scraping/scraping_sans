@@ -22,22 +22,32 @@ CSV_HEADERS = [
 ]
 
 EQUIPMENT_MAP = {
-    "9P": "9-Position ambient sample changer",
-    "10CB": "10 Position sample changer (-10 to 100 C)",
-    "VF": "Vacuum Furnace",
-    "7H": "7 Position Heating Block (up to 200 deg C)",
-    "7HB": "7 Position Heating Block with BN (up to 300 deg C)",
-    "HM1": "Horizontal High-Field Electromagnet (2 Tesla)",
-    "HM2": "Horizontal Low-Field Electromagnet (0.5 Tesla)",
-    "DI": "Closed Cycle, Displex, refrigerator (10K to 330K)",
-    "MSC": "Minnesota Sliding Plate Shear Cell",
+    "HM2": "Horizontal Low-Field Electromagnet (1.0 Tesla)",
+    "DI": "Closed cycle, displex, refrigerator (10 K to 330 K)",
     "BSC": "Boulder Couette Flow Shear Cell",
-    "SE": "Special Environment",
     "NPC": "NIST Pressure Cell",
     "SCM": "Superconducting Magnet (7 Tesla)",
-    "2H": "2 Position Heating Block",
-    "VR": "Vertical Rotation Stage"
+    "2H": "2-position heating stage (up to 200C)",
+    "4H": "4-position heating stage (up to 200C)",
+    "VR": "Vertical Rotation Stage",
+    "6CB": "6-position sample changer (-10 to 100 deg C +/- 0.1 C)",
+    "7CB": "7-position sample changer (-10 to 100 deg C +/- 0.1 C)",
+    "5P": "5-position ambient sample changer",
+    "SE": "Special Environment",
+    "RHEO": "Rheometer 301",
+    "12SC": "1-2 plane flow-SANS shear cell",
+    "LRM": "horizontal low-field electromagnet (0.5T) Little Red Magnet"
 }
+
+# Case-insensitive lookup so equipment codes with inconsistent capitalization
+# (e.g. "5p" vs "5P") resolve to the same long-form description.
+EQUIPMENT_MAP_UPPER = {k.upper(): v for k, v in EQUIPMENT_MAP.items()}
+
+
+def preprocess_field(value):
+    """Basic field normalization: drop question marks (e.g. uncertain "NPC?"
+    entries) and collapse whitespace so downstream fields are consistent."""
+    return re.sub(r"\s+", " ", value.replace("?", "")).strip()
 
 def parse_schedule_text(text_data, schedule_year):
     """Runs our slicing logic on a single text file's contents"""
@@ -54,16 +64,15 @@ def parse_schedule_text(text_data, schedule_year):
         if not line.strip() or "Start" in line or "Date" in line or "-----" in line or "Instrument Schedule" in line or "@" in line:
             continue
 
-        extracted = {k: line[start:end].strip() for k, (start, end) in SLICES.items()}
+        extracted = {k: preprocess_field(line[start:end]) for k, (start, end) in SLICES.items()}
         is_new_entry = re.match(r'^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)', extracted["start_date"])
         
         if is_new_entry:
             if current_row:
                 # NEW MAP LOGIC: Clean and map the equipment before saving!
                 raw_equip = current_row["equip"].strip()
-                clean_equip = raw_equip.replace("?", "").strip() # Handle things like "NPC?"
-                # Replace with long-form, or keep the raw text if it's not in the dictionary
-                current_row["equip"] = EQUIPMENT_MAP.get(clean_equip, raw_equip)
+                # Case-insensitive lookup; keep the raw text if it's not in the dictionary
+                current_row["equip"] = EQUIPMENT_MAP_UPPER.get(raw_equip.upper(), raw_equip)
                 rows.append(current_row)
             
             # Add the 'year' field right at the beginning of the row
@@ -95,14 +104,13 @@ def parse_schedule_text(text_data, schedule_year):
 
     if current_row:
         raw_equip = current_row["equip"].strip()
-        clean_equip = raw_equip.replace("?", "").strip()
-        current_row["equip"] = EQUIPMENT_MAP.get(clean_equip, raw_equip)
+        current_row["equip"] = EQUIPMENT_MAP_UPPER.get(raw_equip.upper(), raw_equip)
         rows.append(current_row)
         
     return rows
 
 # 2. Scrape the Main Page for Links
-MAIN_URL = "https://www.ncnr.nist.gov/programs/sans/schedule/ng7/"
+MAIN_URL = "https://www.ncnr.nist.gov/programs/sans/schedule/bt5/"
 print("Fetching index page...")
 response = requests.get(MAIN_URL)
 soup = BeautifulSoup(response.text, "html.parser")
@@ -138,7 +146,7 @@ for link in links:
             print(f"Failed to process {url}: {e}")
 
 # 4. Save the Mega Database
-with open("NG7_SANS_Mega_Schedule_Database.csv", "w", newline="", encoding="utf-8") as f:
+with open("BT5_USANS_Mega_Schedule_Database.csv", "w", newline="", encoding="utf-8") as f:
     writer = csv.DictWriter(f, fieldnames=CSV_HEADERS)
     writer.writeheader()
     writer.writerows(all_mega_rows)
