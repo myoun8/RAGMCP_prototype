@@ -123,6 +123,7 @@ MCP_TOOL_NAMES = [
     "reduce_files",
     "export_reduction",
     "get_file_intent",
+    "inspect_raw_file",
 ]
 
 # LangGraph's default recursion_limit of 25 caps an agent run at ~12
@@ -134,6 +135,21 @@ MCP_TOOL_NAMES = [
 # both cuts latency and keeps well under this limit. Kept high as headroom for
 # genuinely sequential chains; still bounded so a looping agent can't run forever.
 AGENT_RECURSION_LIMIT = 100
+
+# --- Sampling parameters ----------------------------------------------------
+# temperature=0.0 is pure greedy (argmax) decoding, which has a well-known
+# failure mode on highly self-similar structured output -- long lists of
+# experiment IDs, repeated `ncnrdata/...` paths, frontmatter: the model locks
+# onto a token cycle and emits it forever ("repeats infinitely"), worst during
+# the long reasoning phase of the rchat-hosted open models. A small non-zero
+# temperature breaks the deterministic cycle; a frequency penalty directly
+# discourages token repetition; a max-token ceiling is the hard safety bound so
+# even a residual loop terminates. Do NOT "clean this back up" to 0.
+# NOTE: frequency_penalty is an OpenAI-Chat-Completions-only param -- it is only
+# applied to the OpenAI/rchat branches, never to Anthropic/Google.
+SAMPLING_TEMPERATURE = 0.3
+FREQUENCY_PENALTY = 0.3
+MAX_OUTPUT_TOKENS = 4096
 
 
 # --- Conversation-memory context editing -----------------------------------
@@ -202,6 +218,7 @@ TOOL_GROUPS = {
     "search": {
         "list_instruments", "get_instrument", "list_datasources",
         "list_data_files", "find_raw_data_paths", "get_file_intent",
+        "inspect_raw_file",
         "search-instruments", "search-experiments", "search-datafiles",
     },
     "reduction": {"list_reduction_templates", "reduce_files", "export_reduction"},
@@ -231,7 +248,8 @@ GROUP_SIGNALS = {
     "search": (
         "experiment", "raw data", "data file", "datafile", "files", "file ",
         "path", "list ", "datasource", "intent", "find ", "search",
-        "instrument", "metadata",
+        "instrument", "metadata", "description", "inside the file", "hdf5",
+        "nexus", "comment", "details", "about the",
     ),
     "reduction": (
         "reduce", "reduction", "template", "specular", "background",
@@ -630,14 +648,24 @@ def _build_agent(app: FastAPI, model: str, api_keys: dict[str, str], message: st
     # parallel_tool_calls request param: the rchat proxy fronts models that
     # mishandle it (gemma-4-31B-it already can't do multi-tool auto tool-choice),
     # and an unknown-param rejection there would break the whole request.
+    # frequency_penalty guards against greedy-decoding repetition loops (see
+    # SAMPLING_TEMPERATURE note). It's an OpenAI-Chat-Completions param, so it's
+    # passed only to the OpenAI/rchat branches. gemma-4-31B-it is excluded: the
+    # rchat proxy already mishandles extra request params for it (same reason we
+    # don't force parallel_tool_calls, above), so an unknown-param rejection
+    # there would break the whole request; temperature + max_tokens still apply.
+    openai_kwargs = {"max_tokens": MAX_OUTPUT_TOKENS}
+    if model != "gemma-4-31B-it":
+        openai_kwargs["model_kwargs"] = {"frequency_penalty": FREQUENCY_PENALTY}
+
     if provider == "openai":
-        llm = ReasoningChatOpenAI(model=model, api_key=api_key, temperature=0.0)
+        llm = ReasoningChatOpenAI(model=model, api_key=api_key, temperature=SAMPLING_TEMPERATURE, **openai_kwargs)
     elif provider == "anthropic":
-        llm = ChatAnthropic(model=model, anthropic_api_key=api_key, temperature=0.0)
+        llm = ChatAnthropic(model=model, anthropic_api_key=api_key, temperature=SAMPLING_TEMPERATURE, max_tokens=MAX_OUTPUT_TOKENS)
     elif provider == "google":
-        llm = ChatGoogleGenerativeAI(model=model, google_api_key=api_key, temperature=0.0)
+        llm = ChatGoogleGenerativeAI(model=model, google_api_key=api_key, temperature=SAMPLING_TEMPERATURE, max_output_tokens=MAX_OUTPUT_TOKENS)
     elif provider == "rchat":
-        llm = ReasoningChatOpenAI(model=model, api_key=api_key, base_url=RCHAT_BASE_URL, temperature=0.0)
+        llm = ReasoningChatOpenAI(model=model, api_key=api_key, base_url=RCHAT_BASE_URL, temperature=SAMPLING_TEMPERATURE, **openai_kwargs)
     else:
         raise HTTPException(status_code=400, detail=f"Unsupported provider '{provider}'.")
 
@@ -706,6 +734,7 @@ TOOL_STATUS = {
     "reduce_files":        "Reducing selected files…",
     "export_reduction":    "Exporting reduced data to ORSO…",
     "get_file_intent":     "Determining raw data file intent…",
+    "inspect_raw_file":    "Reading inside the raw data file…",
     "search-instruments":  "Searching instruments…",
     "search-experiments":  "Searching experiments…",
     "search-datafiles":    "Searching data files…",

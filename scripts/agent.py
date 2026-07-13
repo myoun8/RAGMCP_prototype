@@ -34,6 +34,7 @@ MCP_TOOL_NAMES = [
     "list_reduction_templates",
     "reduce_files",
     "get_file_intent",
+    "inspect_raw_file",
 ]
 
 # LangGraph's default recursion_limit of 25 caps a run at ~12 sequential tool
@@ -80,11 +81,18 @@ rchat_model = "gpt-oss-120b"
 raw_endpoint = "https://rchat.nist.gov/api/v1/chat/completions"
 
 clean_base_url = raw_endpoint.replace("/chat/completions", "")
+# temperature=0.0 is greedy decoding, which locks gpt-oss into infinite token
+# repetition on long self-similar output (experiment ID / raw-path lists),
+# worst during its reasoning phase. A small temperature breaks the cycle,
+# frequency_penalty discourages repeats, and max_tokens is the hard cap so a
+# residual loop still terminates. Don't reset temperature back to 0.
 rchat_llm = ChatOpenAI(
     model=rchat_model,
     api_key=rchat_key,
     base_url=clean_base_url,
-    temperature=0.0
+    temperature=0.3,
+    max_tokens=4096,
+    model_kwargs={"frequency_penalty": 0.3},
 )
 
 async def run_agent():
