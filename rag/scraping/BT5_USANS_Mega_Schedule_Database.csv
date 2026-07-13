@@ -1,0 +1,1280 @@
+year,start_date,num_days,users,uniq_id,s_no,experiments,equip,contact
+2002,Mar 6,3,"John Barker, Man-Ho Kim",,,"Instrument Shakedown, Realignment",2-position heating stage (up to 200C),Barker
+2002,Mar 9,2,Charlie Glinka,,,Aggregation of modified clay in polymer matrix,2-position heating stage (up to 200C),Barker
+2002,Mar 11,3,Michael Agamalian,,,Residual stress in Si(220) single crystal,Special Environment,"Kim,Barker"
+2002,Mar 14,2,Mu-Ping Nieh,,,Aggregation of Surfynol 480 surfactant,2-position heating stage (up to 200C),"Kim,Barker"
+2002,Mar 16,22,,,,TBA,2-position heating stage (up to 200C),Barker
+2002,Apr 6,2,,,,"Chilled water outage, reactor shut down",2-position heating stage (up to 200C),Barker
+2002,Apr 8,8,,,,TBA,2-position heating stage (up to 200C),Barker
+2002,May 2,3,Man-Ho Kim+John Barker,,,Instrument Testing,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Kim
+2002,May 5,2,John Barker+Man-Ho Kim,,,Agglomeration of Paint Pigment during Drying,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2002,May 7,5,Charles Zukoski+Syed Ali Shah+Prashant,2987,U13-3,Microstructural changes during gel transitions,7-position sample changer (-10 to 100 deg C +/- 0.1 C),"Barker, Kim"
+2002,May 12,4,Min Lin + Tom Mason,3297,,T-dependence of microgel/Used engine oil,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Kim
+2002,May 16,6,James Harden+David Semmons+Hasan Yardimci+Robert,3055,U13-6,Network Phases of Laponite,2-position heating stage (up to 200C),"Barker, Kim"
+2002,May 22,6,,,,TBA,,Barker
+2002,May 28,4,Surita Bhatia + Mark Crichton,2947,U13-1,Characterization of Novel Diblock Polymer Micelles,2-position heating stage (up to 200C),"Barker, Kim"
+2002,Jun 1,2,,,,TBA,,Barker
+2002,Jun 3,4,John Barker + Man- Ho Kim,,,SANS Summer School,2-position heating stage (up to 200C),Barker
+2002,Jun 7,3,,,,TBA,,Barker
+2002,Jun 20,1,Man-Ho Kim,,,Instrument testing,2-position heating stage (up to 200C),Kim
+2002,Jun 21,5,"J. Harden, D. Sessons, R. Leheny",,,Network Phases of Laponite,2-position heating stage (up to 200C),"Kim,Barker"
+2002,Jun 27,1,P. Thiyagarajan,,,Magnetic correlations in Ca(0.95)Ce(0.05)MnO2,2-position heating stage (up to 200C),Barker
+2002,Jun 28,1,Derek Ho,,,"Organically modified clay in chloroform, large scale structure",2-position heating stage (up to 200C),Barker
+2002,Jun 29,2,"J. Harden, D. Sessons, R. Leheny",,,Network Phases of Laponite,2-position heating stage (up to 200C),"Kim,Barker"
+2002,Jul 1,2,"D Pugh, A. Dursun, S Corcoran",,,nanoporous metal structures produced by chemical dissolution,2-position heating stage (up to 200C),Barker
+2002,Jul 3,2,John Barker,,,Kinetics polymer blend coarsening,2-position heating stage (up to 200C),Barker
+2002,Jul 5,4,"D Pochan, T Deming, L Pakstis, A Nowak, B Pollizotti, R",3029,U13-05,Hydrogels constructed via Block Polypeptide Self- Assembly,2-position heating stage (up to 200C),"Kim, Barker"
+2002,Jul 9,6,James Beattie + Gregory Warr,2993,U13-04,Droplet Size in concentrated Emulsions,2-position heating stage (up to 200C),"Kim,Barker"
+2002,Jul 15,3,Howard Wang,,,Large scale structure of carbon Nanotubes,2-position heating stage (up to 200C),Barker
+2002,Jul 18,1,John Barker,,,Polymer Blend demixing,2-position heating stage (up to 200C),Barker
+2002,Jul 19,5,"D Pochan, T Deming, L Pakstis, A Nowak, B Pollizotti, R",3029,U13-05,Hydrogels constructed via Block Polypeptide Self- Assembly,2-position heating stage (up to 200C),"Kim, Barker"
+2002,Jul 24,1,Operations,,,Reactor shutdown due to T. Storm,2-position heating stage (up to 200C),
+2002,Jul 25,2,T Itakura + W Bertram + R Knott,3131,U13-07,Structure of Natural Clay Subjected to Compression,2-position heating stage (up to 200C),"Kim,Barker"
+2002,Jul 27,2,"S. Shah, C. Zukoski",,,Depletion Colloids,2-position heating stage (up to 200C),"Kim,Barker"
+2002,Aug 20,1,Man-Ho Kim,,,Instrument testing,2-position heating stage (up to 200C),Kim
+2002,Aug 21,7,John Barker,,,Polymer Blend Demixing,2-position heating stage (up to 200C),Barker
+2002,Aug 28,1,Man-Ho Kim,,,Parasitic Scattering from D2O,2-position heating stage (up to 200C),Kim
+2002,Aug 29,4,B. Hammouda,,,Polyethylene polypropylene blends,2-position heating stage (up to 200C),Kim
+2002,Sept 3,2,Man-Ho Kim,,,Instrument Background Measurements,2-position heating stage (up to 200C),Kim
+2002,Sep 5,8,,,,TBA,2-position heating stage (up to 200C),Kim
+2002,Sep 13,4,Belgin Baser,,,Lamellar bilayer spacing,2-position heating stage (up to 200C),Kim
+2002,Sep 17,1,John Barker,,,Diffraction Grating Scattering,2-position heating stage (up to 200C),Barker
+2002,Sep 18,5,"M. Rafailovich, M. Si, D. Peiffer, M. Lin",3689,,Interfacial properties of polymers with fillers,2-position heating stage (up to 200C),Kim
+2002,Sep 23,3,"J. Barker, M. Kim",3285,,Measurement of 1.2 A Beam Component using Prisms,Superconducting Magnet (7 Tesla),Kim
+2002,Sep 26,4,"J. Barker, M. Kim",,,Optimization of Soller Slit Configuration after Sample,2-position heating stage (up to 200C),Barker
+2002,Oct 10,2,Man-Ho Kim,,,Instrument testing,2-position heating stage (up to 200C),Kim
+2002,Oct 12,3,C. Glinka,,,Clay Water Suspensions,2-position heating stage (up to 200C),Barker
+2002,Oct 15,2,J. Barker,,,Instrument Background Tests,2-position heating stage (up to 200C),Barker
+2002,Oct 17,8,C. Glinka,,,Clay Water Suspensions,2-position heating stage (up to 200C),Barker
+2002,Oct 25,1,Belgin Baser,,,Lamellar Bilayer Spacing,2-position heating stage (up to 200C),M. Kim
+2002,Oct 26,2,Operations,,,plant fall outage,2-position heating stage (up to 200C),Barker
+2002,Oct 28,1,Belgin Baser,,,Lamellar Bilayer Spacing,2-position heating stage (up to 200C),M. Kim
+2002,Oct 29,3,Howard Wang,,,Carbon Nanotubes Filled Polymer Composites,2-position heating stage (up to 200C),Man-Ho Kim
+2002,Nov 1,4,Belgin Baser,,,Lamellar Bilayer Spacing,2-position heating stage (up to 200C),Man-Ho Kim
+2002,Nov 5,2,Howard Wang,,,Carbon Nanotubes Filled Polymer Composites,2-position heating stage (up to 200C),Man-Ho Kim
+2002,Nov 7,5,"D. Sessons, J. Harden, R. Leheny",,,Network phases of Laponite,2-position heating stage (up to 200C),"Kim,Barker"
+2002,Nov 12,6,Michael Agamalian,,,Residual Stress in Si(220) Single Crystal,2-position heating stage (up to 200C),"Kim,Barker"
+2002,Nov 18,2,"D. Sessoms, H. Yardimici, J. Harden, R. Leheny",,,Network Phases of Laponite,2-position heating stage (up to 200C),"Kim, Barker"
+2002,Nov 29,2,J Barker,,,Laponite Dispersions,2-position heating stage (up to 200C),Kim
+2002,Dec 1,2,J Barker,,,Instrument Testing,2-position heating stage (up to 200C),Barker
+2002,Dec 3,6,T. Koga,,,PS/EVA in Supercritical CO2,2-position heating stage (up to 200C),"Kim,Barker"
+2002,Dec 10,3,"J Barker, M-H Kim",,,Instrument Testing: Beam profiles,2-position heating stage (up to 200C),Barker
+2002,Dec 13,6,John Barker,,,Cavity Size in H.T. fatigued Copper,2-position heating stage (up to 200C),Barker
+2002,Dec 19,1,J Barker,,,Beam Flux Measurements,2-position heating stage (up to 200C),Barker
+2002,Dec 21,19,Operations,,,Xmas shutdown,2-position heating stage (up to 200C),Barker
+2002,Jan 9,4,"R. Briber, M. Gauthier, Seok-Il Yun",3800,,SANS of Arborescent Graft Polymer polyelectrolytes,7-position sample changer (-10 to 100 deg C +/- 0.1 C),"Kim,Barker"
+2002,Jan 13,4,"M. Rafailovich, D. Peiffer, Mayu Si, Min Lin",3819,,Interfacial properties of polymers with fillers and their,2-position heating stage (up to 200C),"Kim,Barker"
+2002,Jan 17,3,Mitra Yoonessi,3456,U14-02,DCPD/Clay Dispersions and Polymers,2-position heating stage (up to 200C),"Kim,Barker"
+2002,Jan 20,4,M Agamalian,,,Testing of Polished C-Cut Silicon Analyzer,2-position heating stage (up to 200C),"Kim,Barker"
+2002,Jan 24,3,Ahmed Mourchid,,,Structure of Diblock Polymer Gels,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Feb 6,1,Man-Ho Kim,,,Instrument testing,2-position heating stage (up to 200C),Kim
+2003,Feb 7,3,"S Park, I Dimitrov, S Ling, J Lynn",3285,,The presence of Bragg Glass in Nb,Superconducting Magnet (7 Tesla),Barker
+2003,Feb 10,2,John Barker,,,Beam Divergence measurements,2-position heating stage (up to 200C),Barker
+2003,Feb 12,1,Man-Ho Kim,,,Pore size distributions in BaTiO3,2-position heating stage (up to 200C),Man-Ho Kim
+2003,Feb 13,7,"A Hatton, G Moeser, P Laibinis, W Green",3661,UC14-01,Polymer-Coated Magnetic Nanoparticles,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Feb 20,2,John Barker,,,Refraction from Edges of Apertures,2-position heating stage (up to 200C),Barker
+2003,Feb 22,11,"Man-Ho Kim, M. Agamalian",,,Structure of Pores in Piezoelctric Ceramics,2-position heating stage (up to 200C),Man-Ho Kim
+2003,Mar 5,7,"D Sessons, H Yardimci, J Harden, R Leheny",,,Network Phases of Laponite,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Mar 12,1,D Londono,,,Agglomeration of TiO2 powder,2-position heating stage (up to 200C),Barker
+2003,Mar 13,2,"N Balsara, Man-Ho Kim",,,Polymer Blend Microemulsions,2-position heating stage (up to 200C),Kim
+2003,Mar 15,2,"D Sessons, H Yardimci, J Harden, R Leheny",,,Network Phases of Laponite,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Mar 27,1,Man-Ho Kim,,,Instrument testing,2-position heating stage (up to 200C),Kim
+2003,Mar 28,7,C Glinka,4159,,Polymer/ Montmorillonite Nanocomposites,2-position heating stage (up to 200C),Barker
+2003,Apr 4,4,"N Balsara, Man-Ho Kim",,,Polymer Blend Microemulsions,2-position heating stage (up to 200C),Kim
+2003,Apr 8,3,J Barker,,,background from gadolinium apertures,2-position heating stage (up to 200C),Barker
+2003,Apr 11,3,,,,TBA,2-position heating stage (up to 200C),Barker
+2003,Apr 14,2,J Barker,,,Instrument Background,2-position heating stage (up to 200C),Barker
+2003,Apr 16,1,Vivek Prabhu,,,Polyelectrolytes,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Apr 17,7,"Man-Ho Kim, J Barker",,,Instrument Background Characterization,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Apr 25,5,"S Park, S Ling, J Lynn",3285,,The Presence of Bragg Glass in Nb,Superconducting Magnet (7 Tesla),"Kim,Barker"
+2003,Apr 30,6,"Man-Ho Kim, J Barker",,,Instrument Background Characterization,2-position heating stage (up to 200C),Barker
+2003,May 15,2,Man-Ho Kim,,,Instrument testing,2-position heating stage (up to 200C),Kim
+2003,May 17,2,,,,TBA,2-position heating stage (up to 200C),Barker
+2003,May 19,2,Man-Ho Kim,,,Beam Blocked background measurements,2-position heating stage (up to 200C),Kim
+2003,May 20,1,,,,TBA,2-position heating stage (up to 200C),Barker
+2003,May 21,1,"J Barker, J Leao, T Udovic",,,Multiple Refraction from Bismuth Powder,2-position heating stage (up to 200C),Barker
+2003,May 22,2,J Barker,,,Fumed Silica,2-position heating stage (up to 200C),Barker
+2003,May 24,1,D Londono,4054,U15-10,TiO2 pigment agglomeration in Polyester,2-position heating stage (up to 200C),Barker
+2003,May 25,1,J Barker,,,Instrument Background Tests,2-position heating stage (up to 200C),Barker
+2003,May 26,4,,,,TBA,2-position heating stage (up to 200C),Barker
+2003,May 30,1,"W.-R. Chen, S.-R. Chen",,,Crystallization in Concentrated Micellar Glass,2-position heating stage (up to 200C),Barker
+2003,May 31,5,,,,TBA,2-position heating stage (up to 200C),Barker
+2003,Jun 5,4,J Barker,,,Irradiated aluminum Single Crystal,2-position heating stage (up to 200C),Barker
+2003,Jun 9,5,,,,TBA,2-position heating stage (up to 200C),Barker
+2003,Jun 14,9,Technical Support,,,Installation of new premonochromator,,Barker
+2003,Jul 3,1,Man-Ho Kim,,,Instrument testing,2-position heating stage (up to 200C),Kim
+2003,Jul 4,4,"Dale Schaefer, K Chokalingam",4051,U15-07,Conformal Coatings on Membranes for Barrier Applications,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Jul 8,2,Gudrun Schmidt,,,Clay Gels,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Jul 10,5,"Jun Tian, Robert Weiss",4055,u15-08,Macrophase Separation of NIPA FOSA Gels,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Jul 15,1,M. Vayer,,,Thermoset Blends Phase Separation,2-position heating stage (up to 200C),Barker
+2003,Jul 16,3,Roberto Triolo,,,Characterization of Marble from Ancient World,2-position heating stage (up to 200C),Barker
+2003,Jul 20,1,"Areum Kim, Dale Schaefer",,,Membrane Structure,2-position heating stage (up to 200C),Barker
+2003,Jul 21,1,"Vijaya Tirumala, P. Thiyagarajan",,,Gels formed by Xray Irradiation,2-position heating stage (up to 200C),Barker
+2003,Jul 22,1,"M. Vayer, N Boyard, C Sinturel",,,Thermoset Blends Phase Separation,2-position heating stage (up to 200C),Barker
+2003,Jul 23,1,"Ramsey Zitoin,",,,Porosity in Pressed and Sintered Bismuth,2-position heating stage (up to 200C),Barker
+2003,Jul 24,1,,,,TBA,2-position heating stage (up to 200C),Barker
+2003,Jul 25,5,"Vijaya Tirumala, P. Thiyagarajan",,,Gels formed by Xray Irradiation,2-position heating stage (up to 200C),Barker
+2003,Jul 30,2,,,,TBA,2-position heating stage (up to 200C),Barker
+2003,Aug 1,5,"J van Zanten, C Kloxin, S Tanner",4044,U15-05,Grain Structure of Soft Micellar Crystals,2-position heating stage (up to 200C),Barker
+2003,Aug 6,4,Mitra Yoonessi,4196,UC15-02,Phenolic resin/clay dispersions,2-position heating stage (up to 200C),Kim
+2003,Sep 4,1,Man-Ho Kim,,,Instrument testing,2-position heating stage (up to 200C),Kim
+2003,Sep 5,1,Marylene Vayer,3966,,Phase separation and pore formation during crosslinking of,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Sep 6,2,Operations,,,Reactor Power Outage,2-position heating stage (up to 200C),Barker
+2003,Sep 8,3,Marylene Vayer,3966,,Phase separation and pore formation during crosslinking of,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Sep 11,5,"Jeffrey Thomas, Andrew Allen",4049,U15-06,Nanostructure of C-S-H Gel,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Sep 16,2,D. Pochan,4002,U15-04,Self-Assembled Hydrogels,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Sep 18,2,Operations,,,Reactor Power outage - Hurricane Isabel,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Sep 20,4,D. Pochan,4002,U15-04,Self-Assembled Hydrogels,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Sep 24,2,"Philip Reynolds, Mark Henderson",4351,,Oil and Water Microemulsions,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Sep 26,1,David Londono,,,TiO2 Agglomeration in Polyester,2-position heating stage (up to 200C),Barker
+2003,Sep 27,1,Operations,,,Reactor Power outage - (Stuck rabbit),2-position heating stage (up to 200C),"Kim,Barker"
+2003,Sep 28,2,Philip Reynolds,4351,,Oil and Water Microemulsions,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Sep 30,3,"J Connolly, C Buckley, T Edwards",4113,U15-09,Mudcake formed from Montmorillonite Clays,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Oct 3,1,David Londono,,,TiO2 Agglomeration in Polyester,2-position heating stage (up to 200C),Barker
+2003,Oct 4,1,John Barker,,,Scattering from Aperture Edges,2-position heating stage (up to 200C),Barker
+2003,Oct 5,9,NCNR,,,Operation maintenance Shutdown,2-position heating stage (up to 200C),Barker
+2003,Oct 14,4,"C Koxin, J Van Zanten",4044,,Grain Structure of Soft Micellar Crystals,2-position heating stage (up to 200C),"Kim,Barker"
+2003,Oct 18,2,,,,Feasbility measurements,2-position heating stage (up to 200C),Kim
+2003,Oct 21,5,,,,Instrument Background tests,2-position heating stage (up to 200C),Barker
+2003,Nov 6,1,Man-Ho Kim,,,Instrument testing,2-position heating stage (up to 200C),Kim
+2003,Nov 7,11,V R Tirumula,4465,,Phase-separated Hydrogels from Synchrotron Induced,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2003,Nov 18,1,,,,TBA,7-position sample changer (-10 to 100 deg C +/- 0.1 C),"Kim,Barker"
+2003,Nov 19,5,"Min Lin, Oscar, Farng, Jason Gao",4707,,Lube Additions and Soot,7-position sample changer (-10 to 100 deg C +/- 0.1 C),"Kim,Barker"
+2003,Nov 24,4,C. Glinka,4712,,Length of Rod-like Shear- aligned Micelles,Boulder Couette Flow Shear Cell,"Barker,Kim"
+2003,Nov 28,6,"Min Lin, Oscar, Farng, Jason Gao",4707,,Lube Additions and Soot,7-position sample changer (-10 to 100 deg C +/- 0.1 C),"Kim,Barker"
+2003,Dec 4,2,"Joan Connolly, Robert Knott",,,Geological Rocks,2-position heating stage (up to 200C),"Barker,Kim"
+2003,Dec 6,2,V R Tirumula,4465,,Phase-separated Hydrogels from Synchrotron Induced,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2003,Dec 8,6,D. Pochan,4002,U15-04,Self-Assembled Hydrogels,7-position sample changer (-10 to 100 deg C +/- 0.1 C),"Kim,Barker"
+2003,Dec 14,1,"Joan Connolly, Robert Knott",,,Geological Rocks,2-position heating stage (up to 200C),"Barker,Kim"
+2004,Jan 22,2,J Barker,,,Scattering from aperture edges,2-position heating stage (up to 200C),Barker
+2004,Jan 24,2,John Barker,,,Rocking Curve Measurements,2-position heating stage (up to 200C),Barker
+2004,Jan 26,2,"Lyle Levine, James Belak",,,Shock Induced Cavitation in Aluminum,2-position heating stage (up to 200C),Barker
+2004,Jan 28,2,John Barker,,,Instrument Background,2-position heating stage (up to 200C),Barker
+2004,Jan 30,7,Howard Wang,4620,U16-08,Cluster Structures in Polymer Blends,2-position heating stage (up to 200C),Kim
+2004,Feb 6,4,V R Tirumala,4465,U16-03,Phase Separated Hydrogels,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2004,Feb 10,5,"John McCarthy, Jan Ilavsky",4500,U16-05,Carbon Sequestration in Soil Microaggregates,2-position heating stage (up to 200C),Barker
+2004,Feb 15,5,Sungsook Ahn,4737,,Emulsion Characterization for Paraffin Crystallization Control,2-position heating stage (up to 200C),Kim
+2004,Feb 20,3,"James Beattie, Greg Warr",4190,UC15-01,Droplet Size in Concentrated Emulsions,2-position heating stage (up to 200C),"Kim,Barker"
+2004,Feb 23,3,"Man-Ho Kim, C. Glinka",,,Spherulites in Semicrystalline Polymer,2-position heating stage (up to 200C),Kim
+2004,Feb 26,2,Derek Ho,,,PEO in Alcohol,2-position heating stage (up to 200C),Kim
+2004,Feb 28,2,John Barker,,,Effect of Analyzer Tilt on Absolute Calibration,2-position heating stage (up to 200C),Barker
+2004,Mar 11,5,"Ron Hedden, Burcu Unal, J. Lenhart",4461,U16-02,Studies of Gels for Sensor Applications,7-position sample changer (-10 to 100 deg C +/- 0.1 C),"Kim,Barker"
+2004,Mar 16,3,,,,TBA,Special Environment,"Kim,Barker"
+2004,Mar 19,4,Dale Schaefer,,,Gels,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Kim
+2004,Mar 23,9,Philip Reynolds,4450,U16-01,Aggregation in High Internal Phase Emulsions,7-position sample changer (-10 to 100 deg C +/- 0.1 C),"Barker,Kim"
+2004,Apr 1,1,John Barker,,,Instrument background,2-position heating stage (up to 200C),Barker
+2004,Apr 2,4,Joan Connolly,4509,U16-06,Microstructure of Aluminosilicate Geopolymers,2-position heating stage (up to 200C),Kim
+2004,Apr 6,3,Mitra Yoonessi,4594,U16-07,Carbon Nanofiber / Phenolic Resin Composites,2-position heating stage (up to 200C),Kim
+2004,Apr 9,3,Sam Trevino,,,Colloidal Dispersions in Vycor,2-position heating stage (up to 200C),Kim
+2004,Apr 12,2,Man-Ho Kim,,,Scans of Mesc. samples,2-position heating stage (up to 200C),Kim
+2004,Apr 14,3,"K. Heitfeld, D. Schaefer",,,Membranes,2-position heating stage (up to 200C),Barker
+2004,Apr 17,3,Kim,,,Scans of mesc. samples,2-position heating stage (up to 200C),Kim
+2004,May 6,4,Barry Bauer,4893,,Single Wall Carbon nanotube / DNA Complexes,2-position heating stage (up to 200C),"Kim,Barker"
+2004,May 10,5,M. Agamalian,3909,U15-02,Residual Stress of Ni-Ti Multilayer Monochromator,Special Environment,"Kim,Barker"
+2004,May 15,2,,,,TBA,2-position heating stage (up to 200C),Barker
+2004,May 17,2,"Dale Schaefer, Kevin Heitfeld",,,Membranes in D2O,2-position heating stage (up to 200C),Kim
+2004,May 19,6,Man-Ho Kim,4947,,Contrast Matching of Vycor,2-position heating stage (up to 200C),Kim
+2004,May 26,2,Yamali Hernandez,,,Dispersion Characterization of Carbon Nanotubes,2-position heating stage (up to 200C),Barker
+2004,May 28,4,"Barker, Kim",,,Latex Microspheres /Summer School prep.,2-position heating stage (up to 200C),"Barker,Kim"
+2004,Jun 1,5,"Min Lin, Brandon Weldon",4959,,lube additives and soot,,"Kim,Barker"
+2004,Jun 6,4,,,,Shutdown for ACNS,2-position heating stage (up to 200C),Barker
+2004,Jun 10,3,NCNR,,,Summer School,2-position heating stage (up to 200C),"Barker,Kim"
+2004,Jun 13,5,Barry Bauer,4893,,Single Wall Carbon nanotube / DNA Complexes,2-position heating stage (up to 200C),"Kim,Barker"
+2004,Jul 1,7,"Min Lin, B Weldon",4984,,Lube Additives and Soot in Motor Oil,2-position heating stage (up to 200C),Kim
+2004,Jul 8,5,"Ron Hedden, Burcu Unal, Joe Lenhart",4978,,Gels for Sensor Applications,7-position sample changer (-10 to 100 deg C +/- 0.1 C),"Kim,Barker"
+2004,Jul 13,2,Robert Knott,,,Thermo Sensitive Chitosans as Scaffolds for Stem Cell Growth,2-position heating stage (up to 200C),Kim
+2004,Jul 15,1,"Chris Garvey, Robert Knott",,,Structure of Various hard and soft Woods,2-position heating stage (up to 200C),Kim
+2004,Jul 16,3,Man-Ho Kim,4947,,Contrast matching of Vycor,2-position heating stage (up to 200C),Kim
+2004,Jul 19,5,David Londono,,,Scattering from agglomerated particles,2-position heating stage (up to 200C),Kim
+2004,Jul 24,3,"Man-Ho Kim, C Glinka",5001,,Structure of Nafion Membrane,2-position heating stage (up to 200C),Kim
+2004,Jul 27,3,Man-Ho Kim,4947,,Vycor,2-position heating stage (up to 200C),Kim
+2004,Jul 30,4,John Barker,,,Size distribution of Latex Spheres,2-position heating stage (up to 200C),Barker
+2004,Aug 3,3,Norbert Nemes,,,Pore size dependence on humidity in cement gel,2-position heating stage (up to 200C),Barker
+2004,Aug 6,3,Roberto Triolo,5070,,Polychromic Marbles of Archeological Interest,2-position heating stage (up to 200C),Barker
+2004,Nov 18,3,D. Londono,5116,,Inhomogeneities in BaTiO3 Spheres,2-position heating stage (up to 200C),Kim
+2004,Nov 21,1,John Barker,,,Latex Particle Standard,2-position heating stage (up to 200C),Barker
+2004,Nov 22,1,"Barry Bauer, Eric Hobbie",5146,,Carbon Nanotube Dispersions,2-position heating stage (up to 200C),Kim
+2004,Nov 23,1,Man-Ho Kim,,,Instrument Background,2-position heating stage (up to 200C),"Barker,Kim"
+2004,Nov 24,2,Barker,,,Latex standard,2-position heating stage (up to 200C),"Barker,Kim"
+2004,Nov 26,2,,,,TBA,2-position heating stage (up to 200C),"Barker,Kim"
+2004,Nov 28,3,"Min Lin, B. Weldon",5207,U17-08,Soot-containing engine oils,2-position heating stage (up to 200C),Kim
+2004,Dec 1,5,"Greg Warr, Nirmesh Jain",5244,U17-11,Structure in Magnetic Emulsions,2-position heating stage (up to 200C),"Barker,Kim"
+2004,Dec 6,4,"R Triolo, F Lo Celso",5331,,Combined SANS and USANS on Marbles,4P,"Barker,Kim"
+2004,Dec 10,4,"Kristen Wilson, Andrew Allen",5113,,Nano-Glass Filled Dental Composites,2-position heating stage (up to 200C),"Barker,Kim"
+2004,Dec 14,3,"Min Lin, B. Weldon",5207,U17-08,Soot-containing engine oils,2-position heating stage (up to 200C),Kim
+2004,Dec 17,4,Man-Ho Kim,5449,,Additive & Spherulite Structures in Polyethylene,2-position heating stage (up to 200C),"Barker,Kim"
+2004,Dec 21,13,Reactor Operations,,,Holiday Shutdown,2-position heating stage (up to 200C),"Barker,Kim"
+2004,Jan 3,5,"R Hedden, B Unal, J Lenhart",5295,,Gels for Sensor Applications,"Closed cycle, displex, refrigerator (10 K to 330 K)","Barker,Kim"
+2005,Jan 21,5,"P Kilpatrick, V Verruto, K Gawrys",5300,U17-13,Water in Oil Emulsions,2-position heating stage (up to 200C),"Barker,Kim"
+2005,Jan 26,4,"M Yoonessi, R Vaia, M Durstock, T Dang",5367,U17-19,Membranes for Fuel Cells,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Kim
+2005,Jan 31,4,"F Lo Celso, R Triolo, I Ruffo, C Gorgoni",5331,,Porosity in Marbles from Ancient World,4P,Barker
+2005,Feb 4,4,J Barker,5597,,Fatigue Cavities in Copper,4P,Barker
+2005,Feb 8,6,"D Pochan, K Wooley, B Ozbas",5352,U17-18,Long Range Structure in Designed Block Copolymer Self-Assembly,2-position heating stage (up to 200C),Kim
+2005,Feb 14,1,"W R Chen, L Magid, D Bossev, P Butler",5478,,Morphology of Dialkylphosphate Surfactants,2-position heating stage (up to 200C),Kim
+2005,Feb 15,3,"K Crompton, R Knott",5452,U17-30,Chitosan Hydrogels for Stem Cell Scaffolds,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Kim
+2005,Feb 18,2,"C Garvey, R Knott",,,Structure of Various Hard and Soft Woods,2-position heating stage (up to 200C),Kim
+2005,Feb 21,7,"D Schaefer, K Heitfeld",5291,UC17-01,Conformal Coatings on Membranes for Barrier Applications,2-position heating stage (up to 200C),Kim
+2005,Mar 10,1,"J Cook, R Lindstrom, J Barker",5658,,Gold Foil Measuremnt of Premonochromator Flux,2-position heating stage (up to 200C),Barker
+2005,Mar 11,5,"P Reynolds, J White, K Baranyai, A Jackson",5169,U17-03,Surfactant Aggregation in High Internal Phase Emulsions,2-position heating stage (up to 200C),"Kim,Barker"
+2005,Mar 16,3,"N Balsara, M Ruegg",5413,,Diblock Copolymer Content in Microemulsions,2-position heating stage (up to 200C),"Kim,Barker"
+2005,Mar 19,5,"L Magid, W R Chen, D Bossev, P Butler",5478,U17-32,Mesophase of Dialkylphosphate Surfactants,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2005,Mar 24,3,"E Hobbie, B Bauer, P Rai, M Pasquali",5198,U17-06,Dissolution of chemically modified carbon nanotubes,4P,Barker
+2005,Mar 27,2,M-H Kim,5596,,Filler Distribution in Polyolefins,4P,Kim
+2005,Mar 29,3,"J Thomas, A Allen, H Jennings",5307,U17-08,Effects of heating and drying on hydrated portland cement,2-position heating stage (up to 200C),Barker
+2005,Apr 1,4,"B Simmons, S Kline, S Yun",5408,,Cleavable Surfactants,2-position heating stage (up to 200C),Barker
+2005,Apr 5,4,"K Shin, J-T Chen",5440,U17-26,Chained Molecules in Nanoscopic Cylinder,2-position heating stage (up to 200C),Kim
+2005,Apr 9,3,"T Futterer, P Muller, O theodoly",5416,U17-25,Starlike Aggregates Formed by Triblock Copolymer,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Kim
+2005,Apr 12,6,"J Walz, S Bhatia, J Baird",5284,,Effect of Nanoparticles Upon Structure of Laponite Gels,2-position heating stage (up to 200C),Barker
+2005,Apr 28,4,"S Yun, Y Melnichenko, G Wignall",5230,,Polyelectrolyte Aggregation,5-position ambient sample changer,Kim
+2005,May 2,1,J Barker,,,Test of air and thermal diffuse scattering bgd,5-position ambient sample changer,Barker
+2005,May 3,8,"J Penfold, I Tucker, R Thomas",5193,U17-04,Lamellar Fragment Distributions in Surfactant Mixtures,7-position sample changer (-10 to 100 deg C +/- 0.1 C),"Barker, Mildne"
+2005,May 11,4,"S Yun, Y Melnichenko, G Wignall",5230,,Polyelectrolyte Aggregation under Shear,5-position ambient sample changer,Kim
+2005,May 15,2,Operations,,,Reactor Shutdown,2-position heating stage (up to 200C),
+2005,May 17,1,"Barker, Cook",5658,,Premonochromator Beam Flux Measurement,5-position ambient sample changer,Barker
+2005,May 18,1,"H Wang, K Yang, Z Xu",5392,U17-22,Dispersing Carbon Nanotube using Surfactant,5-position ambient sample changer,Kim
+2005,May 19,1,SANS Staff,,,USANS Training Class,5-position ambient sample changer,Barker
+2005,May 20,3,"H Wang, K Yang, Z Xu",5392,U17-22,Dispersing Carbon Nanotube using Surfactant,5-position ambient sample changer,Kim
+2005,May 23,3,"H Wang, K Yang, Z Xu",5456,,Phase Diagram of Polymer Blends,2-position heating stage (up to 200C),Kim
+2005,May 26,2,Bryan Vogt,6025,,"Structure poly (3,4) ethylene",2-position heating stage (up to 200C),Barker
+2005,May 28,3,"M.H. Kim, S. Grot, C. Glinka",6028,,Structure of Cured Nafion,2-position heating stage (up to 200C),Kim
+2005,May 31,3,"P Holden, C Garvey, R Knott",5445,U17-28,Polymer Organization into Inclusion Bodies by Bacteria,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Kim
+2005,Jun 3,3,"S Sen, Y Xie, S Kumar",6034,,Polymer Chain Conformation In The Presence Of Coated,2-position heating stage (up to 200C),"Kim, Mildner"
+2005,Jun 6,1,SANS Staff,,,Shared Beamtime,2-position heating stage (up to 200C),Kim
+2005,Jun 16,1,"John Barker, M-H Kim",,,Instrument Testing,2-position heating stage (up to 200C),Barker
+2005,Jun 17,5,John barker,,,Test of Peak Drift,4P,Barker
+2005,Jun 22,13,M-H Kim,6095,,Perfluorinated Ionomer Polymer,2-position heating stage (up to 200C),Barker
+2005,Jul 5,9,J barker,,,Test Peak Drift,2-position heating stage (up to 200C),Barker
+2005,Jul 14,4,Man-Ho Kim,6109,,Perfluorinated Ionomer Polymer,2-position heating stage (up to 200C),Kim
+2005,Jul 18,2,"T Russell, K Shin, J-T Chen",5918,UC18-01,Static conformation of chained molecules in nanoscopic cylinder,2-position heating stage (up to 200C),Kim
+2005,Jul 20,3,Man-Ho Kim,6113,,Perfluorinated Inonomer Polymers,2-position heating stage (up to 200C),"Barker,Kim"
+2005,Jul 23,2,,,,TBA,2-position heating stage (up to 200C),"Barker,Kim"
+2005,Aug 18,4,John Barker,6125,,Faunhofer Diffraction from Narrow Slits,2-position heating stage (up to 200C),Barker
+2005,Aug 22,2,L Porcar,,,Feasibility tests of assorted samples,5-position ambient sample changer,Kim
+2005,Aug 24,7,"C Zukoski, E Mock",5878,,Structure and Rheology of Anisotropic Particles,5-position ambient sample changer,"Kim,Barker"
+2005,Aug 31,2,J Barker,,,Beam Background,5-position ambient sample changer,Barker
+2005,Sep 2,4,"M Yoonessi, M Durstock, R Vaia",5802,U18-09,Ionic Nanoclusters of Fuel cell Membranes,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Kim
+2005,Sep 6,3,"Derek Ho, Wei-Ren Chen",6163,,Semi-conducting Polymer Solutions,2-position heating stage (up to 200C),Kim
+2005,Sep 9,4,W Bertram,5704,U18-03,Anomalous Multiple Scattering Effects from Sandstone,5-position ambient sample changer,Barker
+2005,Sep 13,3,Operations,,,Reactor Shutdown,2-position heating stage (up to 200C),"Barker,Kim"
+2005,Sep 16,5,"C Nam, D Kalman, N Wagner",5824,U18-11,Aggregated Nanoparticle Suspensions,Boulder Couette Flow Shear Cell,"Kim,Porcar"
+2005,Sep 21,5,"A Nakatani, A VanDyk",5977,UC18-02,Shear Dependence of Polymer Particle Interactions,Boulder Couette Flow Shear Cell,"Porcar,Kim"
+2005,Sep 26,2,"G Schmidt, L Elena",5921,U18-18,Nanocomposite Hydrogels,2-position heating stage (up to 200C),Kim
+2005,Oct 13,1,M-H Kim,,,Instrument Testing,5-position ambient sample changer,Kim
+2005,Oct 14,3,B Simmons,5790,U18-06,Cleavable Surfactants,5-position ambient sample changer,Kline/Kim
+2005,Oct 17,5,Man-Ho Kim,6197,,Structure of Droplets,5-position ambient sample changer,Kim
+2005,Oct 22,2,Operations,,,Reactor Shutdown,5-position ambient sample changer,Kim
+2005,Oct 24,4,E. Loizou,6200,,Large Scale Structures in Polymer-Clay Hydrogels,Boulder Couette Flow Shear Cell,"Porcar,Butler,"
+2005,Oct 28,3,"G Muralidharan, R Klueh, R Swinderman",5886,U18-15,Carbonitrides in 9Cr-1Mo- V-NbN Steels,Horizontal Low-Field Electromagnet (1.0 Tesla),Barker
+2005,Nov 1,7,"P Reynolds, J White, J Zank, A Jackson",5799,U18-02,Surfactant distribution within high internal phase emulsions,2-position heating stage (up to 200C),"Barker,Kim"
+2005,Nov 8,4,"L Anovitz, D Cole, G Lynn, W Hamilton",5866,U18-13,Recrystallization in Natural and Artificial marbles,5-position ambient sample changer,"Porcar,Kim"
+2005,Nov 12,4,"E Gilbert, C Buckley",5960,U18-21,Hierarchical Structures in Unstable Paraffin Blends,7-position sample changer (-10 to 100 deg C +/- 0.1 C),"Kim,Butler"
+2005,Nov 16,2,V Krishnamurthy,5897,U18-16,Magnetic Defect Structures in Patterned CoPt Arrays,5-position ambient sample changer,"Barker,Kim"
+2005,Nov 18,3,R Triolo,5331,,Study of Ancient Marbles,5-position ambient sample changer,Barker
+2005,Nov 21,3,V Tirumula,,,Double Network Hydrogels,5-position ambient sample changer,Barker
+2006,Dec 7,1,J Barker,6485,,Refraction effects in size determination,5-position ambient sample changer,Barker
+2006,Dec 8,4,Research Facility Org.,,,Instrument down due to mechanical problem,2-position heating stage (up to 200C),Barker
+2006,Dec 12,2,J Barker,6485,U19-13,Refraction effects in size determination,5-position ambient sample changer,Barker
+2006,Dec 14,2,R Triolo,5331,,Structure of Ancient Marbles,5-position ambient sample changer,Greenwald
+2006,Dec 16,4,M-H Kim,,,Structure of Nafion,2-position heating stage (up to 200C),M-H Kim
+2006,Dec 20,16,Operations,,,Holiday Shutdown,2-position heating stage (up to 200C),
+2006,Jan 4,2,M-H Kim,,,Instrument Background,5-position ambient sample changer,M-H Kim
+2006,Jan 6,3,J Barker,6485,U19-13,Refraction effects in size determination,5-position ambient sample changer,Barker
+2006,Jan 9,2,,,,TBA,5-position ambient sample changer,
+2006,Jan 11,6,E Loizou,,,Static and Shear Structure of Clay Hydrogels,Boulder Couette Flow Shear Cell,M.H. Kim
+2006,Jan 17,3,Steve Kline,5910,U18-17,Polymerized vesicles for Encapsulation,5-position ambient sample changer,M-H Kim
+2006,Jan 20,1,"D Pochan, J Schneider",5798,U18-07,Self-assembly of charged molecules,5-position ambient sample changer,Kim
+2006,Jan 21,2,operations,,,Shutdown,5-position ambient sample changer,M-H Kim
+2006,Jan 23,6,"D Pochan, J Schneider",5798,U18-07,Self-assembly of charged molecules,5-position ambient sample changer,Kim
+2006,Feb 9,1,"Barker, Kim",,NIST,Instrument Testing,2-position heating stage (up to 200C),Kim/Barker
+2006,Feb 10,2,C Buckley+ C Maitland+ B O'Connor (Curtin,6545,U19-16,Characterization of Porous Structure of Geopolymers,5-position ambient sample changer,Butler
+2006,Feb 12,1,D Pochan+ J Schneider (U Delaware),5798,NIST,Self-assembly of Charged Particles,5-position ambient sample changer,Butler
+2006,Feb 13,3,M-H Kim (NCNR),6197,NIST,Structure of Droplets,5-position ambient sample changer,Kim
+2006,Feb 16,1,V Tirumala+ T Tominaga+ E Lin+ W- L Wu (Polymers),6594,NIST,Toughness in Double- Network Hydrogels,5-position ambient sample changer,Butler
+2006,Feb 17,4,I Gentile+ J Ruggles+ K Baldwin (U Queensland),5882,S18-65,Multilayer Stober Particles,5-position ambient sample changer,Kim
+2006,Feb 21,2,V Tirumala+ T Tominaga+ E Lin+ W- L Wu (Polymers),6594,U19-22,Toughness in Double- Network Hydrogels,5-position ambient sample changer,Butler/Kim
+2006,Feb 23,5,L Walker+ D Kuntz (Carnegie Mellon U),6460,U19-10,pH-resposive polymer- surfactant aggregate gels,5-position ambient sample changer,Kline
+2006,Feb 28,1,V Tirumala+ T Tominaga+ E Lin+ W- L Wu (Polymers),6594,U19-22,Toughness in Double- Network Hydrogels,5-position ambient sample changer,Butler
+2006,Mar 1,6,C Nam+ N Wagner+ D Kalman (U Delaware),6427,U19-08,Study of Shearing Aggregated Silica Suspensions,Boulder Couette Flow Shear Cell,Porcar
+2006,Mar 7,3,B Anderson+ E Mock (U Illinois),6508,U19-14,Microstructure of Nanoparticle Fillers in Low MW PEG,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Porcar/Kim
+2006,Mar 10,3,E Mock+ B Anderson+ C Zukoski (U Illinois),6465,UC19-03,Structure and Rheology of Anisotropic Particles,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Porcar/Kim
+2006,Mar 13,2,S Kline (NCNR),5910,U18-17,Self Assembly of Charged Molecules,5-position ambient sample changer,Kline
+2006,Mar 15,3,J Hutter+ W Wan+ L Millon+ S Hudson (U Western Ontario)+,6480,U19-11,SANS & USANS Investigation of Anisotropic PVA,5-position ambient sample changer,Lin
+2006,Mar 18,2,"E. Loizou, L. Porcar, P. Butler",6773,NIST,Large Scale Structures in Laponite -PEO Hydrogels,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2006,Mar 30,1,"D. Mildner, M-H. Kim",,,Instrument Testing and feasibility meas.,5-position ambient sample changer,Kim
+2006,Mar 31,3,C Nam+ N Wagner+ D Kalman (U Delaware),6427,NIST,Study of shearing agregated silica suspensions,Boulder Couette Flow Shear Cell,Porcar
+2006,Apr 3,3,X Gu+ L Sung (NIST),6802,NIST,Dispersion & interfacial interactions of pigments in polymeric coatings,5-position ambient sample changer,Kim/Loizou
+2006,Apr 6,1,B Hammouda+ D Ho (NIST),5784,U18-05,PEO/d-ethanol crystallization behavior,2-position heating stage (up to 200C),Hammouda/Kim
+2006,Apr 7,4,A van Buuren+ T Willey+ C Saw+ J Kinney (LLNL),6348,U19-06,Pore structure in transition metal oxide aerogels,5-position ambient sample changer,Barker/Mildner
+2006,Apr 11,3,V Tirumala+ T Tominaga+ E Lin+ W- L Wu (Polymers),6821,NIST,In situ component structure of Double Network Hydrogels,5-position ambient sample changer,Butler
+2006,Apr 14,4,D Schaefer+ D Kohls+ G Atthipalli (U Cincinnati),6828,NIST,Polystyrene & silica particle structure evaluation,5-position ambient sample changer,Kim/Butler
+2006,Apr 18,3,M. Agamalian (ORNL),6347,NIST,Study of Ferric- Martensitic 2.25 Cr-1Mo steels,HM1,Barker
+2006,Apr 21,3,Operations,,,Shutdown for spring site- wide utility outage,5-position ambient sample changer,
+2006,Apr 24,4,N Abbott+ F Hubbard (U Wisconsin),6787,NIST,Microstructures formed by light sensitive bolaform surfactants,5-position ambient sample changer,Kline
+2006,Apr 28,7,J Mattsson+ D Weitz (Harvard U),6552,UC19-05,Role oflength-scales in the sol-gel transition of,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker/Jackson
+2006,May 5,4,A Fernandez-Nieves+ D Weitz (Harvard)+ U Gasser (PSI)+ A,6430,U19-09,Structure of concentrated ionic microgel suspensions,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Jackson
+2006,May 9,2,STAFF,,NIST,summer school trial,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Jackson
+2006,May 25,1,"Barker, Kim",,,Instrument Testing,2-position heating stage (up to 200C),
+2006,May 26,5,V Alfredsson+ A Rennie+ P Linton (Lund U),6301,U19-01,Kinetics controlling the formation of mesoporous silica - USANS,Special Environment,Jackson
+2006,May 31,1,I. Lini (South Dakota State),6312,NIST,Scattering Study of the Clay-Polysaccharide Interface,5-position ambient sample changer,Jackson
+2006,Jun 1,2,Facility Shutdown,,,Facility Shutdown,,
+2006,Jun 3,2,J Thomas+ E Gartner (Northwestern U)+ A Allen (NIST),6340,U19-04,Hydration acceleration on nanostructure of cement paste & C-S-H gel -,5-position ambient sample changer,Barker
+2006,Jun 5,4,A Butler+ T Owen+ R Pynn (UC Santa Barbara),6547,U19-17,Metal Induced Phase Change by a Peptide Amphiphile,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2006,Jun 9,4,P Holden+ C Garvey+ R Russell (ANSTO),6353,UC19-02,PHA inclusion body structure and analysis - USANS studies,5-position ambient sample changer,Kim
+2006,Jun 13,8,C Whitby+ G Warr (U Sydney),6334,U19-03,Structure of Nanoparticle Absorbed Layers at Oil- Water Interface,5-position ambient sample changer,Jackson
+2006,Jun 21,1,O Diat+ G Gebel (CEA Grenoble),6590,NIST,Ioner membrane under stress - aging analysis using SAND technique,5-position ambient sample changer,Porcar
+2006,Jun 22,4,O Diat+ G Gebel (CEA Grenoble),6590,U19-21,Ioner membrane under stess - aging analysis using USANS technique,5-position ambient sample changer,Porcar
+2006,Jun 26,4,NCNR summer school,,NIST,summer school,2-position heating stage (up to 200C),STAFF
+2006,Jun 30,3,V Tirumala+ T Tominaga+ E Lin+ W- L Wu (Polymers),6950,NIST,Component Structure of Double Network Hydrogels under Uniaxial,5-position ambient sample changer,Butler
+2006,Jul 13,1,"Barker, Kim",,,Instrument Testing,,
+2006,Jul 14,1,I Lini (South Dakota State),6312,NIST,Scattering Study of the Clay-Polysaccharide Interface,5-position ambient sample changer,Jackson
+2006,Jul 15,1,Y Akpalu (Rensselaer Polytechnical,,NIST,Feasibility Study for meta-polybenzimidiazole Structure,5-position ambient sample changer,Kim
+2006,Jul 16,1,V Tirumala+ T Tominaga + E Lin+ W- L Wu (Polymers),6950,NIST,Component Structure of Double Network Hydrogels under Uniaxial Stress,5-position ambient sample changer,Butler
+2006,Jul 17,4,C Stoltz+ S Peiris+ (Navy) S Trevino (Army),5719,U18-04,USANS studies of RDX crystal defects,5-position ambient sample changer,Barker
+2006,Jul 21,5,L Anovitz+ (Tennessee) D Cole+ G Lynn+ W Hamilton,6494,UC19-04,Recrystallization process in natural & experimental marbles,5-position ambient sample changer,Kim
+2006,Jul 26,3,S Bhatia+ H Baghdadi (U Massachusetts),7183,U20-27,"Large-Scale Structure in Laponite-PEO Glasses, Gels and Solutions",5-position ambient sample changer,Barker
+2006,Jul 29,2,D Singh+ (Johns Hopkins) L Porcar+ (NIST) U Perez-,7297,NIST,High Temperature Phases in Phospholipid Mixtures,5-position ambient sample changer,Porcar
+2006,Jul 31,3,C Nam+ D Kalman+ N Wagner (Delaware),7179,NIST,USANS Study of SiO2 Suspensions,5-position ambient sample changer,Porcar
+2006,Aug 3,1,C Nam+ N Wagner+ D Kalman (U Delaware),6427,NIST,Study of Shearing Aggregated Silica Suspensions,Boulder Couette Flow Shear Cell,Porcar
+2006,Aug 4,4,SM Choi+ TH Kim+ C Doe (KAIST-Korea)+ S Kline (NIST),6535,U19-15,Non-covalently Functionalized SWNT with Controlled Surface,5-position ambient sample changer,Kline
+2006,Aug 8,3,E Loizou+ G Schmidt (LSU)+ L Porcar+ P Butler (NIST),6581,U19-20,Large Scale Structures in Laponite-PEO Hydrogels,Boulder Couette Flow Shear Cell,Kim
+2006,Aug 11,6,J Mang (LANL),6385,U19-07,Porosity in a composite high explosive system,5-position ambient sample changer,Barker
+2006,Aug 17,4,A Rennie (U. Uppsala)+ P Linton+ V Alfredsson (U.,7061,UC20-01,Kinetic Studies of the Formation of Mesoporous Materials,Special Environment,Jackson/Barker
+2006,Aug 31,1,"Barker, Jackson",,NIST,Instrument testing,2-position heating stage (up to 200C),Jackson
+2006,Sep 1,2,E Loizou+ (LSU) L Porcar+ P Butler (NIST),6773,NIST,Testing of perported large scale structure in 1M Mw Laponite PEO,5-position ambient sample changer,Jackson
+2006,Sep 3,3,A Jackson+ (NIST) J White+ (ANU) D McGillivray+ J Mata,7086,NIST,Pore structure of spray dried high protein content powders,5-position ambient sample changer,Jackson
+2006,Sep 6,2,J Thomas+ E Gartner (Northwestern U)+ A Allen (NIST),6340,U19-04,Hydration acceleration on nanostructure of cement paste & C-S-H gel,5-position ambient sample changer,Barker
+2006,Sep 8,3,J Thomas (Northwestern U)+ A Allen (NIST),7131,U20-18,Nanoscale morphology of calcium hydroxide in cementitious materials,5-position ambient sample changer,Barker
+2006,Sep 11,1,B-C Park+ M-H Kim (NIST),7371,NIST,Bending of carbon nanotubes under neutron beam,5-position ambient sample changer,Kim
+2006,Sep 12,2,E Loizou+ G Schmidt+ (LSU) L Porcar+ P Butler,6581,U19-20,Large scale structures in laponite-PEO hydrogels,5-position ambient sample changer,Porcar/Butler
+2006,Sep 14,1,C Whitby+ G Warr (U Sydney),6334,NIST,Structure of nanoparticle adsorbed layers at the oil-water interface,2-position heating stage (up to 200C),Jackson
+2006,Sep 15,4,R Krishnamoorti+ T Chatterjee (U. Houston),6986,U20-04,Fractal structure of nanotube - polymer coatings,2-position heating stage (up to 200C),Jackson
+2006,Sep 19,3,Y Li+ H Herman+ (SUNY Stony Brook) A Allen (NIST),7120,U20-16,"USANS study on porous ceramic, metallic, and ceramic-metal systems",5-position ambient sample changer,Barker
+2006,Sep 22,3,G Muralidharan+ M Agamalian+ W Ren+ Z Feng (ORNL),7149,NIST,Effect of heat treatment on oxide-dispersion strengthened ferritic,Horizontal Low-Field Electromagnet (1.0 Tesla),Barker
+2006,Sep 25,3,K Hong+ (ORNL) Y Liu+ (NIST) WR Chen+ (ORNL) L,7427,NIST,Study of structural information of PCHD polymeric aqueous,5-position ambient sample changer,Porcar
+2006,Sep 28,4,S Bhatia+ S Agrawal (U Massachusetts),7166,U20-25,Large-scale structure in nanoparticle-reinforced hydrogels,5-position ambient sample changer,Porcar
+2006,Oct 2,4,X Gu+ L Sung (NIST),6982,NIST,Pigment dispersion & service life prediction of polymeric coatings,5-position ambient sample changer,Butler
+2006,Oct 6,2,S Pojman+ J Marszalek+ (U. Southern Miss) K,7110,NIST-P,Structure in stimuli- responsive polymer films based on AOT/water,5-position ambient sample changer,Kim
+2006,Oct 26,1,"Barker, Jackson",,NIST,Instrument testing,2-position heating stage (up to 200C),
+2006,Oct 27,6,J Penfold (Rutherford)+ I Tucker + R Thomas,6271,UC19-01,Lamellar Fragments of Dialkyl Chain Cationic & Nonionic Surfacant,Boulder Couette Flow Shear Cell,Barker
+2006,Nov 2,2,P Dubin+ A Kayitmazer (U Mass),7027,NIST-P,Protein-polyelectroluyte coacervates,5-position ambient sample changer,Butler/Mildner
+2006,Nov 4,2,B-C Park+ M-H Kim (NIST),7462,NIST,Deformation of AFM tip under neutron beam,5-position ambient sample changer,Kim
+2006,Nov 6,1,D Hussey+ (NIST) M Hickner (Sandia),7502,NIST,Pore space morphology of Nafion 117 & hydrocarbon membrane,5-position ambient sample changer,Kim
+2006,Nov 7,2,X Gu+ L Sung (NIST),6982,NIST-P,Pigment dispersion & service life prediction of polymeric coatings,5-position ambient sample changer,Mildner
+2006,Nov 9,5,P Baglioni+ M Bonini+ E Fratini+ (Fiorentino),7077,U20-11,Chain-like self-assembly of magnetic nanoparticles,5-position ambient sample changer,Jackson
+2006,Nov 14,3,R Russell+ P Holden (ANSTO),7240,NIST-P,Studies of PHA inclusion body structure and synthesis,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Kim
+2006,Nov 17,4,J Pencer+ N Kucerka+ (Chalk River) T Masui+,7212,U20-31,Influence of curvature on the formation of membrane domains,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Jackson
+2006,Nov 21,3,R Krishnamoorti+ T Chatterjee (U. Houston),6986,NIST-P,Fractal structure of nanotube - polymer coatings,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Jackson
+2006,Nov 24,2,R Knott+ (ANSTO) F Barabaro (BlueScope Steel),6993,NIST-P,Characterisation of Second Phase Particles in Steel,Horizontal Low-Field Electromagnet (1.0 Tesla),Barker
+2006,Nov 26,1,E Loizou,7460,NIST,Large scale structures in laponite-PEO hydrogels,Horizontal Low-Field Electromagnet (1.0 Tesla),Butler
+2006,Nov 27,2,G Muralidharan+ M Agamalian+ W Ren+ R Klueh (Oak Ridge),7139,NIST-P,Effect of creep-fatigue deformation on ferritic- martensitic steels,Horizontal Low-Field Electromagnet (1.0 Tesla),Barker
+2006,Nov 29,4,N Balsara+ M Robertson (California-,7010,U20-07,Ternary polymer blends w minimal concentrations of diblock copolymer,2-position heating stage (up to 200C),Jackson
+2006,Dec 3,1,N Balsara+ M Robertson (California-,7010,NIST-P,Ternary polymer blends w minimal concentrations of diblock copolymer,2-position heating stage (up to 200C),Jackson
+2007,Jan 3,2,T Rieker (NSF),7503,NIST,Superaggregates in carbon and silica soot,5-position ambient sample changer,Barker
+2007,Jan 5,3,J Penfold+ (Rutherford) I Tucker+ R Thomas,6271,NIST-P,Lamellar fragments of diakyl chain cationic & nonionic surfactant,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2007,Jan 8,2,G Warr+ C Whitby (U Sydney),6334,NIST-P,Structure of nanoparticle absorbed layers at oil- water interface,5-position ambient sample changer,Butler
+2007,Jan 10,6,A Nakatani+ A VanDyk (Rohm&Haas),7163,U20-24,Shear rate dependent structure of heur thickened polymer,Boulder Couette Flow Shear Cell,Porcar
+2007,Jan 16,2,V Verruto+ S Turgman Cohen+ P Kilpatrick (N,8021,NIST,Characterization of asphaltenically stabilized water in oil,5-position ambient sample changer,Porcar/Jackson
+2007,Jan 18,1,NC Das+ (Michigan Tech) H Wang+ (SUNY- Binghamton) K Yang,7221,NIST-P,Self-seeding crystallization & homogeneous nucleation,2-position heating stage (up to 200C),Mildner/Barker
+2007,Jan 19,4,NC Das+ (Michigan Tech) H Wang+ (SUNY- Binghamton) K Yang,7221,U20-32,Self-seeding crystallization & homogeneous nucleation,2-position heating stage (up to 200C),Mildner/Barker
+2007,Jan 23,3,K Yang+ NC Das+ (Michigan Tech) H Wang (SUNY-,7256,U20-34,Multiwalled carbon nanotubes synthesized with several iron-,5-position ambient sample changer,Mildner/Barker
+2007,Jan 26,3,A Rennie+ (Uppsala) P Linton+ V Alfredsson (Lund),7061,NIST-P,Kinetic studies of the formation of mesoporous materials,Special Environment,Jackson
+2007,Jan 29,2,T Nylander+ M-L Orberg+ (Lund) K Edler+ (Bath) U,6999,U20-06,DNA compaction using PAMAM dendrimers,5-position ambient sample changer,Jackson
+2007,Jan 31,2,R Kramb+ C Zukoski+ E Mock (U Illinois),7134,U20-20,Structure & rheology of reversible polystyrene gels,5-position ambient sample changer,Porcar
+2007,Feb 2,1,R Kramb+ C Zukoski+ E Mock (U Illinois),7134,NIST-P,Structure & rheology of reversible polystyrene gels,5-position ambient sample changer,Porcar
+2007,Feb 3,3,V Tirumala+ E Lin+ D Delongchamp+ W-L Wu (NIST),7515,NIST,Morphology of poly(ethylene dioxythiophene)/poly(sty,5-position ambient sample changer,Mildner
+2007,Feb 6,3,R Ivkov+ (Triton BioSystems) C Gruettner+,7115,U20-15,Characterization of magnetic nanoparticles for cancer treatment,Horizontal Low-Field Electromagnet (1.0 Tesla),Jackson/Borche
+2007,Feb 9,1,W-L Wu+ V Tirumala+ E Lin+ T Tominaga (NIST),8140,NIST,Component structure of doublenetwork hydrogels under uniaxial,5-position ambient sample changer,Mildner
+2007,Feb 22,1,,,,facility down,,
+2007,Feb 23,8,P Reynolds+ D McGillivray+ J Mata+ J White+,6963,U20-02,Packing of highly dispersive spheres at very high packing,5-position ambient sample changer,Jackson
+2007,Mar 3,5,P Reynolds+ (ANU) A Jackson+ (NIST) D McGillivray (ANU),8391,NIST,Packing in high internal phase emulsions as function of packing,5-position ambient sample changer,Jackson
+2007,Mar 8,1,A Jackson+ (NIST) J White+ D McGillivray+ J Mata,7204,U20-30,Hydration of high protein content powders,NHC,Jackson
+2007,Mar 9,4,C Stoltz+ (Navy) J Ciezak+ (NIST) S Peiris+ (Navy) S,6935,U20-01,Contrast variation studies of RDX powder,5-position ambient sample changer,Barker
+2007,Mar 13,3,T Willey+ T van Buuren (LLNL),7185,U20-29,Voids within TATB-based explosives,5-position ambient sample changer,Barker
+2007,Mar 16,5,N Wanakule (UC Berkeley),7529,NIST,Properties of A/B/A-C Polymer Blends,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Jackson
+2007,Mar 21,2,G Muralidharan+ M Agamalian+ W Ren+ R Klueh (ORNL),7139,NIST-P,Effect of creep-fatique deformation on ferritic- martensitic steels,Horizontal Low-Field Electromagnet (1.0 Tesla),Barker
+2007,Mar 23,4,R Hule (U Delaware),8122,NIST,Strand symmetry microstructure in beta- hairpin peptide,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2007,Mar 27,1,D Pozzo+ L Porcar (NIST),8125,NIST,Structure of biological gels,Special Environment,Porcar
+2007,Mar 28,1,A Tripathi+ J Lee+ (Brown) A Bose+ A Jha (URI),7073,NIST-P,Confinement on the evolution of surfactant mesophases,5-position ambient sample changer,Mildner
+2007,Mar 29,1,T Yucel+ D Pochan+ J Schneider (U Delaware),7656,NIST,Self-assembly of beta- hairpin peptides,5-position ambient sample changer,Barker/Porcar
+2007,Mar 30,2,P Baglioni+ M Bonini+ E Fratini+ (Fiorentino) Y Liu,7077,NIST-P,Chain-like selfassembly of magnetic nanoparticles,5-position ambient sample changer,Porcar/Mildner
+2007,Apr 1,1,A Nakatani+ A Van Dyk (Rohm&Haas),7163,NIST-P,Shear rate dependent structure of heur thickened polymer,5-position ambient sample changer,Porcar
+2007,Apr 19,0,A Jackson,,NIST,test new automated analyzer tilt mechanism,,Jackson
+2007,Apr 19,4,E Loizou+ G Schmidt+ (LSU) L Porcar+ P Butler,7301,U20-36,Large scale sctructures in montmorillonite-PEO hydrogels,Boulder Couette Flow Shear Cell,Porcar
+2007,Apr 23,1,A Jackson+ (NIST) J White+ D McGillivray+ J Mata,7204,U20-30,Hydration of high protein content powders,NHC,Jackson
+2007,Apr 24,3,V Tirumala+ D DeLongchamp+ E Lin+ W-L Wu (NIST),7886,U21-27,Scrambled egg morphology of oppositely charged conducting polymer,5-position ambient sample changer,Butler
+2007,Apr 27,5,R Ivkov+ (Triton BioSystems) J Borchers+ C Dennis+,7895,U21-28,Long range order in magnetic nanoparticles used for cancer,Horizontal Low-Field Electromagnet (1.0 Tesla),Jackson
+2007,May 2,1,R Ivkov+ (Triton BioSystems) J Borchers+ C Dennis+,7895,NIST-P,Long range order in magnetic nanoparticles used for cancer,Horizontal Low-Field Electromagnet (1.0 Tesla),Jackson
+2007,May 3,5,N Wanakule+ A Nedoma (UC Berkeley),7833,U21-22,Thermodynamic & kinetic properties of A/B/A-C polymer blends with,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Jackson
+2007,May 8,6,M-P Nieh+ J Katsaras+ J Pencer (Chalk River),7775,NIST-P,Spontaneous forming multifunctional liposomes for diagnosis and,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Jackson
+2007,May 14,2,E Loizou+ G Schmidt+ (LSU) L Porcar+ P Butler,7301,U20-36,Large scale sctructures in montmorillonite-PEO hydrogels,Boulder Couette Flow Shear Cell,Porcar
+2007,May 16,1,E Loizou+ G Schmidt+ (LSU) L Porcar+ P Butler,7301,NIST-P,Large scale sctructures in montmorillonite-PEO hydrogels,Boulder Couette Flow Shear Cell,Porcar
+2007,May 17,4,D Pozzo+ L Porcar (NIST),8287,NIST,Large scale structure of fibrin networks,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Porcar
+2007,May 21,3,N Das+ H Wang+ K Yang (SUNY Binghamton),7790,U21-18,Polymer chain stretching and disentanglement in solution under shear,5-position ambient sample changer,Barker
+2007,May 24,1,N Das+ H Wang+ K Yang (SUNY Binghamton),7790,NIST-P,Polymer chain stretching and disentanglement in solution under shear,5-position ambient sample changer,Barker
+2007,May 25,1,A Jackson+ (NIST) J White+ D McGillivray+ J Mata,7204,U20-30,Hydration of high protein content powders,5-position ambient sample changer,Jackson
+2007,May 26,1,D Pozzo+ L Porcar (NIST),8287,NIST,Large scale structure of fibrin networks,5-position ambient sample changer,Porcar
+2007,Jun 7,1,,,,facility not available,,
+2007,Jun 8,6,C Welch+ (LANL) M Lynch+ (P&G) J Mang (LANL),7713,NIST-P,Evolution of vesicle aggregate structures in phase separating &,5-position ambient sample changer,Butler/Jackson
+2007,Jun 14,2,R Ivkov+ (Triton Biosystems) J Borchers+ C Dennis+,7895,U21-28,Long range order in magnetic nanoparticles used for cancer,Horizontal Low-Field Electromagnet (1.0 Tesla),Jackson
+2007,Jun 16,3,R Ivkov+ (Triton Biosystems) J Borchers+ C Dennis+,7895,NIST-P,Long range order in magnetic nanoparticles used for cancer,Horizontal Low-Field Electromagnet (1.0 Tesla),Jackson
+2007,Jun 19,3,Y Melnichenko+ A Radlinski+ M Agamalian+ G,7615,U21-04,Structure & adsorption capacity of CO2 saturated coals using USANS,Special Environment,Kline
+2007,Jun 22,3,P Schexnailder+ G Schmidt (Purdue),7746,U21-14,Ionic strength on shear orientation in poly- laponite hydrogels,5-position ambient sample changer,Porcar
+2007,Jun 25,1,P Schexnailder+ G Schmidt (Purdue),7746,NIST-P,Ionic strength on shear orientation in poly- laponite hydrogels,5-position ambient sample changer,Porcar
+2007,Jun 26,3,J Thomas+ (Northwestern) A Allen (NIST),7759,U21-15,Composition & density of calcium silicate hydrate nanoparticles using,5-position ambient sample changer,Kline
+2007,Jun 29,4,L Porcar+ D Pozzo (U Maryland),7906,U21-31,Relationship between 'strain-hardening' & structure of fibrin,Special Environment,Porcar
+2007,Jul 3,8,C Dosch+ (Florida) D Pozzo+ (Carnegie- Mellon) L Porcar,8662,SURF,USANS investigation of fibrin fibers and networks,5-position ambient sample changer,Porcar
+2007,Jul 11,4,Y Melnichenko+ A Radlinski+ M Agamalian+ G,7615,U21-04,Structure & adsorption capacity of CO2 saturated coals using USANS,Special Environment,Barker
+2007,Jul 15,1,Y Melnichenko+ A Radlinski+ M Agamalian+ G,7615,NIST-P,Structure & adsorption capacity of CO2 saturated coals using USANS,Special Environment,Barker
+2007,Jul 26,5,A Navarre-Sitchler+ (PSU) D Cole+ (ORNL) S Brantley+,7805,U21-21,Evolution of porosity during weathering of ancient basalts,5-position ambient sample changer,Porcar/Jackson
+2007,Jul 31,2,P Wang+ D Schaefer (U Cincinnati),7723,U21-13,Morphology of epoxy- silane anti-corrosion system,5-position ambient sample changer,Jackson
+2007,Aug 2,1,J Poelma+ (Southern Mississippi) S Kline (NIST),8668,SURF,Structure of crosslinked micelle gels,5-position ambient sample changer,Kline
+2007,Aug 3,3,T. Chatterjee (U Houston),8389,NIST,Network of single walled carbon nanotubes in epoxy,5-position ambient sample changer,Jackson
+2007,Aug 6,3,J Mang (LANL),7565,U21-01,Characterization of ultralow-density nanostructured metal,5-position ambient sample changer,Barker
+2007,Aug 9,5,J Mang (LANL),7603,U21-03,Porosity in a thermally treated composite high explosive system,5-position ambient sample changer,Barker
+2007,Aug 14,2,T Rieker+ (NSF) C Sorensen+ R Dhaubhadel (KSU),7566,U21-02,Superaggregates in a carbon aerosol gel,5-position ambient sample changer,Barker
+2007,Aug 16,2,D McGillivray+ P Reynolds+ J Mata+ J White+ (ANU) A,7904,U21-30,Aging of High Internal Phase Emulsions,5-position ambient sample changer,Jackson
+2007,Aug 18,3,L Porcar+ (NIST) D Pozzo (U Maryland),7906,U21-31,Relationship between 'strain-hardening' & structure of fibrin,Special Environment,Porcar
+2007,Aug 21,3,D Pochan+ J Schneider+ T Yucel U (Delaware),7656,U21-05,Self-assembly of beta- hairpin peptide,5-position ambient sample changer,Barker
+2007,Aug 24,4,R Hule+ D Pochan (U Delaware),7722,U21-12,Microscale morphology of asymmetric beta-hairpin peptides,5-position ambient sample changer,Barker
+2007,Aug 28,2,D McGillivray+ P Reynolds+ J Mata+ J White+ (ANU) A,7904,U21-30,Aging of High Internal Phase Emulsions,5-position ambient sample changer,Jackson
+2007,Aug 30,1,P Wang+ D Schaefer (U Cincinnati),7723,U21-13,Morphology of epoxy- silane anti-corrosion system,5-position ambient sample changer,Jackson
+2007,Aug 31,2,Y Liu+ L Porcar+ (NIST) W-R Chen (ORNL) E-W Huang (U,10432,NIST,Studying the morphology of metallic glass,5-position ambient sample changer,Porcar
+2007,Sep 13,3,M Robertson+ A Nakatani+ (Rohm & Haas),10451,PROP,proprietary,Boulder Couette Flow Shear Cell,Butler
+2007,Sep 16,2,D McGillivray+ P Reynolds+ J Mata+ J White+ (ANU) A,7904,U21-30,Aging of high internal phase emulsions,5-position ambient sample changer,Jackson
+2007,Sep 18,5,R Kramb+ C Zukoski+ E Mock (U Illinois),7669,U21-07,Microstructure of a model van der Waals gel system,5-position ambient sample changer,Porcar
+2007,Sep 23,4,E Mock+ R Kramb (U Illinois),7711,U21-09,Shear microstructure of chemically anisotropic particles,5-position ambient sample changer,Porcar
+2007,Sep 27,1,E Mock+ R Kramb (U Illinois),7711,NIST-P,Shear microstructure of chemically anisotropic particles,5-position ambient sample changer,Porcar
+2007,Sep 28,10,M Laver+ (NIST) A Abrahamsen+ (Riso) E Forgan,7720,U21-11,Glassy phases of flux line lattice in superconducting niobium,Superconducting Magnet (7 Tesla),Laver/Jackson
+2007,Oct 8,1,M Laver+ (NIST) A Abrahamsen+ (Riso) E Forgan,7720,NIST-P,Glassy phases of flux line lattice in superconducting niobium,Superconducting Magnet (7 Tesla),Butler
+2007,Oct 9,7,L Anovitz+ D Cole+ G Lynn (ORNL),7542,UC21-01,Recrystallization of natural and experimental marbles,5-position ambient sample changer,Jackson/Kline
+2007,Oct 16,2,D McGillivray+ P Reynolds+ J Mata+ J White+ (ANU) A,7904,U21-30,Aging of high internal phase emulsions,5-position ambient sample changer,Jackson
+2007,Oct 18,3,C Stoltz+ (Naval Surface Warfare) J Barker (NIST),8673,NIST,Continung constrast variation experiments on RDX powders with USANS,5-position ambient sample changer,Barker
+2007,Nov 1,4,A Navarre-Sitchler+ S Brantley+ (PSU) Cole+ G Lynn (ORNL),7805,NIST-P,Evolution of porosity during weathering of ancient basalts,5-position ambient sample changer,Porcar
+2007,Nov 5,2,A Navarre-Sitchler+ S Brantley+ (PSU) Cole+ G Lynn (ORNL),7805,U21-21,Evolution of porosity during weathering of ancient basalts,5-position ambient sample changer,Porcar
+2007,Nov 7,2,D McGillivray+ P Reynolds+ J Mata+ J White+ (ANU) A,7904,U21-30,Aging of high internal phase emulsions,5-position ambient sample changer,Jackson
+2007,Nov 9,6,E-W Huang+ P Liaw+ (U Tennessee) L Porcar (NIST),9528,NIST-P,Stress-induced interface transitions in nano precipitates in C-22HS,5-position ambient sample changer,Porcar
+2007,Nov 15,6,M Laver+ (NIST) A Abrahamsen+ (RISO) E Forgan,7720,NIST-P,Glassy phases of flux line lattice in superconducting niobium,Special Environment,Laver
+2007,Nov 21,5,D Ho+ (NIST) W-R Chen+ (ORNL) Y Liu (NIST),9411,U22-10,Semi-conducting polymers in solution,2HB,Jackson
+2007,Nov 26,1,D Ho+ (NIST) W-R Chen+ (ORNL) Y Liu (NIST),9411,NIST-P,Semi-conducting polymers in solution,2HB,Jackson
+2007,Nov 27,7,M Robertson+ A Nakatani (Rohm & Haas),10471,PROP,proprietary,Boulder Couette Flow Shear Cell,Butler
+2007,Dec 4,2,G Muralidharan+ (ORNL) T Tiegs (Vesta Sciences),9486,NIST-P,Pore characteristics in nanoporous polycrystalline silicon,5-position ambient sample changer,Barker
+2007,Dec 6,1,L Anovitz+ D Cole+ G Lynn (ORNL),7542,NIST-P,Recrystallization of natural and experimental marbles,5-position ambient sample changer,Jackson
+2007,Dec 7,2,D McGillivray+ P Reynolds+ J Mata+ J White+ (ANU) A,7904,U21-30,Aging of high internal phase emulsions,5-position ambient sample changer,Jackson
+2008,Jan 3,1,L Anovitz+ D Cole+ G Lynn (ORNL),7542,NIST-P,Recrystallization of natural and experimental marbles,5-position ambient sample changer,Jackson
+2008,Jan 4,4,S Rahatekar + S Kline (NIST),11700,NIST,Network structure of carbon nanotube / epoxy composites,5-position ambient sample changer,Kline
+2008,Jan 8,2,D McGillivray+ P Reynolds+ J Mata+ J White+ (ANU) A,7904,U21-30,Aging of high internal phase emulsions,5-position ambient sample changer,Jackson
+2008,Jan 10,1,L Anovitz+ D Cole+ G Lynn (ORNL),7542,NIST-P,Recrystallization of natural and experimental marbles,5-position ambient sample changer,Jackson
+2008,Jan 11,6,M Robertson+ A Nakatani+ A VanDyk+ M Schure+ J Bohling,9302,U22-08,Structural evolution of fumed silica dispersions under shear,Boulder Couette Flow Shear Cell,Porcar/Mildner
+2008,Jan 17,7,C Dennis+(NIST) R Ivkov+(Triton Biosystems) A,8936,U22-01,Influence of Dextran on Structure Factor of Iron Oxide Nanoparticles,5-position ambient sample changer,Jackson
+2008,Jan 24,6,S Brantley+ (PSU) G Lynn+ D Cole+ G Rother+ D,9350,U22-09,Evolution of porosity during incipient weathering of shale and,5-position ambient sample changer,Porcar/Mildner
+2008,Jan 30,5,N Wanakule+ A Nedoma+ N Balsara (UC Berkeley),12111,NIST,Phase behavior of ternary polymer blends,4-position heating stage (up to 200C),Jackson
+2008,Feb 4,2,M Nagao+ Zheng Yi+ D Bossev (Indiana Univ),11680,NIST,Anesthetic effects on unilamellar vesicle formations,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2008,Feb 6,4,R Knott+ (ANSTO) S Mudie (CSIRO Minerals),9291,NIST-P,Structure of resilin hydrogel,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner/Laver
+2008,Feb 21,1,Th,,,instrument testing,,Jackson
+2008,Feb 22,4,M Robertson+ A Nakatani (Rohm&Haas),10471,PROP,proprietary,Boulder Couette Flow Shear Cell,Mildner
+2008,Feb 26,3,C Stoltz (Navy),9237,U22-03,Study of reduced sensitivity RDX and HMX by contrast variation,5-position ambient sample changer,Barker
+2008,Feb 29,6,A Sitchler+ S Brantley+ (PSU) G Rother+ D Cole,9414,U22-11,Weathering induced changes in porosity and fractal geometry of,Special Environment,Mildner
+2008,Mar 6,6,C Welch+ (LANL) M Lynch+ (Proctor & Gamble) J Mang,9460,U22-12,Microstructure of model vesicles and their aggregates upon phase,4H+5 P,Jackson
+2008,Mar 12,2,STAFF,,,feasibility/shared time,5-position ambient sample changer,Butler
+2008,Mar 14,4,M Fantle+ (PSU) G Rother (ORNL),9259,U22-04,Measuring mesoporosity in carbonates: application of USANS to geological,5-position ambient sample changer,Mildner
+2008,Mar 18,3,C Stoltz (Navy),9237,U22-03,Study of reduced sensitivity RDX and HMX by contrast variation,5-position ambient sample changer,Barker
+2008,Mar 21,4,T Koga+ (SUNY Stony Brook) H Jinnai (Kyoto Inst. Tech.),9500,U22-15,3-dimensional hierarchical structures of nanofillers in,5-position ambient sample changer,Mildner
+2008,Mar 25,5,D Pozzo+ (U Washington) L Porcar (NIST),9610,U22-20,Influence of factor XIII on the flexibility of fibrin network,5-position ambient sample changer,Cheng/Butler
+2008,Apr 10,1,A Jackson,,,Instrument testing,5-position ambient sample changer,Jackson
+2008,Apr 11,4,M Kent+ B Simmons+ J Murton+ (Sandia) R Hjelm+ (LANL) D,9451,S22-54,Study of enzymatic degradation of cellulose fibers,5-position ambient sample changer,Kline
+2008,Apr 15,3,S Rahatekar+ (NIST) K Kozioi (U Cambridge),9515,U22-17,Aggregate structure of multiwall carbon nanotubes dispersion,5-position ambient sample changer,Kline
+2008,Apr 18,3,3 day shutdown,,,reactor shutdown,,
+2008,Apr 21,3,R. Hule+ A Jha+ X Jia+ D Pochan (U Delaware),13113,NIST,Microstructure of double- crosslinked hyaluronic acid-based hydrogels,5-position ambient sample changer,Mildner
+2008,Apr 24,5,A Nakatani & R Pytel (Rohm&Haas),10471,PROP,proprietary,Boulder Couette Flow Shear Cell,Mildner
+2008,Apr 29,2,A Hopkins (Air Force Research Lab),9512,U22-16,sensor evaluation: polyaniline nanofibers for detecting chemical,5-position ambient sample changer,Jackson
+2008,May 1,1,U.Del+Georgetown,,,feasibility measurements / shared beamtime,,Jackson
+2008,May 2,4,Fr,,,summer school preparation measurements (tentative),,Jackson/Kline
+2008,May 6,2,M Laver (NCNR/UMD),NIST,NIST,Instrument Development (Magnet Mounting),Special Environment,Laver
+2008,May 8,10,M Laver+ (NCNR/UMD) A Abrahamsen+ (Riso) E Forgan,9750,U22-21,Fractured lattice and vortex glass phases of flux lines in,Special Environment,Laver
+2008,May 18,3,M Laver+ (NCNR/UMD) A Abrahamsen+ (Riso) E Forgan,9750,NIST-P,Fractured lattice and vortex glass phases of flux lines in,Special Environment,Laver
+2008,May 21,2,,,NIST,instrument development,,
+2008,Jun 4,1,A Jackson,,,instrument calibration,,Jackson
+2008,Jun 5,6,A Nakatani+ R Pytel (Rohm&Haas),10471,PROP,proprietary,Boulder Couette Flow Shear Cell,Mildner
+2008,Jun 11,5,S Bhatia+ D Griffin + S Choudhary (U Mass),13099,U23-19,Controlled aggregation of concentrated suspensions of nanoparticles,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2008,Jun 16,1,neutron source shutdown,,,,,
+2008,Jun 17,2,D. Londono+ (du Pont) A Jackson (NIST),13358,NIST,Polymer/nanoparticle composites,5-position ambient sample changer,Jackson
+2008,Jun 19,2,J Walz + C McKee (Virginia PI&SU),12738,NIST-P,Investigating the microstructure of clay/nanoparticle gels,5-position ambient sample changer,Mildner
+2008,Jun 21,2,D. Londono+ (du Pont) A Jackson (NIST),13358,NIST,Polymer/nanoparticle composites,5-position ambient sample changer,Jackson
+2008,Jun 23,4,summer school,,NIST,NCNR Summer School 2008,,STAFF
+2008,Jun 27,6,C Dennis+ J Borchers+ (NIST) K Collier+ K McNerny+,12826,U23-03,Magnetic nanoparticle chaining in ferrogels and polymer epoxy,5-position ambient sample changer,Jackson
+2008,Jul 3,4,M-H Kim+ K Chae (KIST),13056,NIST-P,Structure of ink-stick and glue,4-position heating stage (up to 200C),Mildner
+2008,Jul 7,6,A Jackson+ (NIST) D McGillivray+ (Auckland) P,12873,U23-07,Packing of binary mixtures of monodisperse spheres,5-position ambient sample changer,Jackson
+2008,Jul 24,10,D Pozzo+ (U Washington) L Porcar (ILL),9236,U22-02,Fibrin networks formed under oscillatory shear - effect of strain,Rheometer 301,Porcar/Mildner
+2008,Aug 3,1,D Pozzo+ (U Washington) L Porcar (ILL),9236,NIST-P,Fibrin networks formed under oscillatory shear - effect of strain,Special Environment,Porcar
+2008,Aug 4,1,C Dennis+ J Borchers+ (NIST) K Collier+ K Miller+,12826,U23-03,Magnetic nanoparticle chaining in ferrogels and polymer epoxy,5-position ambient sample changer,Jackson
+2008,Aug 5,3,C Dennis+ J Borchers+ (NIST) K Collier+ K Miller+,12826,NIST-P,Magnetic nanoparticle chaining in ferrogels and polymer epoxy,5-position ambient sample changer,Jackson
+2008,Aug 8,7,J Barker+ (NIST) C Rehm (ANSTO),13320,NIST,Round robin comparison of SESANS and USANS determination of latex,5-position ambient sample changer,Barker
+2008,Aug 15,6,A Mallia+ R Weiss+ T Yu+ (Georgetown U) P Terech+ (CEA,13115,UC23-21,Self-assembled fibrillar networks of organogels with nitrogen-containing,4-position heating stage (up to 200C),Butler
+2008,Aug 21,5,J Mang (LANL),12950,U23-10,Crack development in a composite high explosive subject to quasi-static,5-position ambient sample changer,Barker
+2008,Aug 26,3,L Porcar+ (ILL) T Mason+ M Fryd (UCLA),13349,NIST,Rheo-USANS of cluster- scale structure of attractive nanoemulsions,Rheometer 301,Porcar/Jackson
+2008,Aug 29,3,C Stoltz (Navy),12921,U23-08,Effects of shock and thermal cycling on explosive/binder,5-position ambient sample changer,Barker
+2008,Oct 6,1,Mo,,,instrument calibration,,Jackson
+2008,Oct 7,3,R Hule+ A Jha+ X Jia+ D Pochan (U Delaware),12728,U23-01,Microstructure of double- crosslinked hyaluronic acid-based hydrogels,5-position ambient sample changer,Mildner
+2008,Oct 10,4,R Hedden+ D Lentz+ B. Unal (Penn State Univ),12840,U23-05,Study of porosity in sponge-like poly(HEMA) gels,5-position ambient sample changer,Mildner
+2008,Oct 14,3,K Page+ A Karim+ (NIST) R Koestner+ M Budinski (GM),13079,U23-16,Structure of catalyst ink formulations for membrane electrode assemblies in,5-position ambient sample changer,Mildner
+2008,Oct 17,3,J Thomas+ (Northwestern Univ) A Allen (NIST),12863,U23-06,Characterization of calcium hydroxide phase in cement as a function,5-position ambient sample changer,Barker
+2008,Oct 20,3,V Tirumala (Cabot Corp),13389,NIST,Hierarchical structure of carbon black filled elastomer composites,5-position ambient sample changer,Butler
+2008,Oct 23,1,B Wyslouzil (Ohio State Univ),13641,NIST,feasibility,5-position ambient sample changer,Jackson
+2008,Oct 24,1,S. Kline (NCNR),13605,NIST,Identity of droplets in gels by contrast variation,5-position ambient sample changer,Kline
+2008,Oct 25,2,reactor 2 day shutdown,,,do not schedule,,
+2008,Oct 27,2,low power testing,,,do not schedule,,
+2008,Oct 29,2,R Hule+ A Jha+ X Jia+ D Pochan (U Delaware),12728,U23-01,Microstructure of double- crosslinked hyaluronic acid-based hydrogels,5-position ambient sample changer,Mildner
+2008,Oct 31,5,L Jin+ S Brantley+ (PSU) G Rother+ D Cole (ORNL),13035,U23-12,Effective surface area and geometry of anisotropic pores in,5-position ambient sample changer,Mildner
+2008,Nov 5,2,A Sitchler+ (PSU) D Cole+ G Rother+ (ORNL) S Brantley,13052,U23-13,Microporosity on the evolution pore connectivity during,5-position ambient sample changer,Mildner
+2008,Nov 7,6,A Nakatani+ R Pytel (Rohm&Haas),10471,PROP,proprietary,Boulder Couette Flow Shear Cell,Mildner
+2008,Nov 13,5,M Lynch+ (Proctor&Gamble) J Mang+ C Welch,12884,UC23-01,Microsture of model vesicles and their aggregates upon and,5-position ambient sample changer,Jackson
+2008,Nov 18,1,Tu,,,open - feasibility,,
+2009,Dec 5,6,N Das+ L Huang+ H Wang (SUNY- Binghamton),13064,U23-15,Understanding solution structure of conjugated polymers,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner/Jackso
+2009,Dec 11,6,D Waters+ (Stanford) M Toney+ (SSRL) C Frank+ S,12829,U23-04,Poly(ethylene glycol)/poly(acrylic acid) high strength,5-position ambient sample changer,Jackson
+2009,Dec 17,2,W-R Chen+ (ORNL) R Pynn+ (Indiana U) Y Liu+ (U Maryland) L,14078,NIST,Study the inter-PMMA interaction by USANS,5-position ambient sample changer,Yun/Mildner
+2009,Dec 19,1,V Tirumala (Cabot Corp),14083,PROP,Proprietary research on complex fluids,5-position ambient sample changer,Mildner
+2009,Dec 20,17,Sa shutdown,,,shutdown Saturday Dec 20 12 noon,,
+2009,Jan 6,1,V Tirumala (Cabot Corp),14083,PROP,Proprietary research on complex fluids,5-position ambient sample changer,Mildner
+2009,Jan 7,2,A Jackson+ (NIST) D McGillivray+ (Auckland) P,12873,U23-07,Packing of binary mixtures of monodisperse spheres,5-position ambient sample changer,Jackson
+2009,Jan 9,4,A Jackson+ (NIST) D McGillivray+ (Auckland) P,12873,NIST-P,Packing of binary mixtures of monodisperse spheres,5-position ambient sample changer,Jackson
+2009,Jan 13,8,C Dennis+ J Borchers+ A Jackson+ (NIST) R,13089,U23-18,Structure & magnetic interactions of silk- elastin protein block,5-position ambient sample changer,Jackson
+2009,Jan 21,5,A Sanchez+ (Cabot Corp) P Butler+ A Jackson (NIST),13105,U23-20,Mixing conditions on structures in oil based nanoparticle dispersions,RH,Butler
+2009,Jan 26,2,A Sanchez+ (Cabot Corp) P Butler+ A Jackson (NIST),13105,NIST-P,Mixing conditions on structures in oil based nanoparticle dispersions,RH,Butler
+2009,Feb 12,1,Th,,,instrument calibration,,Jackson
+2009,Feb 13,2,R Woodward+ M Carroll+ (W Australia) E,12783,NIST-E,Polymer density distribution on magnetite nanoparticles,5-position ambient sample changer,Jackson
+2009,Feb 15,2,S Vakhtushev+ (Ioffe Inst) T Egami+ (Tennesse) P,12793,NIST-E,Surface phonons in biomorphic SiC,5-position ambient sample changer,Jackson
+2009,Feb 17,1,D Mildner+ A Jackson (NIST),13641,NIST,feasibility studies,5-position ambient sample changer,Mildner
+2009,Feb 18,6,A Nakatani+ R Pytel (Rohm&Haas),13653,PROP,Proprietary experiments on coatings,Boulder Couette Flow Shear Cell,Mildner
+2009,Feb 24,1,D Mildner+ A Jackson (NIST),13641,NIST,feasibility studies,5-position ambient sample changer,Mildner
+2009,Feb 25,1,A Jackson+ S Kline+ J Barker+ D Mildner (NIST),14260,NIST-EO,one day tutorial,5-position ambient sample changer,Mildner
+2009,Feb 26,1,S Kline (NIST),14268,NIST,Identity of droplets in gels by contrast variation,5-position ambient sample changer,Kline
+2009,Feb 27,3,JK Park+(Southern Miss) R Moore+ (VPI) + K Page,13940,U24-18,Investigation of perfluorosulfonate ionomer membranes,5-position ambient sample changer,Mildner
+2009,Mar 3,2,K Page+ A Karim+ (NIST) R Koestner+ M Budinski (GM),13079,NIST-P,Catalyst ink formulations for membrane electrode assemblies in fuel cell,5-position ambient sample changer,Mildner
+2009,Mar 4,2,J Wilking+ T Mason (UCLA),13059,NIST-E,pH and light activated nanoemulsion droplet coalescence,5-position ambient sample changer,Liu
+2009,Mar 6,2,L Jin+ S Brantley+ (PSU) G Rother+ D Cole+ (ORNL) R,13814,U24-10,Geometry & connectivity of pores within black shales,Special Environment,Mildner
+2009,Mar 8,1,L Jin+ S Brantley+ (PSU) G Rother+ D Cole+ (ORNL) R,13814,NIST-P,Geometry & connectivity of pores within black shales,Special Environment,Mildner
+2009,Mar 9,1,G Rother+ D Cole (ORNL),13888,NIST-E,Microstructure of carbon dioxide in mesoporous substrates,5-position ambient sample changer,Jackson
+2009,Mar 10,3,A Sitchler+ (PSU) G Rother+ D Cole+ (ORNL) S Brantley,14160,NIST,Microporosity on the evolution pore connectivity during,5-position ambient sample changer,Mildner
+2009,Mar 13,5,D Cole+ G Rother+ M Brady+ J Keiser (ORNL),13919,U24-16,Porosity generation during metal oxidation,5-position ambient sample changer,Jackson
+2009,Mar 18,4,L Jin+ S Brantley+ (PSU) G Rother+ D Cole+ (ORNL) R,13814,U24-10,Geometry & connectivity of pores within black shales,Special Environment,Mildner
+2009,Apr 9,1,Th,,,instrument calibration,,Jackson
+2009,Apr 10,5,M Laver+ (UMD) F Ye+ J Fernandez- Baca (ORNL),14020,U24-23,Strain glass in a phase separated manganite,SCM9,Laver
+2009,Apr 15,1,M Laver+ (UMD) F Ye+ J Fernandez- Baca (ORNL),14020,NIST-P,Strain glass in a phase separated manganite,SCM9,Laver
+2009,Apr 16,1,J Barker (N1ST),14277,NIST,Test of parasitic background from epithermal neutrons,5-position ambient sample changer,Barker
+2009,Apr 17,6,D Ho (NIST),14230,NIST,polyelectrolyte/nanoparti cle dispersions for fuel cell applications,5-position ambient sample changer,Jackson
+2009,Apr 23,5,N Borkar+ D Schaefer+ N Hu (U Cincinnati),13753,U24-05,What pore size is measured by evapoporimetry,5-position ambient sample changer,Mildner
+2009,Apr 28,2,R Knott+ T Hanley (ANSTO),13782,U24-07,Characterisation of second phase particles in steel,5-position ambient sample changer,Mildner
+2009,Apr 30,1,P Butler (NIST),13641,NIST,feasibility,5-position ambient sample changer,Mildner
+2009,May 1,4,C Stoltz+ B Mason (NSWC),13711,U24-02,Deuterated polymeric binder systems for energetic materials,5-position ambient sample changer,Barker
+2009,May 5,3,M Kane+ (Savannah River) D Londono (DuPont),14171,NIST,Polymer nanocomposites for comprehensive hierarchical particle,5-position ambient sample changer,Mildner
+2009,May 8,3,K Page+ A Karim+ (NIST) R Koestner+ M Budinski (GM),13079,NIST-P,Catalyst ink formulations for membrane electrode assemblies in fuel cell,5-position ambient sample changer,Mildner
+2009,May 11,6,Y Melnichenko+ G Cheng+ (ORNL) T Blach+ (Griffith,13658,U24-01,Exploring structure & absorption capacity of methane saturated coals,Special Environment,Jackson
+2009,May 28,1,M Kent+ (Sandia) R Hjelm+ (LANL) B Simmons (Sandia),13762,NIST-P,USANS study of enzymatic digestion of cellulose,5-position ambient sample changer,Mildner
+2009,May 29,5,M Kent+ (Sandia) R Hjelm+ (LANL) B Simmons (Sandia),13762,U24-06,USANS study of enzymatic digestion of cellulose,5-position ambient sample changer,Mildner
+2009,Jun 3,1,A Nakatani+ R Pytel (Rohm&Haas),13653,NIST-P,Proprietary experiments on coatings,Boulder Couette Flow Shear Cell,Mildner
+2009,Jun 4,6,A Nakatani+ R Pytel (Rohm&Haas),13653,PROP,Proprietary experiments on coatings,Boulder Couette Flow Shear Cell,Mildner
+2009,Jun 10,2,A Eberle+ N Wagner + JM Kim (U Delaware),14598,NIST-P,Microstructure formation in model nanoparticle colloidal dispersion,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2009,Jun 12,3,T Koga (Stony Brook),14401,NIST,Polymer chains absorbed to filler nanocomposites in reinforced elastomers,5-position ambient sample changer,Mildner
+2009,Jun 15,4,A Jackson (NIST)+ A Nedoma (UC- Berkeley),14408,NIST-E,Phase behavior of Asymmetric Ternary Polymer Blends,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Jackson
+2009,Jun 19,4,J Mang (LANL),13895,U24-13,Study of ratchet growth in PBX 9502,5-position ambient sample changer,Barker
+2009,Jun 23,3,A Jackson (NIST)+ M Levine (Hood College),14406,SURF,Packing of soft spheres,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Jackson
+2009,Jun 26,8,L Anovitz+ D Cole+ (ORNL) J Valley (U Wisconsin),13910,U24-14,Paleohydraulic properties of large basinal sandstone during,5-position ambient sample changer,Jackson
+2009,Jul 4,1,L Anovitz+ D Cole+ (ORNL) J Valley (U Wisconsin),13910,NIST-P,Paleohydraulic properties of large basinal sandstone during,5-position ambient sample changer,Jackson
+2009,Jul 23,1,,,,instrument calibration,,Jackson
+2009,Jul 24,5,A Jackson (NIST)+ M Levine (Hood College),14406,SURF,Packing of soft spheres,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Jackson
+2009,Jul 29,5,L Porcar(ILL)+ M Laver(NIST)+ P Courtois+ K,13786,U24-08,Study of the microstructure of copper mosaic crystals,5-position ambient sample changer,Mildner
+2009,Aug 3,2,K Larson-Smith+ D Pozzo (U. Washington)+ A,14927,NIST,Structure of particle stabilized oil/water emulsions,5-position ambient sample changer,Jackson
+2009,Aug 5,5,W-R Chen(ORNL)+ R Pynn(Indiana)+ L Porcar(ILL)+ Y,13743,U24-04,Elucidation of inter- particle interaction of PMMA solutions,5-position ambient sample changer,Jackson
+2009,Aug 10,1,A Nakatani (Dow Chemical),13653,NIST-P,Proprietary experiments on coatings,Boulder Couette Flow Shear Cell,Mildner
+2009,Aug 11,6,A Nakatani (Dow Chemical),13653,PROP,Proprietary experiments on coatings,Boulder Couette Flow Shear Cell,Mildner
+2009,Aug 17,4,V Tirumala (Cabot Corp),14083,PROP,Proprietary research on complex fluids,5-position ambient sample changer,Mildner
+2009,Aug 21,3,D Waters(Stanford)+ M Toney(SSRL)+ C Frank+ K Engberg+ R,13966,U24-19,Poly(ethylene glycol)/ poly(acrylic acid) high strength hydrogels,5-position ambient sample changer,Butler
+2009,Aug 24,1,L Anovitz+ D Cole+(ORNL) J Valley (U,13910,NIST-P,Paleohydraulic properties of large basinal sand- stone during diagenesis,5-position ambient sample changer,Jackson
+2009,Aug 25,5,A Eberle+ N Wagner+ JM Kim (U Delaware),14598,U25-04,Microstructure formation in model nanoparticle colloidal dispersion,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Jackson
+2009,Sep 10,1,Th,,,instrument calibration,,Jackson
+2009,Sep 11,3,M Bailey+ (U Kansas) S Kline (NIST),14887,U25-25,Stability of 19F-MRI contrast agent nanoparticles,5-position ambient sample changer,Kline
+2009,Sep 14,2,N Borkar+ D Schaefer (U Cincinnati),14844,UC25-03,What pore size does evaporimetry measure,5-position ambient sample changer,Mildner
+2009,Sep 16,2,N Verdal+ Y Liu+(NIST) M Hartman+ M,14875,NIST-P,Mesoporous nature of (7)Li(11)BH4 confined in carbon aerogels,5-position ambient sample changer,Mildner
+2009,Sep 18,3,M Yoonesssi (NASA- Glenn),12942,U23-09,Structure of graphene nanosheets & energy transport in,5-position ambient sample changer,Mildner
+2009,Sep 21,3,L Anovitz+ D Cole+(ORNL) JValley (U Wisconsin-,13910,NIST-P,Paleohydraulic properties of large basinal sand- stone during diagenesis,5-position ambient sample changer,Mildner
+2009,Sep 24,11,Th,-,,source off,,
+2009,Oct 5,1,Mo,,,instrument calibration,,Jackson
+2009,Oct 6,3,M Bailey+ (U Kansas) S Kline (NIST),14887,NIST-P,Stability of 19F-MRI contrast agent nanoparticles,5-position ambient sample changer,Kline
+2009,Oct 9,3,M-H Kim (KIST),13056,NIST-P,Structure of ink-stick and glue,5-position ambient sample changer,Jackson
+2009,Oct 12,3,L Anovitz+ D Cole+(ORNL) JValley (U Wisconsin-,13910,NIST-P,Paleohydraulic properties of large basinal sand- stone during diagenesis,5-position ambient sample changer,Jackson
+2009,Oct 15,4,C Dennis+ J Borchers+ A Jackson+(NIST) R,14779,U25-15,Structural and magnetic analysis of iron oxide magnetic nanoparticles,HM2/ 5P,Jackson
+2009,Oct 19,4,K McNerny+ M McHenry+(Carnegie- Mellon) C Dennis+ J,14845,U25-21,Monodisperse FeCo and FeNi core/shell magnetic nanoparticles & chaining,5-position ambient sample changer,Jackson
+2009,Oct 23,3,Fr,-,,source off,,
+2009,Oct 26,4,C Stoltz+ B Mason (Naval Surface Warfare Center),14659,UC25-02,Deuterated methanol contrast matching solutions for RDX USANS,5-position ambient sample changer,Barker
+2009,Oct 30,2,L Anovitz+ D Cole+(ORNL) JValley (U Wisconsin-,13910,NIST-P,Paleohydraulic properties of large basinal sand- stone during diagenesis,5-position ambient sample changer,Jackson
+2009,Nov 13,4,S Maccarrone + A Dinsmore + P Dubin (U Mass),15130,NIST,Phase transitions and mesoscopic structure in polyelectrolyte-micelle,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2009,Nov 17,3,R Knott+ (ANSTO) D Mainwaring+ P Murugara,14859,U25-22,Chitosan microparticles for drug delivery,5-position ambient sample changer,Mildner
+2009,Nov 20,2,M Bhatt+ L Jin+ S Brantley (PSU)+ D Cole+ G Rother,14741,U25-10,Porosity development in granite & diabase weathering in temperate,Special Environment,Mildner
+2009,Nov 22,1,M Bhatt+ L Jin+ S Brantley (PSU)+ D Cole+ G Rother,14741,NIST-P,Porosity development in granite & diabase weathering in temperate,Special Environment,Mildner
+2009,Nov 23,2,A Mallia+ R Weiss+ T Yu (Georgetown)+ P Terech (CEA)+ S,13115,NIST-P,Self-assemblied fibrillar networks of organogels with nitrogen containing,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2009,Nov 25,4,L Jin+ S Brantley+ (PSU) G Rother+ D Cole (ORNL),14645,U24-05,Surface area & pore geometry in weathering clast of shales,Special Environment,Mildner
+2009,Nov 29,1,L Jin+ S Brantley+ (PSU) G Rother+ D Cole (ORNL),14645,NIST-P,Surface area & pore geometry in weathering clast of shales,Special Environment,Mildner
+2009,Nov 30,1,Jackson (NIST) + M Levine (Hood College),14406,NIST,Packing of soft spheres,5-position ambient sample changer,Jackson
+2009,Dec 1,3,M Bhatt+ L Jin+ S Brantley (PSU)+ D Cole+ G Rother,14741,U25-10,Porosity development in granite & diabase weathering in temperate,Special Environment,Mildner
+2009,Dec 4,3,J Thomas+ (Northwestern) A Allen (NIST),14757,U25-12,Solid calcium-silicate- hydrate gel as function of calcium/silicon ratio,5-position ambient sample changer,Barker
+2009,Dec 7,4,A Nakatani+ A VanDyke (Dow Chemical),13653,PROP,Proprietary experiments on coatings,Boulder Couette Flow Shear Cell,Mildner
+2009,Dec 11,3,V Tirulala (Cabot Corp),14083,PROP,Proprietary research on complex fluids,5-position ambient sample changer,Mildner
+2009,Dec 14,1,V Prabhu + R Murphy (NIST),15156,NIST,Fractal dimension for PAG induced nanoparticle aggregates,- 5P,Mildner
+2009,Dec 15,5,Z Kurji+ R Hule+ P Pirogovsky+(Cal Tech) N,14764,U25-14,Side group liquid crystal diblocks: vesicles & microstructure,Horizontal Low-Field Electromagnet (1.0 Tesla),Barker
+2010,Jan 5,1,Y Melnichenko+ (ORNL) G Cheng+ (LBL) T Blach+,14517,NIST-P,Structure & absorption of methane saturated coals,Special Environment,Mildner
+2010,Jan 6,8,Y Melnichenko+ (ORNL) G Cheng+ (LBL) T Blach+,14517,UC25-01,Structure & absorption of methane saturated coals,Special Environment,Mildner
+2010,Jan 14,1,Y Melnichenko+ (ORNL) G Cheng+ (LBL) T Blach+,14517,NIST-P,Structure & absorption of methane saturated coals,Special Environment,Mildner
+2010,Jan 15,6,A Jackson+ (NCNR) M Levine+ (Hood College) S Kline+,14795,U25-17,Packing of soft spheres,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Jackson
+2010,Jan 21,1,M Crawford (DuPont) +S Kumar (Columbia U) +M Tyagi (NCNR),14425,NIST-E,Polymer chain conformations in nanocomposites,5-position ambient sample changer,Mildner
+2010,Jan 22,5,M Wasbrough+ K Edler+ (Bath) C Neylon (Isis),15144,NIST,large scale stucture in CTAB/SDS/polymer solutions,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Jackson
+2010,Jan 27,2,L Jin (PSU)+ G Rother (ORNL),15277,NIST,Porosity measurements on weathered Oregon shales using USANS,5-position ambient sample changer,Mildner
+2010,Jan 29,3,G Rother+ D Cole (ORNL),15229,NIST,Microstructure of hydrothermal rocks,5-position ambient sample changer,Mildner
+2010,Feb 1,1,A Nakatani+ A VanDyke (Dow Chemical),13653,PROP,Proprietary experiments on coatings,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2010,Feb 2,2,source down,,,source down,,
+2010,Feb 4,1,J Mang (LANL),14575,U25-03,Nanoscale porosity in copper processed by equal channel angular pressing,5P -,Barker
+2010,Feb 5,2,source down,,,source down,,
+2010,Feb 7,5,J Mang (LANL),14575,U25-03,Nanoscale porosity in copper processed by equal channel angular pressing,5P -,Barker
+2010,Feb 12,1,M Crawford (DuPont) +S Kumar (Columbia U) +M Tyagi (NCNR),14425,NIST-E,Polymer chain conformations in nanocomposites,5-position ambient sample changer,Mildner
+2010,Feb 13,1,B Watson (UMD)+ B Hammouda (NCNR),13687,NIST-E,polymers,5-position ambient sample changer,Mildner
+2010,Feb 25,1,Th,,,instrument calibration,,Jackson
+2010,Feb 26,1,M Crawford (du Pont) +S Kumar (Columbia) + M,14425,NIST-E,Polymer chain conformations in nanocomposites,5-position ambient sample changer,Mildner
+2010,Feb 27,2,G Rother+ D Cole (ORNL),15229,NIST,Microstructure of hydrothermal rocks,5-position ambient sample changer,Mildner
+2010,Mar 1,1,Mo,,,open - feasibility,,
+2010,Mar 2,3,L Porcar(ILL)+ M Laver(PSI)+ P Courtois+ K,13786,U24-08,Study of the microstructure of copper mosaic crystals,5-position ambient sample changer,Mildner
+2010,Mar 5,3,M Helgeson(MIT)+ L Porcar(ILL)+ N Wagner+ C Lopez-,15351,NIST-E,Testing of existence of concentration banding in shear banded flow,Plan,Porcar
+2010,Mar 8,4,P Yaron+ P Reynolds+ K White+(Australian,15358,NIST,USANS to define droplet deformation & break-up in HIPEs,Boulder Couette Flow Shear Cell,Jackson
+2010,Mar 12,5,L Jin+ S Brantley (PSU)+ G Rother+ D Cole (ORNL),15608,U26-16,Effect of tectono- climatic facors on nanoporosity in shales,5-position ambient sample changer,Mildner
+2010,Mar 17,5,K Larson Smith+ D Pozzo(U Washington)+ A,14761,U25-13,Investigation of Pickering emulsion interfacial structure,5-position ambient sample changer,Jackson
+2010,Mar 22,12,C Mudivarthi+ M Wuttig+ A Flatau(U Maryland)+ M Laver,14830,U25-20,Mechanism for the magnetorestriction in FeGa alloys,Superconducting Magnet (7 Tesla),Laver
+2010,Apr 3,1,C Mudivarthi+ M Wuttig+ A Flatau(U Maryland)+ M Laver,14830,NIST,Mechanism for the magnetorestriction in FeGa alloys,Superconducting Magnet (7 Tesla),Laver
+2010,Apr 15,1,B Hammouda (NCNR),16058,NIST,Cylindrical miscelles Pluronic P80 in d-water,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2010,Apr 16,3,Jackson (NCNR),,NIST,NSF-NCNR summer school tests,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Jackson
+2010,Apr 19,4,A Nakatani (Dow Chemical),13653,PROP,Proprietary experiments on coatings,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2010,Apr 23,3,Fr,,,sitewide shutdown at 17.00 Friday,,
+2010,Apr 26,2,V Tirumala (Cabot Corp),14083,PROP,Proprietary research on complex fluids,5-position ambient sample changer,Mildner
+2010,Apr 28,2,L Anovitz+ (Tennessee) D Cole+ G Rother (ORNL),14738,U25-09,Scattering analysis of experimentally recrystallized basinal,5-position ambient sample changer,Jackson
+2010,Apr 30,1,Jackson (NCNR),,NIST,NSF-NCNR summer school tests,5-position ambient sample changer,Jackson
+2010,May 1,6,L Anovitz+ (Tennessee) D Cole+ G Rother (ORNL),14738,U25-09,Scattering analysis of experimentally recrystallized basinal,5-position ambient sample changer,Jackson
+2010,May 7,3,H Nanda+ J Curtis+ S Krueger+ (NCNR) M Goldberg+ A McAuley,15920,NIST,Shear studies of monooclonal antibodies,5-position ambient sample changer,Jackson
+2010,May 10,3,NSF-NCNR summer school,,NIST,NSF-NCNR summer school,5-position ambient sample changer,Jackson
+2010,May 13,1,E Kizilay+ S Maccarrone+ P Dubin+ A Dinsmore,15665,NIST-P,Phase transitions & mesoscopic structure in polelectrolyte- micelle,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2010,May 14,4,E Kizilay+ S Maccarrone+ P Dubin+ A Dinsmore,15665,U26-20,Phase transitions & mesoscopic structure in polelectrolyte- micelle,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2010,May 18,2,H Nanda+ J Curtis+ S Krueger+ (NCNR) A McAuley (Amgen),15921,NIST,Protein clustering in ice,"Closed cycle, displex, refrigerator (10 K to 330 K)",Jackson
+2010,May 20,1,L Porcar(ILL) + M Laver(PSI)+ P Courtois+ K,13786,NIST-P,Study of the microstructure structure of copper mosaic,5-position ambient sample changer,Mildner
+2010,May 21,3,J Thomas+ (Northwestern) A Allen (NIST),15788,U26-22,Nanostructure and composition of hyrated fly ash,5-position ambient sample changer,Barker
+2010,May 24,2,L Porcar(ILL) + M Laver(PSI)+ P Courtois+ K,13786,NIST-P,Study of the microstructure structure of copper mosaic,5-position ambient sample changer,Mildner
+2010,Jun 10,1,M Agamalian (ORNL)+ C Glinka (NCNR),15402,NIST-P,Study of fully hydrated porous vycor glass,5-position ambient sample changer,Barker
+2010,Jun 11,3,M Agamalian (ORNL)+ C Glinka (NCNR),15402,U26-02,Study of fully hydrated porous vycor glass,5-position ambient sample changer,Barker
+2010,Jun 14,1,D McGillivray (Univ Auckland)+ A Jackson (NIST),15413,NIST-P,USANS on high pressure milk solutions,NIST Pressure Cell,Jackson
+2010,Jun 15,6,D McGillivray (Univ Auckland)+ A Jackson (NIST),15413,U26-03,USANS on high pressure milk solutions,NIST Pressure Cell,Jackson
+2010,Jun 21,4,A Nakatani (Dow Chemical),13653,PROP,Proprietary research experiments on coatings,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2010,Jun 25,5,J Richards+ D Pozzo (U Washington),15599,U26-15,Effects of confinement on the self assembly of P3HT in toluene,5-position ambient sample changer,Mildner
+2010,Jun 30,2,A Norman+ H King (ExxonMobil),16045,NIST,Porosity of gas and oil shales using USANS,5-position ambient sample changer,Mildner
+2010,Jul 2,2,A Hamill (NCNR),15819,NIST-E,Temperature effects on the structure of phospholipid bicelles,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2010,Jul 4,2,C Lopez-Barron+ D Li+ M Kim+ C Street+ B Madivala+,16080,NIST-E,soft matter feasibility studies,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2010,Jul 6,2,B Hammouda (NIST),16058,NIST,Structure of P85/d-water by USANS,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2010,Jul 8,5,C Stoltz + B Mason (Navy Indian Head),15638,U26-18,Void formation & morphology from solvent inclusions in,5-position ambient sample changer,Barker
+2010,Jul 13,5,S Mammen+ A Jackson (NIST) +K Larson- Smith+ D Pozzo (U,16136,NIST,USANS study of Pickering emulsions,5-position ambient sample changer,Jackson
+2010,Jul 29,1,,,NIST,instrument development,,Butler
+2010,Jul 30,6,A Nakatani (Dow Chemical),13653,PROP,Proprietary research experiments on coatings,Boulder Couette Flow Shear Cell,Butler
+2010,Aug 5,7,R Sakurovs+ (CSIRO) Y Melnichenko+ (ORNL) T Blach (U,15514,U26-09,Quantification of closed porosity in coals,Special Environment,Mildner
+2010,Aug 12,1,R Sakurovs+ (CSIRO) Y Melnichenko+ (ORNL) T Blach (U,15514,NIST-P,Quantification of closed porosity in coals,Special Environment,Mildner
+2010,Aug 13,5,J Mang (LANL),15550,U26-10,Compaction properties of granular high explosives,5-position ambient sample changer,Barker
+2010,Aug 18,5,M Wasbrough+ K Edler (U Bath),15417,UC26-01,Hierarchical structure in CTAB/SDS solutions with biocompatible polymers,5-position ambient sample changer,Jackson
+2010,Aug 23,1,C Welch+ E Orler+ P Welch (LANL),15501,U26-08,Structure of Nafion in mixed solvent dispersions,5-position ambient sample changer,Mildner
+2010,Aug 24,1,C Welch+ E Orler+ P Welch (LANL),15501,NIST-P,Structure of Nafion in mixed solvent dispersions,5-position ambient sample changer,Mildner
+2010,Aug 25,5,L Anovitz+ (Tennessee) D Cole+ G Rother (ORNL),14738,NIST-P,Scattering analysis of experimentally recrystallized basinal,5-position ambient sample changer,Jackson
+2010,Aug 30,3,C Lopez-Barron+ JM Kim+ J Fang,16427,NIST,Effect of particle size on gelation of model nanoparticle dispersons,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2010,Sept 2,3,M Helgeson+ P Doyle (MIT),16394,NIST,Thermoreversible nanoemulsion organohydrogels,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2010,Sep 18,3,M-H Kim+ B Yu (KIST),15806,U26-23,Structure of solid ink- sticks and porous carbons,4-position heating stage (up to 200C),Jackson
+2010,Sep 21,3,V Tirumala+ R Hall+ J Belleau (Cabot Corp),16676,PROP,Hierarchical structure of carbon black filled elastomer composites,5-position ambient sample changer,Mildner
+2010,Sep 24,5,S Bhatia+ E Saffer+ D Griffin (U Mass),16510,NIST-P,Large scale structure of PEG and PEG/PDMS hydrogels,5-position ambient sample changer,Mildner
+2010,Sep 29,5,A Nakatani (Dow Chemical),13653,PROP,Proprietary research experiments on coatings,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2010,Oct 4,4,R Hedden+ H Chen+ J Zhao (Texas Tech),16354,U27-08,Effects of solvent quality on swelling of porous gels,5-position ambient sample changer,Mildner
+2010,Oct 8,5,K Weigandt+ D Pozzo (U Washington),15585,U26-14,Morphological changes of poly(3-alkylthiophene) organgels casued by,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Jackson
+2010,Oct 13,6,L Anovitz+ D Cole+ G Rother (ORNL),15610,U26-17,Debye relation between neutron scattering & electron backscattering,5-position ambient sample changer,Jackson
+2010,Oct 19,1,J Barker (NCNR),16772,NIST,detector dead time tests,5-position ambient sample changer,Barker
+2010,Oct 20,5,K Larson-Smith+ D Pozzo+ (U Washing- ton) A Jackson,15477,U26-05,Effect of ion concent- ration on Pickering emulsion interface,5-position ambient sample changer,Jackson
+2010,Oct 25,1,K Larson-Smith+ D Pozzo+ (U Washing- ton) A Jackson,15477,NIST-P,Effect of ion concent- ration on Pickering emulsion interface,5-position ambient sample changer,Jackson
+2010,Nov 8,1,J Barker (NCNR)+ M Daymond (Queen's Univ),16827,NIST,Hydride precipitate characterization in zirconium alloys,5-position ambient sample changer,Barker
+2010,Nov 9,6,A Nakatani+ T Chatterjee (Dow Chemical),13653,PROP,Proprietary research experiments on coatings,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2010,Nov 15,1,J Fang (U Delaware),16870,NIST,Microstructure & dynamics of model colloidal gelling system,7-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2010,Nov 16,2,E Bazilevskaya+ L Jin+ (PSU) G Rother+ (ORNL) S,16506,U27-20,Nano & microporosity in Puerto Rico metavolcanics,SP,Mildner
+2010,Nov 18,1,E Bazilevskaya+ L Jin+ (PSU) G Rother+ (ORNL) S,16506,NIST-P,Nano & microporosity in Puerto Rico metavolcanics,SP,Mildner
+2010,Nov 19,3,C Stoltz+ B Mason (Navy Indian Head),16459,UC27-01,Void formation from solvent inclusions in crystalline explosives,5-position ambient sample changer,Barker
+2010,Nov 22,2,C Gagnon+ A Jackson+ D Mildner(NCNR),16877,NIST,testing new sample changer 6CB,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2010,Nov 24,5,L Anovitz+ D Cole+ G Rother+ (ORNL) A Pollington+ J,U27-10,16378,Deep burial diagensis of the Mt. Simon sandstone,5-position ambient sample changer,Jackson
+2010,Nov 29,1,C Gagnon+ A Jackson+ D Mildner(NCNR),16877,NIST,testing new sample changer 6CB,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Jackson
+2010,Nov 30,6,A Nakatani+ T Chatterjee + A VanDyke (Dow,13653,PROP,Proprietary research experiments on coatings,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2010,Dec 6,1,L Anovitz+ D Cole+ G Rother+ (ORNL) A Pollington+ J,U27-10,NIST-P,Deep burial diagensis of the Mt. Simon sandstone,5-position ambient sample changer,Jackson
+2010,Dec 7,2,E Bazilevskaya+ L Jin+ (PSU) G Rother+ (ORNL) S,16506,U27-20,Nano & microporosity in Puerto Rico metavolcanics,5-position ambient sample changer,Mildner
+2010,Dec 9,1,E Bazilevskaya+ L Jin+ (PSU) G Rother+ (ORNL) S,16506,NIST-P,Nano & microporosity in Puerto Rico metavolcanics,5-position ambient sample changer,Mildner
+2010,Dec 10,6,J Shih+ R Briber+ (UMD) C Dennis+ J Borchers+ (NIST) J,16298,U27-05,Composites of silk- elastin protein block copolymers with magnetic,5-position ambient sample changer,Jackson
+2011,Jan 6,1,A Jackson (NIST)+ S Sathaye (Univ Delaware),16976,NIST,Gel sample preparation tests,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Jackson
+2011,Jan 7,4,J Fang+ N Wagner+ A Eberle+ JM Kim (Univ Delaware),16524,U27-23,Microstructure-property relationship of model colloidal gelling system,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2011,Jan 11,2,C Lopez-Barron (U Delaware),16910,NIST,Microstructure of cocontinuous polymer blends,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2011,Jan 13,5,M Helgeson+ P Doyle+ S Moran (MIT),16399,U27-11,Structure of thermoreversible nanoemulsion,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2011,Jan 18,1,M Helgeson+ P Doyle+ S Moran (MIT),16399,NIST-P,Structure of thermoreversible nanoemulsion,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2011,Jan 19,6,M Laver+ N Egetenmeyer+ (PSI) Y Horibe (Rutgers),16485,U27-17,Phase separated states in a perovskite manganite,Superconducting Magnet (7 Tesla),Jackson
+2011,Jan 25,3,M Laver+ N Egetenmeyer+ (PSI) Y Horibe (Rutgers),16485,NIST-P,Phase separated states in a perovskite manganite,Superconducting Magnet (7 Tesla),Jackson
+2011,Jan 28,1,,,,reactor shutdown,,
+2011,Jan 29,3,J Thomas (Schlumberger)+ A Allen (NIST),16416,U27-13,Effects of high pressute on the nanostructure of hydrated cements,5-position ambient sample changer,Barker
+2011,Feb 1,1,J Thomas (Schlumberger)+ A Allen (NIST),16416,NIST-P,Effects of high pressute on the nanostructure of hydrated cements,5-position ambient sample changer,Mildner
+2011,Feb 2,2,T Motwani+ J Maranas (Penn State),16488,U27-18,Cellulose-xyloglucan interactions on nanostructure of plant,5-position ambient sample changer,Liu/Butler
+2011,Feb 4,6,A Trapote+ (IDAEA) L Porcar (ILL)+ J Cama+ J Soler,15491,U26-07,Evolving structure of C-S H during cement leaching,- 5P,Porcar
+2011,Feb 10,3,L Anovitz+ B Smith (ORNL),16473,U27-16,Hydrogen exposure & high- pressure temperature cycling on HDPE tamk,5-position ambient sample changer,Jackson
+2011,Feb 13,2,L Porcar+ P Courtois+ K Andersen+ (ILL) M,15551,U26-11,Effect of impurities on the microstructure of copper mosaic crystals,5-position ambient sample changer,Porcar/Mildner
+2011,Feb 24,1,C Clarkson+ N Solano+ (Calgary) M Mastalerz (Indiana),16352,NIST-P,Gas storage & pore size distribution of shale gas reservoirs,Special Environment,Mildner
+2011,Feb 25,6,C Clarkson+ N Solano+ (Calgary) M Mastalerz (Indiana),16352,U27-07,Gas storage & pore size distribution of shale gas reservoirs,Special Environment,Mildner
+2011,Mar 3,6,R Sakurovs+ (CSIRO) T Blach+ (Griffith) Y Melnichenko(ORNL),16331,U27-06,Gas accessibilty in tight gas shales,Special Environment,Mildner
+2011,Mar 9,2,A Hamill+ (NCNR) L Porcar+ (ILL) P Butler+ (NCNR) M,16277,U27-04,Temperature effects on the structure of phospholipid bicelles,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2011,Mar 11,4,J Mang (LANL),16422,U27-14,Effect of initial grain size on void distribution in consolidated high,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2011,Mar 15,8,K Weigandt+ D Pozzo (U Washington),15585,U26-14,Morphological changes of poly(3-alkylthiophene) organogels caused by,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Jackson
+2011,Mar 23,2,A Hamill+ (NCNR) L Porcar+ (ILL) P Butler+ (NCNR) M,16277,U27-04,Temperature effects on the structure of phospholipid bicelles,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2011,Mar 25,2,A Allen+ L Espinal+ W Wong-Ng+ (NIST) C Brown (NCNR),17038,NIST,USANS determination of CO2 MOF powder morphology,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Kline
+2011,Mar 27,2,C Lopez-Barron (Univ Delaware),17041,NIST,Understanding clustering of wormlike micelles in ionic liquids,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2011,Mar 29,5,A Nakatani+ T Chatterjee (Dow),13653,PROP,Proprietary research experiments on coatings,Boulder Couette Flow Shear Cell,Mildner
+2011,Apr 3,330,,,,long shutdown,,
+2012,Apr 26,1,D Mildner(NCNR)+ M Wasborough (Delaware),17582,NIST,feasibility and repoducibility test measurements,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2012,Apr 27,5,Y Liu (Delaware)+ H Cheng (China)+ X Li (Indiana),17607,NIST,temperature response of structural change of microgel,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasborough
+2012,May 02,2,D Mildner(NCNR)+ M Wasborough (Delaware),17582,NIST,feasibility and repoducibility test measurements,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2012,May 04,3,M Wasborough (Delaware)+ J Lott (Minnesota),17571,NIST,measurement of methylcellulose solutions and gels,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasborough
+2012,May 07,3,D Mildner(NCR)+ M Wasborough (Delaware),17582,NIST,feasibility and repoducibility test measurements,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2012,May 10,1,,,,reactor down,,
+2012,May 11,4,C Stoltz + B Mason (NSWC-Indian Head),17483,U28-17,bonding agents in stressed propellant formulations,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2012,May 15,3,T Perevozchikova (Delaware),17593,NIST,formation of nanoclusters from proteins at different concentrations,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2012,May 18,4,W Chen (ANL) + Y Liu (Delaware),17367,NIST-P,hierarchical nanomorphologies in high performance,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2012,May 22,3,M Kim+ N Wagner+ E Yearley (Delaware),17613,NIST,phase behavior of adhesive hard spheres,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasborough
+2012,May 25,7,WR Chen+ K Hung (ORNL) +L Porcar (ILL) +B Wu (RPI),17493,U28-20,characteristics of concentrated PMMA colloidal suspensions,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2012,Jun 01,2,NSF/NCNR summer school tests,17632,NIST,oil uptake by micellar gels,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Kline
+2012,Jun 19,3,NSF/NCNR summer school,17632,NIST,oil uptake by micellar gels,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough/Jack
+2012,Jun 22,13,,,,reactor down,,
+2012,Jul 05,1,D Mildner (NCNR)+ M Wasborough (Delaware),17582,NIST,calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2012,Jul 06,1,M Wasbrough (Delaware)+ J Krzywon+ D Mildner,17646,NIST,commissioning of new USANS rheometer,RH2,Wasbrough
+2012,Jul 07,3,A Nakatani (Dow Chem),17648,PROP,measurements on proprietary materials,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2012,Jul 10,1,M Wasbrough (Delaware)+ J Krzywon+ D Mildner,17646,NIST,commissioning of new USANS rheometer,RH2,Wasbrough
+2012,Jul 11,3,K Bazilevskaya+ X Gu+ S Brantley (PSU)+ G Rother,17456,U28-15,permeability & porosity in shale weathering profiles,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2012,Jul 14,4,D Cole+ T Liu (OSU)+ G Rother+ L Anovitz (ORNL),17128,U28-01,nanoporosity in rocks from subsurface energy systems,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2012,Jul 18,1,,,,reactor down,,
+2012,Jul 19,4,M Helgeson+ J Kim (UCSB),17431,U28-13,rheo-SANS investigations of yielding in model colloidal gel,RH2,Liu
+2012,Jul 23,3,K Bazilevskaya+ X Gu+ S Brantley (PSU)+ G Rother,17456,U28-15,permeability & porosity in shale weathering profiles,5-position ambient sample changer,Mildner
+2012,Jul 26,5,P de la Iglesia+ D Pozzo (U Washington),17421,U28-12,"effect of solvent on the formation of poly(9,9- dioctyl-fluorene) gels",6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2012,Jul 31,3,C Dennis (NIST)+ J Borchers+ K Krycka (NCNR),17699,NIST,investigation of oil reservoir contrast agents,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2012,Aug 03,3,L Jin (UTEP)+ M Engle (USGS)+ G Rother+ (ORNL) D,17132,NIST-P,pore geometry & connectivity within deep Marcellus shales,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2012,Aug 06,2,M Wasbrough (Delaware)+ J Lott (Minnesota),17571,NIST,measurement of methylcellulose solutions & gels,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2012,Aug 08,2,,,,reactor down,,
+2012,Aug 10,4,D Cole+ T Liu (OSU)+ G Rother+ L Anovitz (ORNL),17128,U28-01,nanoporosity in rocks from subsurface energy systems,5-position ambient sample changer,Mildner
+2012,Aug 10,13,,,,reactor down,,
+2012,Aug 23,1,D Mildner(NCNR) & M Wasbrough (Delaware),17582,NIST,calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2012,Aug 24,3,J Thomas+ A Pomerantz+ J Valenza(SDR)+ A,17138,U28-03,organic keorgen phase in hydrocarbon-bearing shales,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2012,Aug 27,1,B Watson(GA)+ B Hammouda+ D Mildner (NCNR),17695,NIST,structure of silicon carbides,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2012,Aug 28,1,H-J Kang + M Riemer (Clemson),17258,NIST-E,nanostructure network in thermoelectric materials,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2012,Aug 29,3,M Wasbrough+ (Delaware) J Lott (Minnesota),17571,NIST,measurements of methylcellulose solutions & gels,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2012,Sep 01,4,D Cole+ T Liu+ (OSU) G Rother+ L Anovitz (ORNL),17128,,nanoporosity in rocks from surface energy systems,5-position ambient sample changer,Mildner
+2012,Sep 05,1,K Bazilevskaya+ X Gu+ S Brantley+ (PSU) G Rother+,17456,U28-15,permeability & porosity in shale weathering profiles,5-position ambient sample changer,Mildner
+2012,Sep 06,1,J Curtis+ S Krueger+ N Clark+ (NCNR) A McAuley+ J,17579,NIST-E,SANS study of engineered herpes simplex virus,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2012,Sep 07,4,J Mang (LANL),17457,U28-16,microstructure of composite high explosive subjected to increasing,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2012,Sep 11,3,JM Kim (U Delaware),17757,NIST-D,Probing structure of adhesive hard-spheres with USANS,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2012,Sep 14,3,L Jin (UTEP)+ M Engle (USGS)+ G Rother (ORNL)+ D,17132,NIST-P,pore geometry & connectivity within deep Marcellus shales,5-position ambient sample changer,Mildner
+2012,Sep 17,1,R Ndong (U Delaware),17756,NIST-D,gelation mechanism of model anisotropic nanoparticle dispersions,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2012,Sep 18,8,L Anovitz+ G Rother+ (ORNL) D Cole (OSU),17213,U28-06,analysis of nanoporosity in rocks from the Coso geothermal field,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2012,Sep 26,4,L Anovitz (ORNL),17728,NIST,Burial diagenesis of the St Peter sandstone,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2012,Oct 11,1,D Mildner (NCNR)+ M Wasbrough (Delaware),17582,NIST,calibration,,Mildner
+2012,Oct 12,8,C Clarkson+ N Solano+ (Calgary) M Mastalerz (Indiana),17233,U28-08,phase behavior of methane and CO2 on transport in gas & oil reservoirs,Special Environment,Mildner
+2012,Oct 20,2,,,,reactor down sitewide shutdown,,
+2012,Oct 22,7,L Ruppert+ (USGS) Y Melnichenko+ (ORNL) R Sakurovs+ (CSIRO),17454,U28-14,"accessibility of pores in gas shale to methane, water & brine",Special Environment,Mildner
+2012,Oct 29,2,,,,reactor down hurricane SANDY,,
+2012,Oct 31,2,L Ruppert+ (USGS) Y Melnichenko+ (ORNL) R Sakurovs+ (CSIRO),17454,U28-14,"accessibility of pores in gas shale to methane, water & brine",Special Environment,Mildner
+2012,Nov 02,2,C Lopez-Barron (Exxon)+ Y Liu (Delaware),17837,NIST-D,understanding mechanisms of polymer blend compatibilization,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2012,Nov 04,2,C Lopez-Barron (Exxon)+ Y Liu (Delaware),17837,NIST-D,chemical gelation of ionic rubbers,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2012,Nov 06,1,C Lopez-Barron (Exxon),18145,NIST,microstructure of rubber/nylon blends after annealing,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2012,Nov 07,1,E Kelley (Delaware),18164,NIST-D,characterization of amphiphilic homopolymer solution assembly,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2012,Nov 08,1,A Allen+ L Espinal+ W Wong-Ng(NIST)+ C Matranga(DOE)+ J,18160,NIST,USANS studies of CO2 capture materials,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2012,Nov 09,1,J Lynn (NCNR)+ S Saha+ J Paglione (UMD)+ J,18092,U29-21,superconducting suppression of magnetic fluctuations in Ce-HoRu2,cryo,Mildner
+2012,Nov 10,3,L Anovitz (ORNL),17728,NIST,burial diagenesis of the St. Peter sandstone,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2012,Nov 13,1,Y Liu (NIST)+ X Jia+ L Ciao (Delaware),18247,NIST-D,block copolymer micelle crosslinked hydrogels for drug delivery,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2012,Nov 14,2,P de la Iglesia+ D Pozzo (U Washington),17421,NIST,"effect of solvent on the formation of poly(9,9- dioctyl-fluorene) gels",6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2012,Nov 16,1,J Curtis+ S Krueger+ N Clark+ (NCNR) A McAuley+ J,17579,NIST-E,SANS study of engineered herpes simplex virus,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2012,Nov 17,6,J Belkowitz (Stevens Institute),18118,NIST-P,hydrated cement matrix with addition of three silica graduations,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2012,Nov 23,1,JM Kim (Delaware),17757,NIST-D,probing structure of adhesive hard-spheres with USANS,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,Dec 3,1,D Mildner (NCNR)+ M Wasbrough (Delaware),17582,NIST,calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,Dec 04,3,A Eberle+ H King (ExxonMobil)+ G Rother (ORNL),18161,EXXON,USANS shale rock,5-position ambient sample changer,Wasbrough
+2013,Dec 07,3,H-J Kang+ B Wang (Clemson)+ M Laver (PSI)+ W. Xie,17984,NIST-P,"microstructures in thermolelectric material (Bi,Sb)2Te3",5-position ambient sample changer,Mildner
+2013,Dec 10,3,J Kim+ M Helgeson (UCSB),18191,NIST,rheo-SANS investigations of yielding in a model colloidal get,RH2,Wasbrough
+2013,Dec 13,1,M Wasbrough (NCNR),18302,NIST,titanium sample environments,RH2,Wasbrough
+2013,Dec 14,3,Q Dai (MTU)+ A Faraone (NCNR),18201,NIST,pore size distribution in cement matrix samples w/wo internal curing,5-position ambient sample changer,Mildner
+2013,Dec 17,1,J Seppala+ R Jones+ G Holmes (NIST),18221,NIST,durability of shear thickening fluids,5-position ambient sample changer,Wasbrough
+2013,Dec 18,16,,,,reactor down,,
+2013,Jan 03,1,D Mildner (NCNR)+ M Wasbrough (Delaware),17582,NIST,calibration,5-position ambient sample changer,Mildner
+2013,Jan 04,3,M Wasbrough+ (Delaware) G Newbloom,18327,NIST,Pozzo group conjugate polymer gels,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,Jan 07,1,A Allen+ L Espinal+ Wong-Ng(NIST)+ C Matranga+ J Culp,18160,NIST,studies of CO2 capture materials,5-position ambient sample changer,Mildner
+2013,Jan 08,8,L Porcar+ A Martel (ILL)+ P Butler (NIST),17935,U29-10,effect of cations on the formation of silk,5-position ambient sample changer,Butler
+2013,Jan 16,10,N Wagner+ K Gurnon+ S Rogers+ D Godfrin (Delaware),17892,U29-07,concentration gradient & shear banding on model wormlike micellar,1-2 plane flow-SANS shear cell,Wasbrough
+2013,Jan 26,1,R Ndong (Delaware),17756,NIST-D,gelation mechanism of model anisotropic nanoparticle dispersions,5-position ambient sample changer,Wasbrough
+2013,Jan 27,2,J Seppala+ R Jones+ G Holmes (NIST),18221,NSOFT,durability of shear thickening fluids,5-position ambient sample changer,Wasbrough
+2013,Feb 14,1,D Mildner (NCNR)+ M Wasbrough (Delaware),17582,NIST,calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,Feb 15,6,F Karimi+ K Pranzas+ S Boerries+ M,18320,NIST,investigation of solid state hydrogen storage materials,5-position ambient sample changer,Mildner
+2013,Feb 21,8,K Weigandt (Delaware) + D Pozzo (Washington),18072,U29-18,structural characterization of oxidized fibrin gels,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Weigandt
+2013,Mar 01,7,A Jackson (ESS)+ D McGillivray (Auckland)+ P,17390,U28-11,Exploring the structure of binary mixtures of mpnodisperse spheres,5-position ambient sample changer,Jackson
+2013,Mar 08,5,D Li+ (Delaware) C Lopez-Barron+ (ExxonMobil) N,17865,NIST-D,Strucural study of mixed pluronic block copolymers in protic ionic liquid,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Agkun/Wasbroug
+2013,Mar 13,2,J Lott (Minnesota)+ Wasbrough (Delaware),17571,NIST,measurement of methylcellulose solutions & gels,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,Mar 15,1,B Agkun (Maryland),18419,NIST,structural investigation of a protein gel,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,Mar 16,5,P dela Iglesia+ D Pozzo (Washington),18080,U29-19,controlling fiber structure organogels by modifying,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,Mar 21,5,WR Chen(ORNL)+ L Porcar(ILL)+ Y Liu(NIST)+ B Wu,17959,U29-12,structure of concentrated PMMA colloidal suspensions,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,Apr 08,1,D Mildner (NCNR)+ M Wasbrough (Delaware),17582,NIST,calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,Apr 09,7,A Rennie+ M Hellsing+ (Uppsala) B Nkoane+,17896,U29-88,flocculation using natural minerals for water purification,Special Environment,Wasbrough
+2013,Apr 16,3,M Hellsing+ A Rennie+ (Uppsala) A Jackson (ESS),17981,NIST-P,"binary dispersions of colloidal particles - order, clusters & flow",12SH,Wasbrough
+2013,Apr 19,3,,,,site-wide shutdown,,
+2013,Apr 22,8,N Solano+ C Clarkson(Calgary)+ T Blach (Griffith)+,18026,U29-17,tracking fluid phase & wettability changes in shale-CO2-brine,Special Environment,Mildner
+2013,Apr 30,3,Y Melnichenko+ N Lavrik+ E Popov+ L He+ (ORNL)+ D,17750,NIST,meso- & microscopic bubbles on patterned & naive metal surfaces,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,May 03,5,Y Melnichenko+ L He(ORNL)+ M Mastalerz (Indiana),17783,U29-01,pore size distribution & surface area of shale in tight gas reservoirs,5-position ambient sample changer,Mildner
+2013,May 08,1,B Agkun (Maryland),18419,NIST,structural investigation of a protein gel,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,May 09,1,D Li (Delaware),18422,NIST-D,structure study on mixing pluronic polymers in a protic ionic liquid,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,May 10,4,A Camacho (Manitoba)+ L Anovitz (ORNL),17849,U29-04,porosity & permanent changes during high strain deformation,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,May 14,1,A Camacho (Manitoba)+ L Anovitz (ORNL),17849,NIST-P,porosity & permanent changes during high strain deformation,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,May 15,1,M Wasbrough (Delaware) + C Majkrzak (NCNR),,NIST,USANS from silicon gratings,Special Environment,Wasbrough
+2013,May 16,1,J Barker+ D Mildner+ S Kline (NCNR),17485,U28-18,determination of scattering anisotropy by azimuthal scans of,Special Environment,Barker
+2013,May 17,1,,,NIST,feasibility,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough/Mild
+2013,May 18,2,R Jones+(NIST) K Weigandt+ T Perevozchikova,18919,NSOFT,developement of transparent Ti windows,4-position heating stage (up to 200C),Wasbrough
+2013,May 31,1,D Mildner (NCNR)+ M Wasbrough (Delaware),17582,NIST,calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,Jun 01,4,M Wasbrough(Delaw)+ S Thekveli (Novartis-Alcon),18523,NIST,understanding the structure of ocular biomaterials,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,Jun 05,2,X Gu + S Brantley (PSU),18088,U29-20,microscale & nanoscale pores within organic matter in black shale,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,Jun 07,4,J Mang (LANL),17937,U29-11,SANS studies of artificially aged PBX 9501,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2013,Jun 11,3,R Jones+ K Page+ (NIST) A Nakatani+ B Rowe (Dow Chem),18980,NSOFT,USANS of consumer care products,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,Jun 14,6,L Anovitz(Tenn)+ D Cole(OSU)+ G Rother(ORNL)+ A,17989,U29-15,multiscale porosity in the Eagle Ford gas shale,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,Jun 20,2,Y Liu+ M Wasbrough+ (Delaware) M Helgeson (UCSB),18551,NIST,structural evolution of organolhydrogels at different concentrations,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2013,Jun 22,3,GC Yuan+ C Han (Chinese Academy)+ Y Liu (Delaware),18461,NIST-P,dynamical arrested structure of binary colloidal mixture with,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2013,Jun 25,2,X Gu + S Brantley (PSU),18088,U29-20,microscale & nanoscale pores within organic matter in black shale,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,Jun 27,1,Y Liu+ M Wasbrough+ (Delaware) M Helgeson (UCSB),18551,NIST,structural evolution of organolhydrogels at different concentrations,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2013,Jun 28,4,G Warr (Sydney)+ J Smith (Newcastle),18473,NIST,long range structures in ionic liquids,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2013,Jul 02,3,M Wasbrough (Delaware),18957,NIST,coherence length & multiple scattering using mondisperse latex,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,Jul 05,4,YS Kim+ N Wagner + R Ndong(Delaware),17784,U29-02,gelatation mechanism of model anisotropic nanoparticle dispersions,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,Aug 22,1,Y Melnichenko+ N Lavrik (ORNL)+ D Mildner (NCNR),18987,NIST,USANS from virgin and heat treated silicon wafers,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,Aug 23,8,N Wagner+ K Gurnon+ S Rogers+ D Godfrin (UD),17892,NIST,concentration gradients & shear banding on wormlike micellar solution by,1-2 plane flow-SANS shear cell,Wasbrough
+2013,Aug 31,2,K Weigandt+ (Delaware) R Murphy (Solvay),19031,NIST,gelation kinetics of PEDOT:PSS + ionic liquids,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,Sep 02,1,M Wasbrough (Delaware),18696,NIST-P,micron sized micelles from CTAB/SDS,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,Sep 03,1,,,,reactor shutdown,,
+2013,Sep 04,2,M Wasbrough (Delaware),18696,NIST-P,micron sized micelles from CTAB/SDS,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,Sep 06,4,J Cardiel+ P de la Iglesia+ A Shen+ Y Zhao (Washington),18849,U30-27,flow-induced structured phases in micellar solutions,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,Sep 10,2,R Hall (Cabot Corp),19036,PROP,composites 0913,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,Sep 12,2,P Dowding+ C Willis (Infineum) +D Steytler (East Angl,18984,PROP,proprietary reseach on surfactant self-assembly in non-aqueous media,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2013,Sep 14,2,N Clark+ S Krueger+ (NCNR) P Durfee+ D Dunphy (New Mexico),19052,NIST,USANS studies of lipid/protein/SiO2 complexes,6-position sample changer (-10 to 100 deg C +/- 0.1 C),CANCELLED
+2013,Sep 14,2,M Hoare (NCNR),19117,NIST,Aggregated PMMA- functionalized Fe3O4 nanoparticles in dPMMA,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,Sep 16,1,D Mildner+ M Wasbrough+ A Ye (NCNR),19080,NIST,background for small red magnet with field parallel to neutron beam,Special Environment,Mildner
+2013,Sep 17,1,M Wasbrough (NCNR),,NIST,background measurements,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,Sep 18,2,M Birnkrant (UTRC)+ A Norman (Exxon),18574,U30-04,pore structure of high temperature nanocellular materials,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,Sep 20,3,"YS Kim+ C Welch+ R Hjelm,Jr (LANL)+ M Hawley",18703,U30-17,LCST behavior of Nafion in alcohols,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,Sep 23,7,L Anovitz(ORNL)+ D Cole+ A Swift+(OSU) G Rother(ORNL)+ M,17998,U29-16,analysis of nanoporosity from the Geysers geothermal field,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,Oct 01,9,X,,,reactor shutdown,,
+2013,Oct 28,1,D Mildner (NCNR)+ M Wasbrough (Delaware),17582,NIST,calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,Oct 29,14,T Reimann+ S Muehlbauer+ M Schulz+ P Boeni+,18686,U30-13,investigation of superconducting domain structures by USANS,Special Environment,Mildner
+2013,Nov 12,1,X Gu +S Brantley (PSU),18815,NIST-P,effect of tree throw on porosity evolution during shale weathering,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,Nov 13,2,X Gu +S Brantley (PSU),18815,U30-22,effect of tree throw on porosity evolution during shale weathering,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,Nov 15,7,J Gao+ N Wagner (Delaware),18694,U30-14,particle dispersions and particle interactions in ionic liquids,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2013,Nov 22,10,,,,reactor shutdown,,
+2013,Dec 02,2,A Eberle+ C Lopez- Barron (Exxon),19173,EXXON,proprietary polymer/silica nanocomposites,4-position heating stage (up to 200C),Butler
+2013,Dec 04,2,X Gu +S Brantley (PSU),18815,U30-22,effect of tree throw on porosity evolution during shale weathering,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2013,Dec 06,3,B Huang+ X Shu+ (Tennesee) Y Zhang (Illinois),18695,U30-15,utilizing USANS to detect moisture in foamed asphalt,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2013,Dec 09,25,,,,reactor shutdown,,
+2014,Jan 03,6,B Tutolo+ M Saar+ W Seyfried (Minnesota),18606,U30-06,reaction-driven porosity/ permeability generation in serpentinizing,5-position ambient sample changer,Mildner
+2014,Jan 09,6,D Cole+ A Swift+ (OSU) +L Anovitz+ G Rother(ORNL)+ J Ajo-,18824,U30-24,nano to microscale porosity in geologic CO2 storage systems,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,Jan 15,5,P de la Iglesia+ D Pozzo (Univ Washington),18879,U30-31,mesostructure of poly gels formed in organic solvents,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2014,Jan 20,4,J Richards+ D Pozzo (U Washington),18734,U30-19,structural determination of polymer/fullerene composite nanoparticles,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2014,Jan 24,4,M Wasbrough(NIST)+ A Rennie+ (Uppsala)+ A,18957,NIST,effect of concenration and contrast on multiple scattering,Special Environment,Wasbrough
+2014,Jan 28,7,C Dennis+ J Borchers(NIST)+ R Ivkov+ L Woodard,18905,U30-32,colloid structure of gold coated iron oxide magnetic nanoparticles,- 6CB,Wasbrough
+2014,Feb 04,1,M Wasbrough(NIST)+ A Rennie+ (Uppsala)+ A,18957,NIST,effect of concenration and contrast on multiple scattering,Special Environment,Wasbrough
+2014,Feb 05,1,M Zhang+ R Weiss (Georgetown),19267,NIST-E,SANS studies on photoresponsive vesicles,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2014,Feb 06,4,P Malo de Molina+ M Helgeson+ J Kim (UCSB),18864,U30-29,tuning emulsion aggregration in organo- hydrogels varying mesh,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2014,Feb 11,10,,,,reactor shutdown,,
+2014,Feb 21,6,G Yuan(Chinese Acad)+J Chen (Tsinghua) + Y Liu,19276,NIST,liquid-gel liquid transition in mixtures of polysyrence &,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2014,Feb 27,4,J Bowman (Utah)+ L Anovitz (ORNL),18553,U30-03,nanoporosity in contact metamophosed marbles and quartzites,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,Mar 03,7,A Rennie+ M Hellsing (Uppsala) H Kwaambwa,18594,NIST-P,stuctural differences in colloidal flocs - effect of concentration,4R,Wasbrough
+2014,Mar 10,5,M Dadmun+ M Tehrani (Tennessee),18623,NIST-P,morphology-thermoelectric behavior of polymer/ carbonate nanotube,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,Mar 16,39,,,,reactor shutdown,,
+2014,Apr 24,1,D Mildner (NIST)+ M Wasbrough (Delaware),17582,NIST,calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,Apr 25,6,Y Melnichenko + E Popov+ J Bahadur (ORNL),18761,U30-20,meso & microscopic bubbles on patterned and native metal surfaces,Special Environment,Mildner
+2014,May 01,1,R Hall (Cabot Corp),19724,PROP,USANS of composites,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,May 02,3,D Greene+ A Lenhoff+ S Sandler (Delaware),19571,U31-17,USANS on ovalbumin gel beads,4R,Wasbrough
+2014,May 05,3,K Weigandt (Delaware),19712,NIST,TR-Rheo SANS of P3HT gels in mixed solvents,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Weigandt
+2014,May 09,10,,,,reactor shutdown,,
+2014,May 22,4,L Ruppert(USGS)+ R Sakurovs(CSIRO)+ T Blach (QUT)+ Y,19309,U32-04,the origin of inertinite in coal: a USANS study,Special Environment,Mildner
+2014,May 26,2,L Ruppert(USGS)+ R Sakurovs(CSIRO)+ T Blach (QUT)+ Y,19309,NIST-P,the origin of inertinite in coal: a USANS study,Special Environment,Mildner
+2014,May 28,4,T Blach (Queensland Univ Techn) & J Esterle (Univ,19262,U31-02,from wood to coal - how biological structure affect CO2 accessibility,Special Environment,Mildner
+2014,Jun 01,3,T Blach (Queensland Univ Techn) & J Esterle (Univ,19262,NIST-P,from wood to coal - how biological structure affect CO2 accessibility,Special Environment,Mildner
+2014,Jun 04,2,A Eberle+ C Lopez- Barron (ExxonMobil),19254,EXXON,USANS of silica nanocomposites,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2014,Jun 06,3,P Dowding+ C Willis (Infineum)+ D Steytler (East Angl,19739,PROP,proprietary research involving lubricant additives,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2014,Jun 09,1,L Anovitz+ G Rother (ORNL)+D Cole(OSU)+ J,NIST-P,,basinal diagenesis of Dolomitic carbonates,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2014,Jun 10,6,L Anovitz+ G Rother (ORNL)+D Cole(OSU)+ J,18634,U30-09,basinal diagenesis of Dolomitic carbonates,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2014,Jun 16,1,,,,open,,
+2014,Jun 17,1,,,,reactor down,,
+2014,Jun 18,2,M Birnkrant (United Technologies),19472,U31-11,pore structure and morphology due to creep in nanocellular nickel,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2014,Jun 20,4,D Cole+ A Swift+ (OSU)+L Anovitz G Rother(ORNL)+ J,19620,U31-23,characterization of porosity in reservoir rocks from subsurface,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,Jun 24,4,R Krishnamoorti + C Umeasiegbu (Houston),19608,U31-21,correlating anomalous pH- responsive microscale behavior of aqueous,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2014,Jun 28,1,,,,open,,
+2014,Jun 30,14,,,,reactor shutdown,,
+2014,Jul 14,4,,,,NCNR summer school,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Wasbrough
+2014,Jul 18,4,H Shen+ L Xiang+ Y Yan (Delaware)+ Y Liu (NCNR),19828,,high performance facilitated transport hydroxide exchange,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2014,Jul 22,6,T Blach (QUT)+ J Pearce (Univ Queensland),19264,U31-03,effect of fluids on pore interconnectivity of gas shale rocks,Special Environment,Mildner
+2014,Jul 28,1,T Blach (QUT)+ J Pearce (Univ Queensland),19264,NIST-P,effect of fluids on pore interconnectivity of gas shale rocks,Special Environment,Mildner
+2014,Jul 29,1,,,,reactor shutdown,,
+2014,Jul 30,1,T Blach (QUT)+ J Pearce (Univ Queensland),19264,NIST-P,effect of fluids on pore interconnectivity of gas shale rocks,Special Environment,Mildner
+2014,Jul 31,4,R Sakurovs(CSIRO)+Y Melnichenko(ORNL)+ L Ruppert(USGS)+ T,19259,U31-01,effect of mineral matter on extraction efficiency of gas shales,Special Environment,Mildner
+2014,Aug 04,5,M Helgeson+ M Valentine+ H Waite (UCSB),19625,U31-24,formation & mesoscopic structure of mussel byssal plaques to,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2014,Aug 09,2,M Helgeson+ P Malo de Molina+ M Zhang (UCSB),19635,NIST-P,probing structure of microgels with encapusulated,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2014,Aug 11,3,M Helgeson+ P Malo de Molina+ M Zhang (UCSB),19635,U31-26,probing structure of microgels with encapusulated,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2014,Aug 14,1,M Wasbrough,,NIST,TBA,,
+2014,Aug 15,4,H Carstensen+ M Wolff+ V Kapaklis (Uppsala),19569,U31-16,self assembly in magnetic liquids,Horizontal Low-Field Electromagnet (1.0 Tesla),Krycka
+2014,Aug 19,1,,,NIST,,,
+2014,Aug 20,4,J Mang (LANL),19383,U31-08,correlating microstructural parameters with,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2014,Aug 25,14,,,,reactor shutdown,,
+2014,Sep 08,1,R Ashkar (UMD)+ P Butler (NCNR),19899,NIST,cluster size of silica/dPS networks in cyclohexane,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2014,Sep 09,4,P de la Iglesia+ D Pozzo (Washington),19644,U31-23,characterization of purified poly dispersions in organic solvents,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2014,Sep 13,2,P de la Iglesia+ D Pozzo (Washington),19644,NIST-P,characterization of purified poly dispersions in organic solvents,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2014,Sep 15,3,P Godfrin+ Y Liu+ N Wagner (Delaware),19557,NIST-P,temperature dependence of a mAb protein gel structure,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2014,Sep 18,3,X Gu+ S Brantley (Penn State),19319,U31-05,kerogen porosity in Marcellus shale across a maturation gradient,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,Sep 21,2,D Mildner(NIST)+ X Gu (PSU)+ G Rother (ORNL)+ M Wasbrough,19367,U31-07,porosity in anisotropic geological systems,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,Sep 23,1,K Weigandt +A Tabatabai (Delaware),19922,NIST,USANS of silk gels,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Weigandt
+2014,Sep 24,5,L Porcar(ILL)+ S Rogers+ M Calabrese+ A,19606,U31-20,concentration gradient in shear banding wormlike solutions,12SH,Barker
+2014,Sep 29,3,R Hall (Cabot Corp),19845,PROP,USANS of nanocomposites,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,Oct 02,2,A Gordon+ L Anovitz+ A Stack+ G Rother+ J,19619,NIST-P,inorganic contaminants on porous media during unconventional gas pr,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,Oct 03,1,,,,reactor shutdown,,
+2014,Oct 04,2,A Gordon+ L Anovitz+ A Stack+ G Rother+ J,19619,U31-22,inorganic contaminants on porous media during unconventional gas pr,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,Oct 06,1,X Gu+ S Brantley (Penn State),19319,NIST-P,kerogen porosity in Marcellus shale across a maturation gradient,5-position ambient sample changer,Mildner
+2014,Oct 07,3,X Gu+ S Brantley (Penn State),19319,U31-05,kerogen porosity in Marcellus shale across a maturation gradient,5-position ambient sample changer,Mildner
+2014,Oct 10,4,D Schaefer+ N Hu+ Z Yuan (Cincinnati),19561,U31-15,morphology & colligative properties of complex fluids,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2014,Oct 14,1,K Theis-Broehl (Bremerhaven)+ P Guttfreund (ILL)+ M,19455,NIST-E,Interaction of magnetic nanoparticles in ferrofluids with silicon,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2014,Oct 15,2,B Tutolo+ A Luhmann+ W Seyfried+ M Saar,19402,U31-09,examining sub-crystal scale reaction pathways,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,Oct 17,1,D Mildner(NIST)+ X Gu (PSU)+ G Rother (ORNL)+ M Wasbrough,19367,NIST-P,porosity in anisotropic geological systems,5-position ambient sample changer,Mildner
+2014,Oct 19,24,,,,reactor shutdown,,
+2014,Nov 12,1,R Ashkar (UMD) + P Butler (NCNR),19899,NIST,cluster size of silica.dPS networks in cyclohexane,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2014,Nov 13,4,M Tehrani (New Mexico)+ M Dadmun (Tennessee),19417,NIST-P,morphology-thermoelectric behavior of polymer/ carbon nanotube,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,Nov 17,7,L Anovitz(UTK)+ C Novack (UTK)+ D Cole(OSU)+ G,19481,U31-12,nanoscale structure of carbonate dissolution,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,Nov 24,1,K Weigandt (Delaware),19923,NIST,USANS: fumed silica shear thickening fluid,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Weigandt
+2014,Nov 25,1,R Ashkar (UMD) + P Butler (NCNR),19899,NIST,cluster size of silica dPS networks in cyclohexane,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2014,Nov 26,5,Q Dai & X Sun Michigan Technological Univ),20220,NIST-P,alkali-silica reaction gel with prepared gel- particle film specimens,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,Dec 01,2,L Anovitz(UTK)+ C Novack (UTK)+ D Cole(OSU)+ G,19481,U31-12,nanoscale structure of carbonate dissolution,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,Dec 03,2,D Godfrin (Delaware),20454,NIST,network formation in concentrated mAb formulations,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2014,Dec 05,5,T Blach (Queensland Univ Techn) & L Ruppert (USGS),20458,NIST,coal and tight shale rocks of geologiocal importance,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,Dec 10,2,M Weir(Sheffield) + S Parnell (Indiana),20057,NIST,size & conformation of graphene oxide in polymer nanocomposites,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2014,Dec 12,4,H Wang & Y He (SUNY Binghamton),20422,NIST,battery electrode structures,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2014,Dec 16,2,T Blach (Queensland Univ Techn) & L Ruppert (USGS),20458,NIST,coal and tight shale rocks of geologiocal importance,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,Dec 18,3,M Calabrese & S Rogers & N Wagner (Delaware),20449,NIST,microstructure of branched CTAT/SDBS wormlike micelles,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2014,Dec 22,14,,,,reactor shutdown,,
+2015,Jan 05,1,Bleuel,17582,NIST,calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2015,Jan 06,2,K Weigandt (NCNR),20473,NIST,Rheo USANS with SRF attachment =Anton Paar tests,Rheometer 301,Weigandt
+2015,Jan 08,5,G Yuan & C Han & J Luo (Chinese Academy Sciences),20006,U32-04,gelation of particles with short range attraction induced by,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2015,Jan 13,7,Jin (Texas-El Paso) +X Gu+ S Brantley (Penn State),20435,NIST,how do submicron scale surface features change during shale weathering,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2015,Jan 20,6,A Tabatabai+ D Blair (Georgetown) +K Weigandt (NIST),20042,U32-08,pH dependent silk gelation,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Weigandt
+2015,Jan 26,1,A Tabatabai+ D Blair (Georgetown) +K Weigandt (NIST),20042,NIST-P,pH dependent sil gelation,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Weigandt
+2015,Jan 27,7,J Borchers+ K Krycka+ C Dennis+ D Huber+ E Vreeland+,20256,U32-19,concentration of long range interparticle interactions in Fe3O4,Horizontal Low-Field Electromagnet (1.0 Tesla),Bleuel
+2015,Feb 03,1,R Ashkar (UMD) + P Butler (NCNR),19899,NIST,cluser size of silica dPS networks in cyclohexane,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2015,Feb 04,1,O Rezhdo+ R Carrier+ (NE'ern) P Le+ SH Chen (MIT),20287,NIST-P,colloidal structures during simulated gastrointestinal,4P,Liu
+2015,Feb 05,4,O Rezhdo+ R Carrier+ (NE'ern) P Le+ SH Chen (MIT),20287,U32-21,colloidal structures during simulated gastrointestinal,4P,Liu
+2015,Feb 09,4,J Richards (NIST),20575,NIST,poly(stryene sulfonate) adsorption on micron- sized cationic silica,4P,Bleuel
+2015,Feb 14,40,,,,reactor shutdown,,
+2015,Mar 25,1,M Bleuel(UMD)+ B Lee+ M Bockstaller (Carnegie Mellon),20665,NIST,grain size of PS/PI block copolymer filled with D- PS,- 6CB,Bleuel
+2015,Mar 26,8,L Anovitz+ G Rother (ORNL)+ H Buss (Bristol)+ E Ilton,19605,U31-19,oxidative weathering of granite,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2015,Apr 03,6,T Reimann & M Schulz & Boni & S Muehlbauer (TUM),20180,U32-14,superconducting domain structures in Nb - thickness dependence,LRM DI,Bleuel
+2015,Apr 09,1,T Reimann & M Schulz & Boni & S Muehlbauer (TUM),20180,NIST-P,superconducting domain structures in Nb - thickness dependence,LRM DI,Bleuel
+2015,Apr 10,6,T Reimann & S Muehlbauer & C Pfleiderer (TUM),20234,U32-16,looking for skyrmion domain structures by means of USANS,LRM DI,Bleuel
+2015,Apr 16,1,T Reimann & S Muehlbauer & C Pfleiderer (TUM),20234,NIST-P,looking for skyrmion domain structures by means of USANS,LRM DI,Bleuel
+2015,Apr 17,3,,,,. site wide shutdown,,
+2015,Apr 20,1,A Nakatani (Dow),20642,NIST,polymer-clay interactions,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2015,Apr 21,6,S Emmanuel+ (Jerusalem) L Anovitz (Tennessee),20037,U32-07,sills as seals: porosity & permeability during contact metamorphism,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2015,Apr 27,1,B Tutolo &A Luhmann &W Seyfried &M Saar (Minnesota),20103,NIST-P,modelling hydrothermal serpentization of peridotite,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2015,Apr 28,2,B Tutolo &A Luhmann &W Seyfried &M Saar (Minnesota),20103,U32-11,modelling hydrothermal serpentization of peridotite,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2015,Apr 30,3,X Gu + S Brantley (Penn State),20293,U32-22,organic matter & pyrite role in shale deep weathering,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2015,May 03,3,G Newbloom+ L Pozzo+ Y Xi (Washington) K,20331,U32-24,self-assembled & organic dispersible PEDOT - surfactant complexes,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Weigandt
+2015,May 07,19,,,,reactor shutdown,,
+2015,May 26,1,M Bleuel (UMD),20664,NIST,instrument calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2015,May 27,1,J Warren+ S Kundu (Miss State) K Weigandt (NCNR),20064,NIST-P,microstructure of shear- thickening fumed-silica suspensions,Rheometer 301,Weigandt
+2015,May 28,4,J Warren+ S Kundu (Miss State) K Weigandt (NCNR),20064,U32-09,microstructure of shear- thickening fumed-silica suspensions,Rheometer 301,Weigandt
+2015,Jun 01,3,Q Dai + X Sun (Michigan Tech),20220,U32-15,microstructure charact erization of alkali silica reaction gel,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2015,Jun 04,1,M Bleuel (UMD)+ B Lee+ M Bockstaller (Carnegie-Mellon),20665,NIST,grain sixe of PS/PI block copolymer filled with d- PS,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2015,Jun 05,1,,,,reactor shutdown,,
+2015,Jun 06,5,A Camacho (Manitoba) +L Anovitz (ORNL)+ D,20005,NIST-P,permeability changes during high strain deformation in rocks,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2015,Jun 11,1,X Gu & S Brantley (Penn State),20293,NIST-P,organic matter & pyrite role in shale deep weathering,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2015,Jun 12,3,X Gu & S Brantley (Penn State),20293,U32-22,organic matter & pyrite role in shale deep weathering,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2015,Jun 15,1,M Bleuel (UMD),20750,NIST,feasibility studies,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2015,Jun 16,9,A Rennie+ M Hellsing (Uppsala) M Kwaambwa,20119,NIST-P,flocculation of mixed particles,4R,Butler
+2015,Jun 25,2,K Weigandt (NCNR)+ R Weiss (Georgetown),20794,NIST,structural characterization of thixotropic orgsnogels,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Weigandt
+2015,Jun 27,2,M Bleuel (UMD),20750,NIST,feasibility studies,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2015,Jun 29,1,Y Mao (UMD),20752,NIST,solution behavior of cellulose nanofiber,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Yimin
+2015,Jun 30,6,Z Wang (Tsinghua Univ) G Yuan & Y Liu (Delaware),20726,,liquid-gel liquid transition in mixtures of polystyrenre microsphere,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Yimin
+2015,Jul 07,13,,,,reactor shutdown,,
+2015,Jul 20,1,M Bleuel (UMD),20664,NIST,instrument calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2015,Jul 21,6,D Seeman+ K Weigandt+ P Butler+ (NIST) M Calabrese,21316,NIST,rheo-usans - aligned samples in slit-smeared collimation,Rheometer 301,Weigandt
+2015,Jul 27,1,J Barker & D Mildner (NIST),20722,NIST,absolute calibration error caused by crystal misalignment,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2015,Jul 28,1,Y Mao (UMD),21306,NIST,USANS study on cellulose nanofiber suspension,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Yimin
+2015,Jul 29,2,Y Mao (UMD)+ V Prabhu (NIST- Polymers),21307,NIST,structure of clusters of micelles formed by oligocarbonate fluorine,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Yimin
+2015,Jul 31,3,X Gu & S Brantley (Penn State),20293,NIST-P,organic matter & pyrite role in shale deep weathering,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2015,Aug 03,2,M Bleuel (UMD)+ B Lee+ M Bookstaller (Carnegie-Mellon),20665,NIST,grain size of PS/PI block copolymer filled with d- PS,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2015,Aug 05,2,C Tassone+ K Schmidt+ M Toney (Stanford),18797,NIST-E,phase segregation in bulk heterojunction photovoltaics,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2015,Aug 07,4,R Ashkar+ (UMD) + P Butler (NCNR),19899,NIST,clusters of silica dPS networks in cyclohexane,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2015,Aug 11,1,C Medina & M Mastalerz & J Rupp (Indiana)& T Blach,19935,NIST-P,residual saturation of carbon dioxide in sandstone reservoirs,Special Environment,Mildner
+2015,Aug 12,6,C Medina & M Mastalerz & J Rupp (Indiana)& T Blach,19935,U32-01,residual saturation of carbon dioxide in sandstone reservoirs,Special Environment,Mildner
+2015,Aug 18,1,T Blach (Queensland Univ Techn),20246,NIST-P,uniaxial strain on pore interconnectivity of coal and gaa shale rock,Special Environment,Mildner
+2015,Aug 19,9,T Blach (Queensland Univ Techn),20246,U32-18,uniaxial strain on pore interconnectivity of coal and gaa shale rock,Special Environment,Mildner
+2015,Aug 29,16,,,,reactor shutdown,,
+2015,Sep 14,1,M Bleuel (UMD),20664,NIST,instrument calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2015,Sep 15,3,J Weston (NIST),21403,NIST,electrostatic nanoparticle gels,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Weigandt
+2015,Sep 18,4,M Cheshire+ L Anovitz+ G Rother+ T Prisk (ORNL),21247,U33-23,porosity evolution during CaCO3 precipitation with in microporous rock,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2015,Sep 22,3,W-S Chiang & Y Liu (Univ Delaware),21400,NIST,CD4 adsorption in kerogen as a function of pressure,5-position ambient sample changer,Bleuel
+2015,Sep 25,3,M Ding & R Hjelm (LANL),20984,U33-08,characterization of pore tuffs & pathways for identifying UNE events,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2015,Sep 28,1,M Ding & R Hjelm (LANL),20984,NIST-P,characterization of pore tuffs & pathways for identifying UNE events,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2015,Sep 29,3,J Richards (NIST),21409,NIST,PLGA microsphere characterization,4R,Mildner
+2015,Oct 02,4,Z Zander+ M Becker+ C Wiener + B Vogt (Akron),20868,U33-03,kinetically dependent cross linking in hydrogels,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2015,Oct 06,3,G Yuan (NIST) Z Wang (Tsinghua) Y Liu (Delaware),20726,NIST,liquid–gel liquid 4 transition in mixtures of polystyrene & poly,R Li,u
+2015,Oct 09,3,S Russell+ L Campos+ S Kumar (Columbia),21211,NIST-P,single chain conformation of aqueous poly (cyclopropenium),6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mao
+2015,Oct 12,1,M Mackay (Delaware) & B Kirby (NCNR),2169,NIST-P,cork cellular structure,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2015,Oct 13,2,M Jiang & C Kitchens (Clemson),21042,U33-10,cellulose nanocrystal particle interaction & microstructure growth,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mao
+2015,Oct 15,1,M Jiang & C Kitchens (Clemson),21042,NIST-P,cellulose nanocrystal particle interaction & microstructure growth,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mao
+2015,Oct 16,3,C Adams+ D Pink+ M English+N Callaghan- Patrachar+ (SFX)+ M,20922,U33-06,effect of salt on gluten networks in dough,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2015,Oct 19,3,R Chen+ N Wagner (Delaware) C Lopez- Barron (Exxon),21277,U33-26,pluronic iono-elastomers in protic ionic liqiuid ethylammoniumnitrate,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2015,Oct 22,1,J Weston (NIST),21403,NIST,electrostatic nanoparticle gels,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Weigandt
+2015,Oct 24,17,,,,reactor shutdown,,
+2015,Nov 10,1,M Bleuel (UMD),20664,NIST,instrument calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2015,Nov 11,2,M Mackay (Delaware)+ B Kirby (NIST),21269,U33-25,cork cellular structure,5-position ambient sample changer,Mildner
+2015,Nov 13,3,B Tutolo (Oxford)+ W Seyfried+ P Scheuermann,21064,,porosity generation during reaction driven cracking at mid-ocean,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2015,Nov 16,4,J Mang LANL),21238,U33-22,performance properties of new & legacy TATB,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2015,Nov 20,3,X Gu+ S Brantley+ K Hyojin (PSU) W Dietrich+ D Rempe,21224,U33-21,argillite porosity for understanding hydrologic controls on weathering,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2015,Nov 23,4,R Murphy+ N Wagner (Delaware),21156,U33-17,gelation of adhesive silica rods with thermo- reversible short range,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2015,Nov 27,3,B Lee (Carnegie- Mellon),20921,U33-05,grain coarsening & defec annealing in block copolymer,t 6CB,Bleuel
+2015,Nov 30,4,G Yuan (NCNR),21504,NIST,solid-liquid transition in mixed suspensions of solica colloids &,4R,Bleuel
+2015,Dec 04,3,X Gu+ S Brantley+ K Hyojin (PSU) W Dietrich+ D Rempe,21224,U33-21,argillite porosity for understanding hydrologic controls on weathering,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2015,Dec 07,4,R Murphy+ N Wagner (Delaware),21156,U33-17,gelation of adhesive silica rods with thermo- oreversible short range,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2015,Dec 11,8,L Pozzo(Washington) & K Weigandt (NIST),21147,U33-16,modification of fibrin networks by synthetic hemostatic polymers,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Weigandt
+2015,Dec 20,17,,,,reactor shutdown,,
+2016,Jan 06,4,shutdown,,,startup delayed,,
+2016,Jan 10,3,H Xu+ R Pawar+ M Ding+ R Hjelm (LANL),20859,U33-02,hydrocarbon fluid flow behavior in nanoporous shale rocks,SP,Barker
+2016,Jan 13,4,I Hoffmann+ M Gradzielski (TUBerlin)+ M,21129,U33-15,studies on clusters of polyelectrolytes,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel/Mao
+2016,Jan 17,2,G Yuan (NCNR),21504,NIST,solid-liquid transition in mixed suspensions of silica colloids &,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Jan 19,1,L Ruppert (USGS)+ Y Melnichenko (ORNL),21582,NIST,shale wafers for TOF USANS instrument,5-position ambient sample changer,Mildner
+2016,Jan 20,2,R Chen+ N Wagner+ (Delaware) C Lopez - Barron (Exxon),21277,NIST-P,pluronic iono-elastomers in protic ionic liquid ethyammoniumnitrate,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Jan 22,4,J Mang (LANL),21031,U33-09,characterization of detonation products,4R,Barker
+2016,Jan 26,1,A Kolesnikov (ORNL) +M Bleuel (UMD),21624,NIST,measurement of pore sizes of molecular hydrogen H2 in copper,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Jan 27,6,A Swift+ D Cole (OSU)+ L Anovitz+ G Rother (ORNL),21186,U33-19,near fracture pore network response to reaction in 2 geologic,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2016,Feb 02,1,J Barker (NCNR),21675,NIST,maximizing instrument beam intensity,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2016,Feb 03,2,Q Hu+ T Barber (Texas Arington),21175,NIST-P,characterization of µm- sized pores of fine grain reservoirs,6CB M,ildner
+2016,Feb 05,4,R Ford+ J Kim+ J Kornfield+ M Diallo (Cal Tech),20976,U33-07,micro/nanostructures of porous membranes with in situ synthesized,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel/Liu
+2016,Feb 09,1,J Barker (NCNR),21675,NIST,maximizing instrument beam intensity,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2016,Feb 10,1,A Reinert (Naval Surface Warfare Center),21581,NIST,closed porosity in aluminum slurry,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2016,Feb 11,1,L Ruppert (USGS)+ Y Melnichenko (ORNL),21582,NIST,shale wafers for TOF USANS instrument,5-position ambient sample changer,Mildner
+2016,Feb 12,4,G Yuan (NCNR),21680,NIST,phase separation & gelation in binary mixures of oppositely,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Feb 16,2,I Hoffmann+ M Gradzielski (TUBerlin)+ M,21129,U33-15,studies on clusters of polyelectrolytes,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Feb 18,1,M Bleuel (Maryland),,NIST,feasibility,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Feb 20,11,,,,reactor shutdown,,
+2016,Mar 02,1,M Bleuel (UMD),20664,NIST,instrument calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Mar 03,2,H Xu+ P Pawar+ M Ding+ R Hjelm (LANL),20859,U33-02,hydrocarbon fluid flow behavior in nanporous shale rocks,SP,Barker
+2016,Mar 05,2,H Xu+ P Pawar+ M Ding+ R Hjelm (LANL),20859,NIST-P,hydrocarbon fluid flow behavior in nanporous shale rocks,SP,Barker
+2016,Mar 07,6,L Anovitz (ORNL) S Emmanuel (Hebrew Univ) S Brantley,20035,U32-06,submicron scale structures on limestone weathering rates,5-position ambient sample changer,Mildner
+2016,Mar 13,5,L Anovitz (ORNL) S Emmanuel (Hebrew Univ) S Brantley,20035,NIST-P,submicron scale structures on limestone weathering rates,5-position ambient sample changer,Mildner
+2016,Mar 18,7,A Rennie+ M Hellsing (Uppsala)+ M Kwaambwa (Poly,21253,U33-24,flocculation of particles - comparison of plant products,4R,Bleuel
+2016,Mar 25,3,A Rennie+ M Hellsing (Uppsala)+ M Kwaambwa (Poly,21253,NIST-P,flocculation of particles - comparison of plant products,4R,Bleuel
+2016,Mar 28,4,T Blach (Queensland Univ Techn),20246,NIST-P,uniaxial strain on pore interconnectivity of coal and gas shale rock,Special Environment,Mildner
+2016,Apr 01,4,H Deglint C Clarkson (Calgary) T Blach (QUT) Y,20160,U32-13,pore connectivity of uncoventional light oil reservoir,Special Environment,Mildner
+2016,Apr 05,3,T Blach (Queensland Univ Techn),20246,NIST-P,uniaxial strain on pore interconnectivity of coal and gas shale rock,Special Environment,Mildner
+2016,Apr 08,4,T Blach (Queensland Univ Techn),20246,NIST-P,uniaxial strain on pore interconnectivity of coal and gas shale rock,Special Environment,Mildner
+2016,Apr 12,15,,,,reactor shutdown,,
+2016,Apr 27,1,M Bleuel (UMD),20664,NIST,instrument calibration,6C,Bleuel
+2016,Apr 28,8,JK Keum+ A Naskar+ B Smith (ORNL)+Y Mao (NIST),21668,U34-01,morphology of hydrogen- plasticized liner & seal materials in hydrogen,NIST Pressure Cell,Mao
+2016,May 06,10,J Weston (Georgetown)+ K Weigandt,22085,U34-20,rheo-USANS of electrostatic heteroaggregation gels,Rheometer 301,Weigandt
+2016,May 16,2,W Chen+ J Yu (ANL)+ J Mao+ M Tirrell (Chicago),22036,NIST-P,interfacial interactions of tethered polyzwitter - ionic polymer brushes,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2016,May 18,2,D Londono (du Pont),22250,NIST,structural origin of viscosity enhancement in industrial polysacchar-,4R,Yimin
+2016,May 20,3,R Chen+ N Wagner+ (Delaware) C Lopez- Barron (Exxon),21964,U34-13,Pluronic iono-elastomers in protic ionin liquid ethylammonium nitrate,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,May 23,2,M Bleuel (UMD),22272,NIST,test for the summer school,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,May 25,2,G Yuan (NCNR),21680,NIST,separation & gelation in binary mixtures of oppositely charged,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,May 27,3,M Ding (LANL),21977,U34-15,pore variability for identifying underground nuclear explosion events,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2016,May 30,1,M Ding (LANL),21977,NIST-P,pore variability for identifying underground nuclear explosion events,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2016,May 31,1,K Whitcomb+ M Gordon+ C Kloxin+ N Wagner (Delaware),22273,NIST,microstructure of aging thermreversible colloidal gel,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2016,Jun 01,5,C Adams+ D Pink+ N Callaghan-Petrachar (SFX) A Marangoni+,21725,U34-04,nano to micro-scale structure of cheese,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2016,Jun 07,15,,,,reactor shutdown,,
+2016,Jun 22,1,M Bleuel (UMD),20664,NIST,instrument calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Jun 23,4,R Murphy+ N Wagner (Delaware),21916,U34-11,microstructure in gels & glasses of adhesive hard rods with,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Jun 27,4,P Butler+ G Yuan+ Y Liu (NIST) NIST Summer School,22272,NIST,gelation of spherical colloidal systems with bridging attractions,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Jul 01,4,WS Chiang+ H Guo+ Y Liu (Delaware),22096,U34-26,study porous structure of kerogens using USANS,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Jul 05,3,J Richards+ P Butler+ (NIST) J Hipp (Delaware),21984,U34-16,study of flowable electrodes for semi-solid flow battery application,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2016,Jul 08,3,V Marcon+ X Gu+ S Brantley (PSU),21854,U34-09,lithology on porosity development during weathering of,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2016,Jul 11,1,M Ding+ R Hjelm (LANL),21977,NIST-P,pore variability for identifying underground nuclear explosion events,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2016,Jul 12,1,J Barker (NIST),22408,NIST,Q calibration with grating,Special Environment,Barker
+2016,Jul 13,2,MH Kim (KIST) + B Hammouda (NCNR),22342,NIST,P3HT-b-PMMA block copolymer varing solvents,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2016,Jul 15,7,L Cademartiri+ B Yuan+ (Iowa State) L Anovitz (ORNL),21695,U34-02,growth of polymer-like crystals in confined envionments,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2016,Jul 22,5,A Routh+ J Starkie+ (Cantab) P Dowding (Infineum),21741,U34-05,mechanism of wax anti- settling additives & wax crystallization,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Teixeira/Butle
+2016,Jul 27,2,MH Kim (KIST) + B Hammouda (NCNR),22342,NIST,P3HT-b-PMMA block copolymer varing solvents,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2016,Jul 29,4,A Navarre-Sitchler (Colorado Schl Mines),21689,S34-09,contact metamorphism of shale on fluid transport properties,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2016,Aug 03,15,,,,reactor shutdown,,
+2016,Aug 18,1,J Barker+ D Mildner (NCNR)+ M Bleuel (UMD),22460,NIST,time-of-flight wavelength calibration,Special Environment,Barker
+2016,Aug 19,4,G Yuan+ (NIST) Y Liu (Delaware),22059,NIST-P,liquid-solid transition in colloidal system with bridging effect,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2016,Aug 23,3,A Reinert (Naval Surface Warfare Center),21969,U34-14,investigation of pore& distribution in A/H2O slurries,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker/Jensen
+2016,Aug 26,3,V Marcon+ X Gu+ S Brantley (PSU),21854,U34-09,lithology on porosity development during weathering of,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2016,Aug 29,1,V Marcon+ X Gu+ S Brantley (PSU),21854,NIST-P,lithology on porosity development during weathering of,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2016,Aug 30,1,Y Mao (UMD),22381,NIST,probing large structures in cellulose gel,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mao
+2016,Aug 31,2,S Parnell (Delft)+ W Hamilton (ORNL)+ A Washington,22092,U34-23,single sphere or multi shell structure in Stober silica oarticles,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Sep 02,5,J Weston (Georgetown) + K Weigandt (NIST),22085,NIST-P,rheo-USANS of electrostatic heteroaggregation gels,Rheometer 301,Weigandt
+2016,Sep 07,2,J Richards+ P Butler+ (NIST) N Wagner (Delaware),22424,NIST,Rheo-USANS of Vulcan XC72 in propylene carbonate,Rheometer 301,Weigandt
+2016,Sep 09,7,H Yoon+ T Dewers+ (Sandia) L Anovitz (ORNL),21830,U34-08,fluid-rock interaction on multiscale heterogeneous pore structure,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2016,Sep 16,3,R Hjelm+ J Mang (LANL),21790,U34-07,void formation in TATB/PBX during compression,Special Environment,Barker
+2016,Sep 19,1,D Londono (du Pont),22250,NIST,structural origin of viscosity enhancement in industrial polysaccchar-,4R,Mao
+2016,Sep 20,2,MH Kim+ KY Baek (KIST)+ B Hammouda (NCNR),22488,NIST,structure of P3HTb-PMMA linear block copolymers & star polymers,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Barker
+2016,Sep 22,3,N Osti+ M Abdelmalak+ E Mamontov+ (ORNL) Y,21870,NIST-P,intercalation & synthesis procedure on structure of MXenes,5-position ambient sample changer,Bleuel
+2016,Sep 26,15,,,,reactor shutdown,,
+2016,Oct 18,1,M Bleuel (UMD),20664,NIST,instrument calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Oct 19,1,S Teixeira (Delaware),22458,NIST,feasibility studies on iron containing particles,4R,Teixeira
+2016,Oct 20,1,A Karim (Akron)+ S Satija (NCNR)+ M Bleuel (UMD),22522,NIST,phase separation of block copolymers on pattened surfaces,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Oct 20,1,M Steele-MacInnis (Arizona)+ A Luhrmann (New,22253,NIST,feasibility studues on fluid inclusions in quartz,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Oct 21,14,T Blach (Queensland UT),22472,NIST,effects of uniaxial strain on nanopore network in coal & shale,Special Environment,Mildner
+2016,Nov 04,2,R Hall (Cabot Corp),22845,PROP,USANS of nanocomposites,5-position ambient sample changer,Mildner
+2016,Nov 06,1,I Hoffmann+ M Gradielski (TU Berlin)+ M Bleuel,21129,NIST-P,studies on clusters of polyelectrolyte,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Nov 07,1,R Zhang+ S Liu (Penn State)+ Y Mao+ M Bleuel (UMD),22524,NIST,feasibility studies on coal and shale samples,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Nov 08,8,L Anovitz+ T Prisk (ORNL),22089,U34-21,nanostructure formation during sedimentation of sandstone,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2016,Nov 16,2,L Anovitz+ T Prisk (ORNL),22089,NIST-P,nanostructure formation during sedimentation of sandstone,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2016,Nov 18,1,A Senses (UMD),23052,NIST,chain conformation in nanocomposites,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Nov 19,2,"T Hoare, T Gilbert & R Alsop (McMaster)",22044,NIST-E,morphology of injectible interpenetrating network hydogels,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Nov 21,2,A Reinert (Naval Surfacee Warfare Center),21969,NIST,pore size & distribution in Al/H2O slurries,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Jensen
+2016,Nov 23,1,B Lee (Carnegie- Mellon),20921,NIST-P,grain coarsening & defec annealing in block coploymer,t 6CB,Bleuel
+2016,Nov 24,1,A Karim (Akron)+ S Satija (NCNR)+ M Bleuel (UMD),22522,NIST,phase separation of block copolymers on pattened surfaces,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2016,Nov 26,17,,,,reactor shutdown,,
+2017,Dec 09,4,J Hipp (Delaware) & J Richards (NIST),22771,U35-09,study of model carbon black suspensions,4R,Butler
+2017,Dec 13,2,T Hoare+ T Gilbert+ R Alsop(McMaster),22044,NIST-E,gelatin time on morpholgy of injectable interpenetrating network,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2017,Dec 15,1,S Teixeira (Delaware),22962,NIST-P,biocompatible magnetic core-shell nanocomposites,4R,Teixeira
+2017,Dec 16,4,G Yuan (NIST) & Y Liu (Delaware),22968,U35-23,non-crystalline liquid- solid transition in binary mixtures of,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2017,Dec 20,1,G Yuan (NIST) & Y Liu (Delaware),22968,NIST-P,non-crystalline liquid- solid transition in binary mixtures of,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2017,Dec 22,13,,,,reactor shutdown,,
+2017,Jan 04,1,M Bleuel (UMD),20664,NIST,instrument calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2017,Jan 05,5,J Hipp (Delaware)+ J Richards (NCNR),22956,U35-21,carbon black suspensions for semi-sold flow battery applications,Rheometer 301,Butler
+2017,Jan 10,7,J Weston (Georgetown) + K Weigandt (NCNR),22819,U35-14,agglomeration & gelation of oppositely charge nanoparticles,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Weigandt
+2017,Jan 17,1,J Weston (Georgetown) + K Weigandt (NCNR),22819,NIST-P,agglomeration & gelation of oppositely charge nanoparticles,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Weigandt
+2017,Jan 18,1,S Teixeira (Delaware)+ A Elkady+ H El-,22962,NIST-P,biocompatible magnetic core-shell nanocomposites,4R,Teixeira
+2017,Jan 19,5,D Pochan& M Haider& P Worthington& Y Tian (Delaware),22711,U35-06,characterization of computationally designed peptide nanostructures,4R,Jensen
+2017,Jan 24,2,T Hoare+ T Gilbert+ R Alsop(McMaster),22044,NIST-E,gelatin time on morpholgy of injectable interpenetrating network,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2017,Jan 26,3,D Adams & M Nolan (Glasgow)& M Bleuel (UMD),22511,NIST-P,determination of low molecular weight hydrogel networks,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2017,Jan 30,15,,,,reactor shutdown,,
+2017,Feb 15,2,J Dura+ A Faraone+ M Bleuel (NIST)+ C Wang (UMD),23119,NIST,"gel structure of ""water in salt"" electrolytes",6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2017,Feb 17,4,D Pochan+ M Haider+ P Worthimgton+ Y Tian (Delaware),22711,NIST-P,characterization of computationally designed peptide nanostructures,4R,Jensen
+2017,Feb 21,1,T Hoare+ T Gilbert +R Alsop (McMaster),22044,NIST-E,morpholgy of injectible interpenetrating network hydrogels,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2017,Feb 22,2,MH Kim+ KY Baek+ HJ Kim (KIST)+ B Hammouda (NIST),22878,U35-17,large structure of functionalized P3HT-b- PMMA linear block,4R,Bleuel
+2017,Feb 24,4,Q Hu+ T Barber+ Y Zhang (UTA)+ M Bleuel (UMD),22759,U35-07,influence of wettability on shale pore accessibility,,Bleuel
+2017,Feb 28,2,D Londono (du Pont) & Y Mao (UMD),22971,U35-24,aggregate structure of hydrophobic polysaccharides,4R,Yimin
+2017,Mar 02,1,,,,reactor down,,
+2017,Mar 03,7,B Ellis+ S Das(Michigan)+ L Anovitz (ORNL),22905,U35-19,pore accessibility of surfactant fracturing fluids,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2017,Mar 10,4,J Mang+ C Armstrong (LANL),22514,U35-02,characterization of PBX9502 and TATB porosity,4-position heating stage (up to 200C),Barker
+2017,Mar 14,3,H Yoon& T Dewers (Sandia)& L Anovitz (ORNL),22915,NIST-P,multiscale pore structure & mineralogy on properies of geomaterials,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2017,Mar 17,4,R Hjelm+ J Mang (LANL),22840,U35-15,void formation in TATB/PBX9502 during compression,Special Environment,Barker
+2017,Mar 21,2,E Watkins& R Singh (LANL),22779,NIST-P,mechanism of catalytic hydrogenation of unsaturated organic,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Yimin
+2017,Mar 23,2,R Hale& M Cheshire& J McFarlane& L Anovitz& R Howard,22767,U35-08,water & contamination migration in engineered barrier materials,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2017,Mar 25,1,H Yoon& T Dewers (Sandia)& L Anovitz (ORNL),22915,NIST-P,multiscale pore structure & mineralogy on properies of geomaterials,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2017,Mar 27,16,,,,reactor shutdown,,
+2017,Apr 12,1,S Teixeira (Delaware),22962,NIST-P,biocompatible magnetic core-shell nanocomposites,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Teixeira
+2017,Apr 13,1,,,NIST,TBD,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2017,Apr 14,3,X Gu + V Marcon + S Brantley (PSU),22862,U35-16,microfractures during weathering of shale,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2017,Apr 17,1,,,,TBD,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2017,Apr 18,5,V DiStefano + L Anovitz (ORNL),22108,U34-28,organic matter distributon in porosity of unconventional gas,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2017,Apr 23,1,V DiStefano + L Anovitz (ORNL),22108,NIST-P,organic matter distributon in porosity of unconventional gas,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2017,Apr 24,4,Q Hu + T Barber + Y Zhang + (UTA) M Bleuel (UMD),22759,U35-07,influence of wettability on shale pore accessibility,,Bleuel
+2017,Apr 29,4,,,,site wide shutdown,,
+2017,May 02,3,D Londono (du Pont) + Y Mao (UMD),22971,U35-24,aggregate structure of hydrophobic polysaccharides,4R,Yimin
+2017,May 05,3,X Gu + V Marcon + S Brantley (PSU),22862,U35-16,microfractures during weathering of shale,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2017,May 08,3,V Prabhu (NIST) + S Ali (Bangalore)+ M Bleuel (UMD),23106,NIST,structure of polyelectrolyte complexes,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2017,May 11,4,G Yuan (NIST) & Y Liu (Delaware),22968,NIST-P,non-crystalline liquid- solid transition in binary mixtures of,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2017,May 15,1,P Dowding+ C Willis (Infineum)+ D Steytler (East,23288,EXXON,proprietary research on extended structures in lubricant additives,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2017,May 16,1,SHUTDOWN,,,,,
+2017,May 17,2,P Dowding+ C Willis (Infineum)+ D Steytler (East,23288,EXXON,START at 16:30 - proprietary research on extended structures in,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2017,May 19,3,A Nakatani (Dow) (Infineum)+ D Steytler (East,23727,NSOFT EXXON,characterization of HASE rheology modifiers proprietary research on extended structures in,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2017,May 25,17,,,,reactor shutdown,,
+2017,Jun 08,0,M Bleuel (UMD),20664,NIST,instrument calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2017,Jun 08,4,J Hipp+ N Wagner (Delaware) + J Richards (NCNR),23736,NIST,carbon black suspensions for semi-solid flow battery applications,Rheometer 301,Butler
+2017,Jun 12,4,K Weigandt (NCNR) + J Weston (Georgetown),23654,U36-24,Rheo-USANS of shear thickening emulsions,Rheometer 301,Weigandt
+2017,Jun 16,3,V Marcon+ X Gu+ S Brantley+ (PSU) D Richter (Duke Univ),23566,U36-14,comparing field scale NMR porosity with neutron scattering,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Teixeira
+2017,Jun 19,1,V Marcon+ X Gu+ S Brantley+ (PSU) D Richter (Duke Univ),23566,NIST-P,comparing field scale NMR porosity with neutron scattering,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Teixeira
+2017,Jun 20,3,R Hall+ T Dionne (Cabot Corp),23817,PROP,USANS of nanocomposites,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2017,Jun 23,3,R Herz-Thyhsen+ J Kaszuba+ (Wyoming) G Rother (ORNL),23323,36-02,nano-pore evolution in unconventional reservoir rocks during hydraulic,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mao
+2017,Jun 26,1,L Hong (UMB)+ S Teixeira (Delaware),SURF,NIST,scattering spectrum of native bovine casein micelles,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Teixeira
+2017,Jun 27,1,,,,TBD,,Bleuel
+2017,Jun 28,2,K Weigandt (NCNR),23844,NIST,deploying a trial version of NICE on USANS,4R,Weigandt
+2017,Jun 30,5,M Cheshire+ L Anovitz+ A Stack (ORNL),22775,U35-10,porosity development & mdification during granite saprolization,4R,Bleuel
+2017,Jul 05,6,L Anovitz (ORNL)+ M Fantle (PSU),23633,U36-22,grain evolution in response to carbonate diagnesis,4R,Jensen
+2017,Jul 11,5,R Eldam+ A Sitchler (Colorado Schl Mines),23541,U36-11,lithologic control on weathering processes in the East River Valley,5-position ambient sample changer,Teixeira
+2017,Jul 17,17,,,,reactor shutdown,,
+2017,Aug 03,1,S Parnell (Delft)+ W Hamilton (ORNL)+ A Washington,22092,NIST-P,single sphere or multi shell structure in Stober siica particles,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2017,Aug 04,4,R Hall+T Dionne (Cabot Corp),23817,PROP,USANS of nanocomposites,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2017,Aug 08,1,L Hong UMB)+ S Teixeira (Delaware) +B Brooks (Magruder,SURF-RE,NIST,scattering spectrum of naive bovine casein micelles,4R,Teixeira
+2017,Aug 09,2,K Weigandt (NCNR),23844,NIST,deploying a trial version of NICE on USANS,4R,Weigandt
+2017,Aug 11,4,A Bergfelt+ T Bowden+ A Rennie (Uppsala),23445,U36-06,phase separated solid polymer electolytes,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Butler
+2017,Aug 15,2,Y Mao (UMD)+ S Ali (NIST-Polymers),23911,NIST,investigating microstructure of clay gel due to aging,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mao
+2017,Aug 17,4,M Nolan+ D Adams (Glasgow),23362,U36-04,UV radiation affects low molecular weight gelator- based gel networks,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2017,Aug 21,1,A Nallapaneni (Akron)+ A Karim+ S Satija+ M Bleuel,23534,NIST-P,morphology & structure of phase separated polymer blend films,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2017,Aug 22,2,A Griffith+ T Barber (OSU)+ M Bleuel (UMD),23560,U36-12,evolution of bittle rock fracture during high strain rate deformation,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2017,Aug 24,5,L Anovitz+ A Stack+ (ORNL) J Chen+ (BPNNL) K Weigandt,23494,U36-08,shear-induced aggregation of Hanford waste slurries,Rheometer 301,Weigandt
+2017,Aug 29,3,A Reinert (Naval SWC),23280,U36-01,bubble size & distribution as function of pressure in metal/H2O,Special Environment,Jensen
+2017,Sep 01,8,T Blach (Queensland Univ Tech)+HG Noll (Univ Queensland),23580,U36-15,in-situ porosity study of hydration process of enhanced bentonite,Special Environment,Mildner
+2017,Sep 09,1,T Blach (Queensland Univ Tech)+HG Noll (Univ Queensland),23580,NIST-P,in-situ porosity study of hydration process of enhanced bentonite,Special Environment,Mildner
+2017,Sep 11,115,,,,reactor shutdown,,
+2018,Jan 08,2,M Bleuel,20664,NIST,instrument calibration,,
+2018,Jan 10,2,A Reinert (Naval SWC),23280,U36-01,bubble size & distribution as a function of pressure in,Special Environment,Jensen
+2018,Jan 12,5,H Yoon+ T Dewers (Sandia)+ L Anovitz (ORNL),23591,U36-16,minerology & organic matter on pore structure & mechanical properties,Special Environment,Barker
+2018,Jan 17,1,H Chen-Mayer (NIST),24669,NIST,morphology of a lung density reference foam,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2018,Jan 18,4,L Anovitz+ A Stack+ (ORNL) J Chen+ (BPNNL) K Weigandt,23494,U36-08,shear-induced aggregation of Hanford waste slurries,Rheometer 301,Weigandt
+2018,Jan 22,3,,,,government shutdown,,
+2018,Jan 25,1,J Barker (NCNR),,NIST,instrument assessment,,Barker
+2018,Jan 26,3,Y Mao (UMD)+ D Londono (du Pont)+ R Briber+ H Wang+ X,23686,U36-29,in-situ investigation on enzyme-catalyzed synthesis of cellulose,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mao
+2018,Jan 29,2,R Hale+ M Cheshire+ J McFarlane+ L Anovitz (ORNL)+ E,23669,U36-26,engineered barrier materials for spent fuel & high level waste,5-position ambient sample changer,Bleuel
+2018,Jan 31,2,V DiStefano+ L Anovitz (ORNL),24002,NIST,organic matter distrib- ution in porosity of unconventional gas,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2018,Feb 02,4,A Nakatani (Dow Chemical),24663,NSOFT,associative polymer surfactant interaction,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mildner
+2018,Feb 06,2,Y Mao (UMD),24712,NIST,enzyme hydrolysis of cellulose nanocystals,4R,Mao
+2018,Feb 08,5,F Wang (ARL)+ J Dura+ M Bleuel+ A Faraone (NCNR),24616,NIST,concentrated electrolyte for highly reversible zinc-based battery,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2018,Feb 13,3,K Weigandt (NCNR)+ J Weston (Georgetown),24714,NIST,USANS of sheared boehmite slurries,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Weigandt
+2018,Feb 17,12,,,,reactor shutdown,,
+2018,Mar 01,1,M Bleuel,20664,NIST,instrument calibration,,Bleuel
+2018,Mar 02,4,Y Mao (UMD),24728,NIST,USANS study on microstructure of polysaccharides,4R,Mao
+2018,Mar 06,1,J Weaver+ (NIST) M Heibert+R Phaneuf (UMD),24804,NIST,pore size distribution in corroded glass,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2018,Mar 07,5,M Bleuel+ Y Liu (NIST) S Ali (Raman Res Inst)+ V Prabhu,24488,U37-22,phase behavior of mixtures of D2O/C2D6O & poly ethylene oxide,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2018,Mar 12,2,M Bleuel+ Y Liu (NIST) S Ali (Raman Res Inst)+ V Prabhu,24488,NIST-P,phase behavior of mixtures of D2O/C2D6O & poly ethylene oxide,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2018,Mar 14,2,F Wang(ARL)+ J Dura+ M Bleuel+ A Faraone (NCNR),24616,NIST,concentrated electrolyte for highly reversible zinc-based battery,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2018,Mar 16,4,G Yuan (NIST),24119,NIST-P,mixed suspensions of silica colloids & oppositely charged,Rheometer 301,Bleuel
+2018,Mar 20,6,J Hipp +N Wagner (Delaware)+ J Richards (NIST),24364,U37-15,rheo/USANS study of carbon black suspensions,Rheometer 301,Bleuel
+2018,Mar 26,2,R Cordero+ R Vij+ A Casadevall (JHU)+ S Teixeira (Delaware),24015,NIST-P,Cryptoccal polysaccharide antigen structure,4R,Teixeira
+2018,Mar 28,6,R Zhang+ S Liu+ G Sang (PSU)+ M Bleuel (UMD),24531,U37-25,water vapor adsorption & pore structure alteration in shale,HC,Bleuel
+2018,Apr 03,5,R Murphy+ Y Liu (Delaware)+ K Weigandt (NCNR),24378,U37-16,highly porous solids processed from hybrid nanoparticle fluids,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2018,Apr 09,16,,,,reactor shutdown,,
+2018,Apr 26,1,M Bleuel,20664,NIST,instrument calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2018,Apr 27,3,X Gu+ V Marcon+ S Brantley (PSU),24591,U37-30,probing matrix porosity in fractured shale,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Teixeira
+2018,Apr 30,3,T Hoare+ E Mueller+ M Majcher+ M Simpson+ S Himbert,24423,U37-18,crosslinking dynamics in self-assembled thermoresponsive,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2018,May 03,4,J Riley (NCNR)+ R Tilton+ YR Huang (Carnegie Mellon) P,24516,U37-23,characterization of Pickering emulsions stabilized by star,4R,Butler
+2018,May 07,4,T Nylander MV Badell (Univ Lund)+ S Teixeira,24329,U37-12,sponge-like nanoparticles as carriers for macromolecules,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Teixeira
+2018,May 11,6,H Xu+ R Hjelm+ E Watkins(LANL)+ Y Mao (NCNR),24285,U37-10,shale nanopores & interactions with hydrocarbon gases,NIST Pressure Cell,Mao
+2018,May 17,1,Y Liu (NIST)+ A Sitchler (Colorado Schl Mines),,NIST,dummy run summer school,4R,Liu
+2018,May 18,2,G Jensen+ N Sinha+ D Pochan (Delaware),24961,NIST,macro-scale structure of 1D supramolecular chains composed of,4R,Jensen
+2018,May 20,2,Y Mao+ X Zhang+ R Briber+ (Maryland)+ H Wang (SUNY),24578,U37-27,enzyme-catalyzed hydrolysis of crystalline form cellulose,4R,Mao
+2018,May 22,3,X Gu+ V Marcon+ S Brantley (PSU),24591,U37-30,probing matrix porosity in fractured shale,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Teixeira
+2018,May 25,2,S Bhatia+ B Zheng+ A Carr+ X Yu (SUNY Stony Brook),24483,NIST-P,structure of nanoparticle emulsions for enhanced oil recovery,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Jensen
+2018,May 28,18,,,,reactor shutdown,,
+2018,Jun 15,0,M Bleuel,20664,NIST,instrument calibration,,Bleuel
+2018,Jun 15,4,R Murphy+ Y Liu (Delaware)+ K Weigandt (NCNR),24378,U37-16,highly porous solids processed from hybrid nanoparticle fluids,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2018,Jun 19,3,A Sitchler (ColoradoSM)+ Y Liu+ WS Chiang+ R,,NIST NC,NIST summer school on SANS & reflectometry June 19-23,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2018,Jun 22,3,,,,reactor shutdown,,
+2018,Jun 25,2,J de Mel+ G Schneider+ S Gupta (LSU)+ M Bleuel,24356,NIST-P,microemulsion - phospholipid-polymer hybrid systems,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2018,Jun 27,5,R Hjelm+ H Xu+ E Watkins+ M Hawley (LANL),24301,U37-11,shale nanopores interaction with water under thermomechanical,Special Environment,Mao
+2018,Jul 02,1,B Natarajan+ J Gilman+ (NIST) Y Mao +(UMD) E Senses,24417,NIST-P,cellulose self assembly during photonic film fabrication,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Mao
+2018,Jul 03,1,L Heroux (ORNL)+ M Dadmun+ J Moncada (Univ Tennessee),24192,NIST-P,structural changes in PEDOT:PSS correlated thermoelectric,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Weigandt
+2018,Jul 04,5,L Heroux (ORNL)+ M Dadmun+ J Moncada (Univ Tennessee),24192,U37-06,structural changes in PEDOT:PSS correlated thermoelectric,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Weigandt
+2018,Jul 09,10,L Anovitz+ M Cheshire+ J Weber (ORNL),24268,U37-08,multiscale porosity enhancement during volume reducing replacement,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel/Butler
+2018,Jul 19,4,Y Mao(UMD)+ D Londono+ K Kim (du Pont),24728,NIST,microstructure of polysaccharide aggregates,4R,Mao
+2018,Jul 23,1,,,,,,
+2018,Jul 26,1,S Gupta+ G Schneider (LSU)+ M Bleuel (UMD)+ M,24358,NISTE,ultrsound mediated disruption in polymersomes,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2018,Jul 26,12,,,,reactor shutdown,,
+2018,Aug 08,1,M Bleuel,20664,NIST,instrument calibration,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2018,Aug 09,1,,,,,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2018,Aug 10,3,J Robertson(NIST)+ N Hassan+ Z Tsinas+ E Karim+ M El-,24433,NIST-P,investigation of radiation-induced hydrogels,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2018,Aug 13,4,A Nallapaneni+ A Karim (Akron)+ S Satija+ M Bleuel,24441,NIST-P,structural morphologt of phase-separated polymer blend films,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2018,Aug 17,3,C Shelton (Dow)+ K Weigandt (NIST),24972,NIST,Ceria particle interactions with PMMA in water,4R,Weigandt
+2018,Aug 20,2,J Riley (NCNR)+ R Tilton+ YR Huang (Carnegie-Mellon)+,24516,U37-23,Pickering-Mellon emulsions stabilized by dual-responsive block-,4R,Butler
+2018,Aug 22,2,MH Kim (KIST)+J Barker (NCNR),23608,U36-18,correlation between magnetic fields & detector geometry,Special Environment,Barker
+2018,Aug 24,1,L Shan + N Wagner (Delaware),24313,NIST-P,microstructure change of asphalt binders caused by fatique damage,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Liu
+2018,Aug 26,11,,,,reactor shutdown,,
+2018,Sep 05,2,D Londono+ K Kim+ L Clinger (du Pont)+ Y Mao (UMD),24583,NISTP,USANS study of Glucan aggregates,4R,Mao
+2018,Sep 07,3,X Gu (PSU),24973,NIST,quantifying porosity in shale,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2018,Sep 10,4,R Murphy+ Y Liu (Delaware)+ K Weigandt (NCNR),24378,U37-16,highly porous solids processed fom hybrid nanoparticle fluids,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Weigandt
+2018,Sep 14,7,T Blach X Yu (Univ New South Wales),24608,U37-31,porosity of coal & shale affected by ex-situ measurements,Special Environment,Bleuel
+2018,Sep 21,6,L Anovitz+ A Stack (ORNL)+ J Chun (BPNWNL),24274,U37-09,particle aggregation & Ostwald ripening in Hanford waste slurries,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2018,Sep 27,1,L Anovitz+ A Stack (ORNL)+ J Chun (BPNWNL),24274,U37-09,particle aggregation & Ostwald ripening in Hanford waste slurries,6-position sample changer (-10 to 100 deg C +/- 0.1 C),Bleuel
+2018,Sep 29,12,,,,reactor shutdown,,
