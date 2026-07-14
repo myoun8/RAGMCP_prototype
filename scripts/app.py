@@ -355,6 +355,7 @@ async def lifespan(app: FastAPI):
         "optional params.\n"
         "\n"
         "STYLE: be brief and direct, no preamble; prefer short sentences or lists over prose.\n"
+        "Generated lists should be 10 rows maximum unless the user specifies for more."
         "\n"
         "REDUCTION: after listing an experiment's raw files (find_raw_data_paths/"
         "list_data_files), ask which files to reduce before calling reduce_files. For "

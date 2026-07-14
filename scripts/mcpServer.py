@@ -670,7 +670,7 @@ def search_instrument_schedule(
     uniq_id: str = None,
     s_no: str = None,
     contact: str = None,
-    limit: int = 5
+    limit: int = 10
 ) -> str:
     """Look up the historical experiment SCHEDULE for an SANS/USANS instrument
     (NG7, NGB30, or BT5): who ran an experiment, what was measured, and when --
