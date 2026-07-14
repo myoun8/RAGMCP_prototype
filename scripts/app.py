@@ -329,11 +329,12 @@ async def lifespan(app: FastAPI):
         )
         for name in MCP_TOOL_NAMES
     ]
-
+    # os.name is 'nt' on Windows, and 'posix' on Linux/macOS
+    npx_cmd = "npx.cmd" if os.name == "nt" else "npx"
     mcp_client = MultiServerMCPClient({
         "ncnr-api-server": {
             "transport": "stdio",
-            "command": "npx.cmd",
+            "command": npx_cmd,
             "args": [
                 "--yes",
                 "@ivotoby/openapi-mcp-server",
