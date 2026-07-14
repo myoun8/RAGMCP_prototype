@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NCNR Assistant</title>
+  <title>CHRNS-AI</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -661,6 +661,68 @@
     }
     #api-key-save-confirm.show { opacity: 1; }
 
+    /* ── Delete-chat confirmation dialog ── */
+    #delete-chat-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 110;
+      align-items: center;
+      justify-content: center;
+    }
+    #delete-chat-modal-overlay.open { display: flex; }
+    #delete-chat-modal {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      width: 340px;
+      max-width: 90vw;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+    }
+    #delete-chat-modal h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+    }
+    #delete-chat-modal p {
+      font-size: 13px;
+      color: #8a8578;
+      line-height: 1.45;
+      margin-bottom: 20px;
+    }
+    #delete-chat-modal .modal-chat-title {
+      color: #444;
+      font-weight: 600;
+    }
+    #delete-chat-actions {
+      display: flex;
+      gap: 10px;
+    }
+    #delete-chat-actions button {
+      flex: 1;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 10px;
+      padding: 10px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    #delete-chat-cancel-btn {
+      color: #444;
+      background: #fff;
+      border: 1px solid #e0ddd7;
+    }
+    #delete-chat-cancel-btn:hover { background: #f0ede6; }
+    #delete-chat-confirm-btn {
+      color: #fff;
+      background: #c0392b;
+      border: 1px solid #c0392b;
+    }
+    #delete-chat-confirm-btn:hover { background: #a93226; border-color: #a93226; }
+
     #memory-field {
       margin-top: 18px;
       padding-top: 16px;
@@ -909,10 +971,22 @@
     </div>
   </div>
 
+  <!-- Delete-chat confirmation dialog -->
+  <div id="delete-chat-modal-overlay" role="presentation">
+    <div id="delete-chat-modal" role="dialog" aria-modal="true" aria-labelledby="delete-chat-modal-title">
+      <h2 id="delete-chat-modal-title">Delete chat?</h2>
+      <p>“<span class="modal-chat-title" id="delete-chat-name"></span>” will be permanently deleted. This cannot be undone.</p>
+      <div id="delete-chat-actions">
+        <button id="delete-chat-cancel-btn" type="button">Cancel</button>
+        <button id="delete-chat-confirm-btn" type="button">Delete</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Welcome header — visible only before first message -->
   <div id="welcome">
     <div class="logo"><img src="/static/atom.svg" alt="NCNR atom logo"/></div>
-    <h1>NCNR Assistant</h1>
+    <h1>CHRNS-AI</h1>
     <p>Ask about instruments, experiments, or documentation.</p>
   </div>
 
@@ -922,7 +996,7 @@
   <!-- Input box — lives in page flow (welcome) or sticks to bottom (chat) -->
   <div id="input-wrap">
     <div id="input-box">
-      <textarea id="user-input" placeholder="Message NCNR Assistant…" rows="1"></textarea>
+      <textarea id="user-input" placeholder="Message CHRNS-AI…" rows="1"></textarea>
       <div id="input-footer">
         <button id="send-btn" disabled aria-label="Send">
           <svg id="send-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -1767,9 +1841,26 @@
       inputEl.focus();
     }
 
+    /* ── Delete-chat confirmation dialog ── */
+    const deleteChatOverlay = document.getElementById('delete-chat-modal-overlay');
+    const deleteChatName    = document.getElementById('delete-chat-name');
+    let pendingDeleteId = null;
+
+    function closeDeleteChatModal() {
+      deleteChatOverlay.classList.remove('open');
+      pendingDeleteId = null;
+    }
+
+    /* Opens the confirmation dialog; actual removal happens in performDeleteChat. */
     function deleteChat(id) {
       if (isGenerating) return;
-      if (!confirm('Delete this chat? This cannot be undone.')) return;
+      const chat = chats.find(c => c.id === id);
+      pendingDeleteId = id;
+      deleteChatName.textContent = (chat && chat.title) || 'New chat';
+      deleteChatOverlay.classList.add('open');
+    }
+
+    function performDeleteChat(id) {
       deleteMsgs(id);
       chats = chats.filter(c => c.id !== id);
       if (!chats.length) {
@@ -1784,6 +1875,19 @@
       renderSidebar();
       renderMessages(activeChatId);
     }
+
+    document.getElementById('delete-chat-confirm-btn').addEventListener('click', () => {
+      if (pendingDeleteId) performDeleteChat(pendingDeleteId);
+      closeDeleteChatModal();
+    });
+    document.getElementById('delete-chat-cancel-btn').addEventListener('click', closeDeleteChatModal);
+    /* dismiss on backdrop click or Escape */
+    deleteChatOverlay.addEventListener('click', (e) => {
+      if (e.target === deleteChatOverlay) closeDeleteChatModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && deleteChatOverlay.classList.contains('open')) closeDeleteChatModal();
+    });
 
     /* ── sidebar collapse/expand (persisted) ── */
     function setSidebarCollapsed(collapsed) {
