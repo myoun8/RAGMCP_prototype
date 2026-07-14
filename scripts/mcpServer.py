@@ -9,9 +9,11 @@ import json
 import os
 import subprocess
 import sys
+import time
 import uuid
 import pandas
 from pathlib import Path
+from urllib.parse import quote
 
 import pandas
 import requests
@@ -389,6 +391,104 @@ def find_raw_data_paths(experiment_id: str, instrument: str | None = None) -> li
             "download_url": f"/download/raw/ncnr/{path}",
         })
     return results
+
+
+# Experiment log sheets are scanned PDFs the beamline staff keep on the SANS
+# data share (not on the ncnr.nist.gov public HTTP server), one file per
+# experiment/run. The keys here are the instrument tokens the tool accepts; the
+# values are the UNC roots to walk. app.py's /download/logsheet endpoint reads
+# from these same roots, so the two must stay in sync.
+LOGSHEET_ROOTS = {
+    "ng7": Path(r"\\charlotte.ncnr.nist.gov\Sans Data\NG7_FILES\Experiment Log Sheets"),
+    "ngb30": Path(r"\\charlotte.ncnr.nist.gov\Sans Data\NGB30_FILES\002- LogSheet\Backup"),
+}
+
+
+def _normalize_instrument_token(instrument: str) -> str:
+    """Map a user-supplied instrument name to a LOGSHEET_ROOTS key.
+
+    Accepts case/punctuation variants ("NG7", "ng-7", "NGB-30") by lowercasing
+    and stripping non-alphanumerics. Raises ValueError for anything unknown."""
+    token = "".join(c for c in (instrument or "").lower() if c.isalnum())
+    if token not in LOGSHEET_ROOTS:
+        raise ValueError(
+            f"Unknown instrument {instrument!r} for log sheets; "
+            f"choose one of {sorted(LOGSHEET_ROOTS)}."
+        )
+    return token
+
+
+@mcp.tool()
+def find_experiment_logsheet(instrument: str, query: str = "", top: int = 15) -> dict:
+    """Find experiment log-sheet PDFs for a SANS instrument and return download
+    links for the user.
+
+    instrument: "ng7" or "ngb30" (case/punctuation-insensitive). query: space-
+    separated search terms matched (case-insensitive, ALL terms must appear)
+    against each PDF's path/filename -- e.g. a PI surname ("Prabhu"), a date or
+    year ("2020", "20200731"), or a cycle. NOTE: the files are named by date and
+    PI surname (YYYYMMDD_<instr>_<PI>.pdf), NOT by experiment/proposal number, so
+    search by PI name or date rather than an experiment ID. Leave query empty to
+    list the most recent log sheets.
+
+    Returns {"instrument", "query", "count", "matches"} where matches is up to
+    `top` records (most recent first), each {"filename", "relative_path",
+    "size_kb", "modified", "download_url"}. count==0 means nothing matched -- tell
+    the user and suggest a PI surname or date. Render each download_url as a
+    Markdown link so the user can open/save the PDF; if several match, list them
+    and ask which experiment they meant."""
+    token = _normalize_instrument_token(instrument)
+    root = LOGSHEET_ROOTS[token]
+    if not root.is_dir():
+        raise RuntimeError(
+            f"Log-sheet directory for {token} is not reachable ({root}); "
+            "the SANS data share may be unmounted or offline."
+        )
+
+    terms = [t.lower() for t in query.split()]
+    matches = []
+    for pdf in root.rglob("*.pdf"):
+        # macOS leaves AppleDouble resource-fork stubs ("._name.pdf") on the
+        # share; they're a few KB of metadata, not the real scan -- skip them.
+        if pdf.name.startswith("._"):
+            continue
+        try:
+            rel = pdf.relative_to(root)
+        except ValueError:
+            continue
+        rel_str = rel.as_posix()
+        hay = rel_str.lower()
+        if terms and not all(t in hay for t in terms):
+            continue
+        try:
+            stat = pdf.stat()
+        except OSError:
+            continue
+        matches.append({
+            "filename": pdf.name,
+            "relative_path": rel_str,
+            "size_kb": round(stat.st_size / 1024, 1),
+            "modified": time.strftime("%Y-%m-%d", time.localtime(stat.st_mtime)),
+            "_mtime": stat.st_mtime,
+            "download_url": f"/download/logsheet/{token}/{quote(rel_str)}",
+        })
+
+    matches.sort(key=lambda m: m["_mtime"], reverse=True)
+    for m in matches:
+        del m["_mtime"]
+    top_matches = matches[: max(1, top)]
+    # Return a dict (never a bare list): langchain-core treats a tool's returned
+    # list as message content blocks when every element qualifies -- true for an
+    # empty list (no matches) or a list of plain values -- and passes it to the
+    # model provider un-stringified, which the OpenAI/RChat API then rejects
+    # ("content.0 is not a valid Content"). A top-level dict is always
+    # JSON-stringified, so both the empty and non-empty cases serialize safely.
+    return {
+        "instrument": token,
+        "query": query,
+        "count": len(top_matches),
+        "matches": top_matches,
+    }
 
 
 def _load_file_nodes(instrument_id: str, template_name: str) -> tuple[dict, list[dict]]:

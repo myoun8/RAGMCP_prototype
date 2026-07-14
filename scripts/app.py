@@ -9,6 +9,7 @@ import threading
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
+from urllib.parse import unquote
 
 import requests
 import uvicorn
@@ -119,6 +120,7 @@ MCP_TOOL_NAMES = [
     "list_datasources",
     "list_data_files",
     "find_raw_data_paths",
+    "find_experiment_logsheet",
     "list_reduction_templates",
     "reduce_files",
     "export_reduction",
@@ -219,7 +221,7 @@ TOOL_GROUPS = {
     "search": {
         "list_instruments", "get_instrument", "list_datasources",
         "list_data_files", "find_raw_data_paths", "get_file_intent",
-        "inspect_raw_file",
+        "inspect_raw_file", "find_experiment_logsheet",
         "search-instruments", "search-experiments", "search-datafiles",
         "search_instrument_schedule",
     },
@@ -252,6 +254,7 @@ GROUP_SIGNALS = {
         "path", "list ", "datasource", "intent", "find ", "search",
         "instrument", "metadata", "description", "inside the file", "hdf5",
         "nexus", "comment", "details", "about the", "schedule",
+        "log sheet", "logsheet", "log-sheet", "pdf", "ng7", "ngb30",
     ),
     "reduction": (
         "reduce", "reduction", "template", "specular", "background",
@@ -500,6 +503,47 @@ def download_export(export_id: str, filename: str):
     )
 
 
+# Roots for experiment log-sheet PDFs on the SANS data share; mcpServer owns the
+# mapping (find_experiment_logsheet builds the /download/logsheet URLs), we read
+# the same dict so the served path resolves to the exact file it found.
+LOGSHEET_ROOTS = _mod.LOGSHEET_ROOTS
+
+
+@app.get("/download/logsheet/{instrument}/{path:path}")
+def download_logsheet(instrument: str, path: str):
+    """Serve an experiment log-sheet PDF from the SANS data share as a download.
+
+    find_experiment_logsheet returns exactly this URL for each match; instrument
+    and path are the token and relative_path it reported. The files live on a
+    Windows network share, so we read them locally and stream them inline (PDFs
+    open in the browser's viewer) with traversal guarded against escaping the
+    instrument's log-sheet root."""
+    root = LOGSHEET_ROOTS.get(instrument)
+    if root is None:
+        raise HTTPException(status_code=400, detail=f"Unknown instrument {instrument!r}.")
+
+    clean = unquote(path).replace("\\", "/").strip("/")
+    if not clean or ".." in clean.split("/") or not clean.lower().endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Invalid log-sheet path.")
+
+    target = (root / clean)
+    # Confirm the resolved file really sits under the root (defense in depth on
+    # top of the ".." check above) before reading it.
+    try:
+        target.relative_to(root)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid log-sheet path.")
+    if not target.is_file():
+        raise HTTPException(status_code=404, detail="Log sheet not found.")
+
+    filename = target.name
+    return StreamingResponse(
+        _file_chunks(target),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'inline; filename="{filename}"'},
+    )
+
+
 def _file_chunks(path: Path, chunk_size: int = 65536):
     with open(path, "rb") as fh:
         while True:
@@ -732,6 +776,7 @@ TOOL_STATUS = {
     "list_datasources":    "Listing data sources…",
     "list_data_files":     "Browsing data files…",
     "find_raw_data_paths": "Finding raw data files for experiment…",
+    "find_experiment_logsheet": "Searching experiment log sheets…",
     "list_reduction_templates": "Looking up reduction templates…",
     "reduce_files":        "Reducing selected files…",
     "export_reduction":    "Exporting reduced data to ORSO…",

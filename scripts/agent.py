@@ -31,6 +31,7 @@ MCP_TOOL_NAMES = [
     "list_datasources",
     "list_data_files",
     "find_raw_data_paths",
+    "find_experiment_logsheet",
     "list_reduction_templates",
     "reduce_files",
     "get_file_intent",
