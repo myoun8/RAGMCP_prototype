@@ -34,6 +34,7 @@ MCP_TOOL_NAMES = [
     "find_experiment_logsheet",
     "list_reduction_templates",
     "reduce_files",
+    "export_reduction",
     "get_file_intent",
     "inspect_raw_file",
 ]
@@ -119,11 +120,13 @@ async def run_agent():
                           "TOOL RULES: only pass arguments the user explicitly gave; never pass empty/None/null "
                           "placeholders for optional params.\n"
                           "\n"
-                          "DATA REDUCTION: after listing an experiment's raw files (find_raw_data_paths/"
-                          "list_data_files), ask the user which files to reduce before calling reduce_files. "
-                          "For multi-node templates (check list_reduction_templates), confirm which files map "
-                          "to which node/intent (specular/background+/background-/intensity) — never guess or "
-                          "reuse files across nodes.\n"
+                          "DATA REDUCTION (in order): find_raw_data_paths/list_data_files (path+mtime+source) "
+                          "-> list_reduction_templates (read load_nodes for the file->node mapping AND "
+                          "output_nodes for target_node) -> ask the user which files to reduce -> reduce_files "
+                          "-> plot_reduction. For multi-node templates confirm which files map to which "
+                          "node/intent (specular/background+/background-/intensity) — never guess or reuse "
+                          "files across nodes. Read target_node from output_nodes (the leaf/reduced node); "
+                          "never guess it.\n"
                           "\n"
                           "STYLE: be brief and direct, no preamble; prefer short sentences or lists over prose.\n"
                           "\n"

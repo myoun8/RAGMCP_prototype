@@ -491,6 +491,26 @@ def find_experiment_logsheet(instrument: str, query: str = "", top: int = 15) ->
     }
 
 
+def _get_instrument(instrument_id: str) -> dict:
+    """Look up a reductus instrument definition, raising a friendly ValueError
+    that lists the valid IDs when the id is unknown.
+
+    reductus' own lookup_instrument raises a bare KeyError for a bad id, which
+    surfaces to the model as an opaque error with no hint of the valid choices.
+    """
+    try:
+        return reductus_api.get_instrument(instrument_id)
+    except Exception:
+        try:
+            valid = sorted(reductus_api.list_instruments())
+        except Exception:
+            valid = []
+        raise ValueError(
+            f"Unknown instrument_id {instrument_id!r}"
+            + (f"; valid instruments: {valid}" if valid else "")
+        )
+
+
 def _load_file_nodes(instrument_id: str, template_name: str) -> tuple[dict, list[dict]]:
     """Look up a named template for an instrument and find its file-input nodes.
 
@@ -498,7 +518,7 @@ def _load_file_nodes(instrument_id: str, template_name: str) -> tuple[dict, list
     [{"node": index, "title": ..., "module": ..., "intent": config.get("intent")}, ...]
     for every module in the template that has a 'filelist' (fileinfo) field.
     """
-    instrument = reductus_api.get_instrument(instrument_id)
+    instrument = _get_instrument(instrument_id)
     templates = instrument.get("templates", {})
     if template_name not in templates:
         raise ValueError(
@@ -527,21 +547,86 @@ def _load_file_nodes(instrument_id: str, template_name: str) -> tuple[dict, list
     return template_def, load_nodes
 
 
+def _output_nodes(instrument: dict, template_def: dict) -> list[dict]:
+    """Find a template's terminal/leaf nodes — modules whose output terminals are
+    not wired into any other node. The final reduced curve is a graph leaf, so
+    these are the candidates for target_node/target_terminal in reduce_files,
+    plot_reduction and export_reduction.
+
+    A reductus wire is {"source": [node_index, terminal], "target": [...]}; a node
+    is a leaf when its index never appears as a wire source. Returns
+    [{"node": index, "title": ..., "module": ..., "terminals": [term_id, ...]}, ...].
+    """
+    registry = {m["id"]: m for m in instrument["modules"]}
+    consumed = {w["source"][0] for w in template_def.get("wires", [])}
+    out_nodes = []
+    for i, node in enumerate(template_def["modules"]):
+        if i in consumed:
+            continue
+        module = registry.get(node["module"])
+        if module is None:
+            continue
+        terminals = [t["id"] for t in module.get("outputs", [])]
+        if not terminals:
+            continue
+        out_nodes.append({
+            "node": i,
+            "title": node.get("title", node["module"]),
+            "module": node["module"],
+            "terminals": terminals,
+        })
+    return out_nodes
+
+
+def _validate_target(instrument: dict, template_def: dict, target_node: int,
+                     target_terminal: str) -> None:
+    """Validate a target_node index and target_terminal against a template before
+    calc_terminal runs, raising a friendly ValueError (that lists the leaf/output
+    nodes) instead of letting reductus raise an opaque index/lookup error."""
+    modules = template_def["modules"]
+    out_nodes = _output_nodes(instrument, template_def)
+    if not isinstance(target_node, int) or not (0 <= target_node < len(modules)):
+        raise ValueError(
+            f"target_node {target_node!r} is out of range (valid 0..{len(modules) - 1}); "
+            f"the reduced curve is usually a leaf node — pick one of: {out_nodes}"
+        )
+    registry = {m["id"]: m for m in instrument["modules"]}
+    module = registry.get(modules[target_node]["module"])
+    terminals = [t["id"] for t in (module or {}).get("outputs", [])]
+    if target_terminal not in terminals:
+        raise ValueError(
+            f"target_terminal {target_terminal!r} is not an output of node "
+            f"{target_node} ({modules[target_node]['module']}); valid terminals: "
+            f"{terminals}. Reduced-curve (leaf) nodes: {out_nodes}"
+        )
+
+
+# reductus calc_terminal return_type values reduce_files exposes.
+_RETURN_TYPES = {"full", "plottable", "metadata", "export"}
+
+
 @mcp.tool()
 def list_reduction_templates(instrument_id: str) -> dict:
-    """List the standard reduction templates available for a reductus instrument,
-    and for each template, which module nodes accept data files (and their role,
-    e.g. 'specular'/'background+'/'intensity' for reflectometry).
+    """List the standard reduction templates available for a reductus instrument.
 
-    Instrument IDs are like 'ncnr.sans' or 'ncnr.refl'. Returns a dict mapping
+    For each template returns {"load_nodes": [...], "output_nodes": [...]}:
+    - load_nodes: module nodes that accept data files (and their role, e.g.
+      'specular'/'background+'/'intensity' for reflectometry) — map your files to
+      these node indices in reduce_files' node_files.
+    - output_nodes: the template's terminal/leaf nodes with their valid output
+      terminals — the reduced curve is a leaf, so read target_node/target_terminal
+      for reduce_files/plot_reduction/export_reduction from here. Never guess them.
 
-    Use this before reduce_files to find a template_name and the node indices
-    to pass in node_files."""
-    instrument = reductus_api.get_instrument(instrument_id)
+    Instrument IDs are like 'ncnr.sans' or 'ncnr.refl'.
+    Use this before reduce_files."""
+    instrument = _get_instrument(instrument_id)
     result = {}
     for template_name in instrument.get("templates", {}):
-        _, load_nodes = _load_file_nodes(instrument_id, template_name)
-        result[template_name] = load_nodes
+        template_def, load_nodes = _load_file_nodes(instrument_id, template_name)
+        result[template_name] = {
+            "load_nodes": load_nodes,
+            "output_nodes": _output_nodes(instrument, template_def),
+        }
     return result
 
 
@@ -549,12 +634,24 @@ def _sanitize_fileinfo(file_descriptor: dict) -> dict:
     """Reduce a file descriptor down to the exact {path, source, mtime[, entries]}
     shape reductus' fileinfo validator requires, dropping any extra descriptive
     keys (e.g. filename/instrument/rxcycle_id from find_raw_data_paths)."""
-    if "mtime" not in file_descriptor:
-        raise ValueError(f"file descriptor missing required 'mtime': {file_descriptor!r}")
+    missing = [k for k in ("path", "source", "mtime") if file_descriptor.get(k) is None]
+    if missing:
+        raise ValueError(
+            f"file descriptor missing required {missing} (each file needs "
+            f"'path', 'source' and integer 'mtime' — get them from "
+            f"find_raw_data_paths/list_data_files): {file_descriptor!r}"
+        )
+    try:
+        mtime = int(file_descriptor["mtime"])
+    except (TypeError, ValueError):
+        raise ValueError(
+            f"file descriptor 'mtime' must be integer epoch seconds "
+            f"(from find_raw_data_paths), got {file_descriptor['mtime']!r}"
+        )
     sanitized = {
         "path": str(file_descriptor["path"]),
         "source": str(file_descriptor["source"]),
-        "mtime": int(file_descriptor["mtime"]),
+        "mtime": mtime,
     }
     if file_descriptor.get("entries") is not None:
         sanitized["entries"] = list(file_descriptor["entries"])
@@ -578,7 +675,7 @@ def _all_node_outputs(instrument_id: str, template_def: dict, config: dict, retu
     template returned ~420KB — far past any LLM context budget. Callers who
     need a node's full metadata pass target_node instead.
     """
-    instrument = reductus_api.get_instrument(instrument_id)
+    instrument = _get_instrument(instrument_id)
     registry = {m["id"]: m for m in instrument["modules"]}
     output = {}
     for i, node in enumerate(template_def["modules"]):
@@ -613,7 +710,13 @@ def reduce_files(
     "path", "mtime" (int) and "source". Prefer a specific template. Omit
     target_node for per-node summaries, or pass it for one node's full output
     (return_type: full/plottable/metadata/export). Returns {"reduction",
-    "reductus_url", "reductus_template_id"}; to plot use plot_reduction."""
+    "output_nodes" (leaf nodes = target_node candidates), "reductus_url",
+    "reductus_template_id"}; to plot use plot_reduction."""
+    if return_type not in _RETURN_TYPES:
+        raise ValueError(
+            f"Unknown return_type {return_type!r}; choose one of {sorted(_RETURN_TYPES)}."
+        )
+    instrument = _get_instrument(instrument_id)
     template_def, load_nodes = _load_file_nodes(instrument_id, template_name)
     valid_nodes = {str(n["node"]) for n in load_nodes}
     unknown = set(node_files) - valid_nodes
@@ -622,6 +725,8 @@ def reduce_files(
             f"Node(s) {sorted(unknown)} are not file-input nodes for template "
             f"{template_name!r}; valid load nodes: {sorted(valid_nodes)}"
         )
+    if target_node is not None:
+        _validate_target(instrument, template_def, target_node, target_terminal)
 
     template_def["name"] = template_name
     template_def.setdefault("description", template_name)
@@ -632,17 +737,29 @@ def reduce_files(
         for node_index, files in node_files.items()
     }
 
-    if target_node is None:
-        reduction = _fit_result(_all_node_outputs(instrument_id, template_def, config, return_type))
-    else:
-        reduction = _fit_result(reductus_api.calc_terminal(
-            template_def, config, target_node, target_terminal, return_type=return_type,
-        ))
-    return {
-        "reduction": reduction,
+    out_nodes = _output_nodes(instrument, template_def)
+    result = {
         "reductus_url": _reductus_url(instrument_id, _reductus_folder(node_files)),
         "reductus_template_id": _save_template_payload(template_def, config),
+        # The reduced curve is a leaf; echo the candidates so the model can
+        # re-call with the right target_node instead of guessing.
+        "output_nodes": out_nodes,
     }
+    if target_node is None:
+        result["reduction"] = _fit_result(
+            _all_node_outputs(instrument_id, template_def, config, return_type)
+        )
+        result["_note"] = (
+            "Per-node summary only — arrays are collapsed to a headline. For the "
+            "full reduced curve, re-call with target_node set to the leaf node "
+            "(see output_nodes) and return_type='plottable', or call plot_reduction "
+            "to draw it directly."
+        )
+    else:
+        result["reduction"] = _fit_result(reductus_api.calc_terminal(
+            template_def, config, target_node, target_terminal, return_type=return_type,
+        ))
+    return result
 
 # Historical schedule databases live under rag/scraping/, one CSV per
 # instrument. All three share the same columns (year, start_date, num_days,
@@ -792,7 +909,7 @@ def plot_reduction(
     instrument_id: str,
     template_name: str,
     node_files: dict[str, list[dict]],
-    target_node: int = 12,
+    target_node: int | None = None,
     target_terminal: str = "output",
     title: str | None = None,
 ) -> str:
@@ -801,10 +918,13 @@ def plot_reduction(
     generate_plot — for a reduced dataset: it draws the FULL arrays server-side,
     whereas reduce_files returns truncated summaries that plot empty. Arguments
     mirror reduce_files (instrument_id/template_name, node_files of "path"/
-    "mtime"/"source" descriptors); target_node = FINAL reduced node (default 12).
-    Return the <div class="plotly-figure"> verbatim."""
+    "mtime"/"source" descriptors). target_node = FINAL reduced node; omit it to
+    auto-select the template's single leaf node, or read it from
+    list_reduction_templates' output_nodes. Return the <div class="plotly-figure">
+    verbatim."""
     import plotly.graph_objects as go
 
+    instrument = _get_instrument(instrument_id)
     template_def, load_nodes = _load_file_nodes(instrument_id, template_name)
     valid_nodes = {str(n["node"]) for n in load_nodes}
     unknown = set(node_files) - valid_nodes
@@ -813,6 +933,18 @@ def plot_reduction(
             f"Node(s) {sorted(unknown)} are not file-input nodes for template "
             f"{template_name!r}; valid load nodes: {sorted(valid_nodes)}"
         )
+
+    if target_node is None:
+        out_nodes = _output_nodes(instrument, template_def)
+        if len(out_nodes) != 1:
+            raise ValueError(
+                f"template {template_name!r} has {len(out_nodes)} leaf/output nodes; "
+                f"pass target_node explicitly — candidates: {out_nodes}"
+            )
+        target_node = out_nodes[0]["node"]
+        target_terminal = out_nodes[0]["terminals"][0]
+    else:
+        _validate_target(instrument, template_def, target_node, target_terminal)
 
     template_def["name"] = template_name
     template_def.setdefault("description", template_name)
@@ -910,6 +1042,7 @@ def export_reduction(
         )
     export_type, suffix, _ = _ORSO_EXPORTS[export_format]
 
+    instrument = _get_instrument(instrument_id)
     template_def, load_nodes = _load_file_nodes(instrument_id, template_name)
     valid_nodes = {str(n["node"]) for n in load_nodes}
     unknown = set(node_files) - valid_nodes
@@ -918,6 +1051,7 @@ def export_reduction(
             f"Node(s) {sorted(unknown)} are not file-input nodes for template "
             f"{template_name!r}; valid load nodes: {sorted(valid_nodes)}"
         )
+    _validate_target(instrument, template_def, target_node, target_terminal)
 
     template_def["name"] = template_name
     template_def.setdefault("description", template_name)
@@ -1100,7 +1234,7 @@ def get_file_intent(
     if fast is not None:
         return fast
 
-    instrument = reductus_api.get_instrument(instrument_id)
+    instrument = _get_instrument(instrument_id)
     templates = instrument.get("templates", {})
     if template_name:
         candidate_names = [template_name]

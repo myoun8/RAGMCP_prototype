@@ -19,3 +19,4 @@ python-dotenv>=1.0,<2.0    # agent.py — load_dotenv
 fastapi>=0.111,<1.0        # app.py — web server
 uvicorn>=0.29,<1.0         # app.py — ASGI runner
 playwright>=1.40,<2.0      # reductus_external.py — opens a local browser and injects a reduction template into the reductus web editor; also run `playwright install chromium` once
+pylru>=1.2,<2.0            # LRU cache
