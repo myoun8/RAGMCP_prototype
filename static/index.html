@@ -1174,17 +1174,6 @@
           if (reductusLink.classList.contains('launching')) return;
           reductusLink.classList.add('launching');
           reductusLink.innerHTML = 'Launching…';
-          // Open a blank tab synchronously (before the async fetch) so it isn't
-          // blocked as a pop-up. If the server injects locally we close it; if
-          // the client is remote we navigate it to reductus.
-          const remoteTab = window.open('', '_blank');
-          const resetLink = (label, ms) => {
-            reductusLink.innerHTML = label;
-            setTimeout(() => {
-              reductusLink.classList.remove('launching');
-              reductusLink.innerHTML = originalLabel;
-            }, ms);
-          };
           fetch('/reductus/open-editor', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1192,28 +1181,13 @@
           })
             .then(async (r) => {
               if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
-              const data = await r.json();
-              if (data.status === 'remote') {
-                // Server can't drive this (remote) client's browser. Open
-                // reductus ourselves and download the template so the user can
-                // load it via reductus' menu → Load.
-                if (remoteTab) remoteTab.location = fig.reductus_url || 'https://reductus.nist.gov/';
-                const dl = document.createElement('a');
-                dl.href = data.download_url;
-                dl.download = 'reductus-template.json';
-                document.body.appendChild(dl);
-                dl.click();
-                document.body.removeChild(dl);
-                resetLink('Downloaded — in Reductus use ☰ → Load', 8000);
-              } else {
-                // Local: Playwright launched the browser server-side (= this
-                // machine); the blank tab isn't needed.
-                if (remoteTab) remoteTab.close();
-                resetLink('Launched — check your desktop', 4000);
-              }
+              reductusLink.innerHTML = 'Launched — check your desktop';
+              setTimeout(() => {
+                reductusLink.classList.remove('launching');
+                reductusLink.innerHTML = originalLabel;
+              }, 4000);
             })
             .catch((err) => {
-              if (remoteTab) remoteTab.close();
               reductusLink.classList.remove('launching');
               reductusLink.innerHTML = originalLabel;
               alert(`Could not open reductus editor: ${err.message}`);
