@@ -7,7 +7,7 @@ def inject_template_with_open_browser(instrument_id: str, template_payload_json_
 
     with sync_playwright() as p:
         print("🤖 Launching browser...")
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         context = browser.new_context()
         page = context.new_page()
 
