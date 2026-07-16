@@ -1196,7 +1196,7 @@
               if (data.status === 'remote') {
                 // Server can't drive this (remote) client's browser, so open
                 // reductus ourselves and download the template for the user to
-                // load via reductus' menu → Load.
+                // load via reductus' menu → Template → Upload Template.
                 if (remoteTab) remoteTab.location = fig.reductus_url || 'https://reductus.nist.gov/';
                 const dl = document.createElement('a');
                 dl.href = data.download_url;
@@ -1204,7 +1204,7 @@
                 document.body.appendChild(dl);
                 dl.click();
                 document.body.removeChild(dl);
-                resetLink('Downloaded — in Reductus use ☰ → Load', 8000);
+                resetLink('Downloaded — in Reductus: ☰ → Template → Upload Template', 8000);
               } else {
                 // Local: Playwright injected into a browser on this machine, so
                 // the blank tab isn't needed.
