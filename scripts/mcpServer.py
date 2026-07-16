@@ -239,7 +239,9 @@ def generate_plot(
 
 @mcp.tool()
 def list_instruments() -> list:
-    """List available reductus instruments (e.g. 'ncnr.refl', 'ncnr.sans')."""
+    """List available reductus instruments (e.g. 'ncnr.refl', 'ncnr.sans').
+    Only use this tool when the user asks for a list of reductus instruments; 
+    do NOT use it to answer questions all ncnr instruments."""
     return reductus_api.list_instruments()
 
 

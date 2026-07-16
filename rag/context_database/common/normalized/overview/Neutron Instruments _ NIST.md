@@ -16,8 +16,6 @@ citation_required: false
 
 # Neutron Instruments
 
-> DEPRECATION NOTICE: This page is no longer being updated and the information may be out of date.
-
 ## Crystallography
 * **BT1 - Powder Diffractometer**: Hui Wu, Hayden Evans, Craig Brown
 * **BT8 - Engineering Diffractometer**: Thomas Gnäupel-Herold
