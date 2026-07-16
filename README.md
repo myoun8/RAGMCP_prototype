@@ -6,6 +6,22 @@ Every capability the agent has is a tool served over the **Model Context Protoco
 
 Retrieval-augmented generation over the instrument documentation is **one of those tools** (`gen_chunks`), not the whole system. The knowledge packs and the ingestion pipeline that build it live under [`rag/`](rag/) and are documented in [Knowledge base (RAG)](#knowledge-base-rag) below.
 
+---
+
+## 📖 New here? Start with [`documentation.md`](documentation.md)
+
+**[`documentation.md`](documentation.md) is the full setup walkthrough** — read it before the abbreviated quick start below. It covers the things this README assumes you already know:
+
+- **[Prerequisites](documentation.md#1-prerequisites)** — Python, Ollama, Node/`npx`, and NCNR network access
+- **[Getting an RChat API key](documentation.md#2-getting-an-rchat-api-key)** — what RChat is and how to obtain a key
+- **[Linking the key into the project](documentation.md#3-linking-the-key-into-the-project)** — where `.env` goes and which entry point reads it how
+- **[Installing dependencies](documentation.md#4-installing-dependencies)** — `setup.sh`, plus the manual Windows steps
+- **[Starting the server](documentation.md#5-starting-the-server)** — web UI, CLI REPL, or standalone MCP server, and what a healthy start looks like
+- **[Building the knowledge base](documentation.md#6-building-the-knowledge-base)** — why a fresh clone retrieves nothing until you do
+- **[⚠️ Known bugs and gotchas](documentation.md#known-bugs-and-gotchas)** — the model that crashes with tools bound, the plot tool that silently returns an empty chart, and the rest
+
+---
+
 ## Quick start
 
 1. Create a `.env` file in the repo root:
