@@ -61,4 +61,4 @@ Resolution: NSE decouples neutron velocity spread from sample energy-transfer re
 ## Related Documents
 - Full NSE polymer dynamics experiment guide (Sections 2–3)
 - Appendix A: The principle of neutron spin echo
-- NCNR NSE instrument details: https://www.ncnr.nist.gov/instruments/nse/NSE_details.html
+- NCNR NSE instrument details: https://www.nist.gov/ncnr/chrns-nse-neutron-spin-echo-spectrometer

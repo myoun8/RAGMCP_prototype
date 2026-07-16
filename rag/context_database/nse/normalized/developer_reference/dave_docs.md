@@ -65,8 +65,8 @@ DAVE is the NCNR Data Analysis and Visualization Environment for reduction, visu
 ## Templates and PAN extension guidance
 
 - [Template and brief instructions](https://www.ncnr.nist.gov/dave/documentation/dave_template.html) for including a GUI into DAVE version 1.x.
-- To include additional functions in PAN, define the function in IDL as described in [PAN_userfunction.pdf](https://www.ncnr.nist.gov/dave/documentation/PAN_userfunction.pdf) or use the [function template](http://www.ncnr.nist.gov/staff/dimeo/panweb/pan_functions.html) as a guide. IDL source code can be forwarded to the DAVE team for possible inclusion in a future build.
-- Documentation for the stand-alone version of PAN, requiring an IDL license, is available on the [PAN documentation page](http://www.ncnr.nist.gov/staff/dimeo/panweb/pan.html). Much of it is also relevant to the DAVE version of PAN.
+- To include additional functions in PAN, define the function in IDL as described in [PAN_userfunction.pdf](https://www.ncnr.nist.gov/dave/documentation/PAN_userfunction.pdf). IDL source code can be forwarded to the DAVE team for possible inclusion in a future build.
+- The stand-alone version of PAN, requiring an IDL license, is documented in [pandoc_DAVE.pdf](https://www.ncnr.nist.gov/dave/documentation/pandoc_DAVE.pdf) and [pan_user_macros.pdf](https://www.ncnr.nist.gov/dave/documentation/pan_user_macros.pdf). Much of it is also relevant to the DAVE version of PAN. The former stand-alone PAN website is no longer available.
 
 ## Required citation / acknowledgement
 

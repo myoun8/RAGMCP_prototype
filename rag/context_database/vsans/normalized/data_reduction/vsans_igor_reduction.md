@@ -31,7 +31,7 @@ An upgrade of the reduction and analysis software has been completed based on us
 - All of the SANS and USANS Reduction and Analysis procedures are now in a single download package that includes an installer and updater.
 - Installation package: [Latest GitHub release](https://github.com/sansigormacros/ncnrsansigormacros/releases/latest)
 - Installation instructions: [Install_Instructions.txt](https://www.nist.gov/document/sans-igor-macros-installation-instructions)
-- How to install the SANS Package: [Install_SANS_Package.mp4](https://www.ncnr.nist.gov/programs/sans/data/movies/Install_SANS_Package.mp4)
+- How to install the SANS Package: [SANS Reduction Macros: Installation Instructions](https://www.nist.gov/video/sans-reduction-macros-installation-instructions)
 - A Quick Start guide to the package is highlighted in [video documentation](https://www.nist.gov/ncnr/sans-usans-reduction-video-tutorials)
 
 

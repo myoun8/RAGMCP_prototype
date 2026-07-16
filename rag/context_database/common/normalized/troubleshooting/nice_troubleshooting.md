@@ -120,7 +120,7 @@ See Temperature Controllers under Sample Environment Equipment (https://www.nist
 
 ## What are the features of the counter (event vs. non-event mode, handshaking on/off)?
 
-See Counters in the NICE Help (https://www.nist.gov/ncnr/nice-help/devices/counter).
+See Counters in the NICE Help (https://www.nist.gov/ncnr/nicesoftware/nice-help/devices/counter).
 
 ## How/where/when to save configs, maps, trays, and sequence files? Common file naming schemes?
 

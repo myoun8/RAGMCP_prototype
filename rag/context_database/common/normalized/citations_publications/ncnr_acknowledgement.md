@@ -39,7 +39,7 @@ CHRNS instruments include:
 
 ## Related links
 
-- WERB / NIST Technical Publication Policy: https://www.nist.gov/ncnr/nist-technical-publication-policy-werb
+- WERB / NIST Technical Publication Policy: https://www.nist.gov/ncnr/publishing-your-results/werb
 - Publishing CHRNS Results: https://www.nist.gov/ncnr/chrns/publications-and-acknowledgment
 
 ## Contacts

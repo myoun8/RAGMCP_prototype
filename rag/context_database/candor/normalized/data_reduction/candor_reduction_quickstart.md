@@ -120,8 +120,8 @@ The page links to browser-based reflectivity calculators for quick data explorat
 
 Available calculators:
 
-- Magnetic reflectivity calculator: https://ncnr.nist.gov/instruments/magik/calculators/magnetic-reflectivity-calculator.html
-- Non-magnetic / unpolarized reflectivity calculator: https://ncnr.nist.gov/instruments/magik/calculators/reflectivity-calculator.html
+- Magnetic reflectivity calculator: https://pages.nist.gov/reflectometry-calculators/magnetic-reflectivity-calculator.html
+- Non-magnetic / unpolarized reflectivity calculator: https://pages.nist.gov/reflectometry-calculators/reflectivity-calculator.html
 
 The calculators allow user-generated SLD profiles to be exported to a heavily commented Python Refl1D model file, providing a starting point for modeling data in Refl1D.
 

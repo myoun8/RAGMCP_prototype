@@ -9,7 +9,7 @@ access_level: public
 status: current
 owner: CANDOR team
 last_reviewed: 2026-06-12
-source_url_or_path: https://www.ncnr.nist.gov/instruments/candor/publications.html
+source_url_or_path: https://ncnr.nist.gov/publications/CANDOR_pubs.html
 citation_required: true
 ---
 

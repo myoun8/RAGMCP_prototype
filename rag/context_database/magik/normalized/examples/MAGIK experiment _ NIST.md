@@ -101,7 +101,7 @@ $$SLD_{non-water}(z) = \frac{SLD_{fit,H_2O}(z)}{SLD_{known,D_2O} - SLD_{fit,D_2O
 11. DeCaluwe, S.C., et al. (2018). Nano Energy, 46, 91-100.
 12. Dura, J., et al. (2006). Rev. Sci. Instr, 77, 074301.
 13. Owejan, J.E., et al. (2012). Chem. Mater, 24, 11: 2133–2140.
-14. Kienzle, P.A., et al. Refl1D: Interactive depth profile modeler. http://www.reflectometry.org/danse/software
+14. Kienzle, P.A., et al. Refl1D: Interactive depth profile modeler. https://refl1d.readthedocs.io/en/stable/
 
 ## Contacts
 [contact details omitted]
