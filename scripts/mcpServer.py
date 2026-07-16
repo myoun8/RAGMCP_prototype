@@ -3,17 +3,19 @@ from turtle import pd
 
 from fastmcp import FastMCP
 import copy
+import html
 import importlib.util
 import io
 import json
 import os
+import re
 import subprocess
 import sys
 import time
 import uuid
 import pandas
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 import pandas
 import requests
@@ -394,14 +396,112 @@ def find_raw_data_paths(experiment_id: str, instrument: str | None = None) -> li
 
 
 # Experiment log sheets are scanned PDFs the beamline staff keep on the SANS
-# data share (not on the ncnr.nist.gov public HTTP server), one file per
-# experiment/run. The keys here are the instrument tokens the tool accepts; the
-# values are the UNC roots to walk. app.py's /download/logsheet endpoint reads
-# from these same roots, so the two must stay in sync.
+# data share, one file per experiment/run. Charlotte also publishes that same
+# share read-only over public HTTP as an Apache auto-index, so we browse it
+# there instead of over SMB: the UNC roots are only reachable from a
+# NIST-networked host with the share mounted, while these URLs work anywhere.
+# The keys are the instrument tokens the tool accepts; the values are the base
+# URLs to walk. app.py's /download/logsheet endpoint proxies from these same
+# bases, so the two must stay in sync.
 LOGSHEET_ROOTS = {
-    "ng7": Path(r"\\charlotte.ncnr.nist.gov\Sans Data\NG7_FILES\Experiment Log Sheets"),
-    "ngb30": Path(r"\\charlotte.ncnr.nist.gov\Sans Data\NGB30_FILES\002- LogSheet\Backup"),
+    "ng7": "https://charlotte.ncnr.nist.gov/pub/sansdata/NG7_FILES/Experiment%20Log%20Sheets/",
+    "ngb30": "https://charlotte.ncnr.nist.gov/pub/sansdata/NGB30_FILES/002-%20LogSheet/Backup/",
 }
+
+# One row of an Apache mod_autoindex table: the link, the last-modified stamp,
+# and the human-readable size. Each row sits on its own line, so the pattern is
+# anchored per-row and never spans one. Hrefs starting with "?" (the column-sort
+# links) or "/" (Parent Directory) are excluded by the first character class.
+_INDEX_ROW = re.compile(
+    r'<a href="([^"?/][^"]*)">[^<]*</a>\s*</td>'
+    r'\s*<td[^>]*>\s*([^<]*?)\s*</td>'
+    r'\s*<td[^>]*>\s*([^<]*?)\s*</td>'
+)
+
+# A full recursive walk of a log-sheet root is ~50 HTTP requests / ~2-3s, and
+# the archive only changes when staff add a sheet, so a walked index is cached
+# and reused across calls (a user typically searches a few times in a row).
+_LOGSHEET_INDEX_TTL = 900
+_logsheet_index_cache: dict[str, tuple[float, list[dict]]] = {}
+
+
+def _autoindex_size_kb(token: str) -> float | None:
+    """Convert an autoindex size cell ("155K", "1.2M", "-") to kilobytes.
+
+    The index only reports 2-3 significant digits, so this is approximate --
+    exact byte counts would cost a HEAD per file. Returns None for directories
+    and anything unparseable."""
+    token = token.strip()
+    if not token or token == "-":
+        return None
+    scale = {"K": 1.0, "M": 1024.0, "G": 1024.0 * 1024.0}.get(token[-1].upper())
+    try:
+        # No unit suffix means a plain byte count.
+        value = float(token[:-1]) * scale if scale else float(token) / 1024.0
+    except ValueError:
+        return None
+    return round(value, 1)
+
+
+def _walk_logsheet_index(token: str, max_dirs: int = 300) -> list[dict]:
+    """Recursively walk an instrument's log-sheet auto-index and return every
+    PDF it lists, most recent first. Cached for _LOGSHEET_INDEX_TTL seconds.
+
+    Paths are kept URL-decoded (the names contain spaces) to match what the tool
+    reports; callers re-quote when building a URL. max_dirs bounds the crawl so
+    an unexpectedly deep tree can't hang the tool."""
+    cached = _logsheet_index_cache.get(token)
+    if cached and time.time() - cached[0] < _LOGSHEET_INDEX_TTL:
+        return cached[1]
+
+    root = LOGSHEET_ROOTS[token]
+    files: list[dict] = []
+    queue = [""]  # directory paths relative to root, still URL-quoted
+    seen = set()
+    while queue and len(seen) < max_dirs:
+        rel_dir = queue.pop(0)
+        if rel_dir in seen:
+            continue
+        seen.add(rel_dir)
+        try:
+            resp = requests.get(root + rel_dir, timeout=30)
+            resp.raise_for_status()
+        except requests.RequestException as exc:
+            # One unreadable subdirectory shouldn't sink the whole search; the
+            # root failing is fatal and reported by the caller.
+            if rel_dir == "":
+                raise RuntimeError(
+                    f"Could not reach the {token} log-sheet archive at {root}: {exc}"
+                ) from exc
+            continue
+
+        for href, modified, size in _INDEX_ROW.findall(resp.text):
+            # Apache HTML-escapes the href rather than percent-encoding it, so a
+            # name with "&" arrives as "&amp;"; undo that to recover the real URL
+            # before walking into it or decoding it.
+            href = html.unescape(href)
+            if href.endswith("/"):
+                queue.append(rel_dir + href)
+                continue
+            if not href.lower().endswith(".pdf"):
+                continue
+            rel_str = unquote(rel_dir + href)
+            # macOS leaves AppleDouble resource-fork stubs ("._name.pdf") on the
+            # share; they're a few KB of metadata, not the real scan -- skip them.
+            if rel_str.rsplit("/", 1)[-1].startswith("._"):
+                continue
+            files.append({
+                "filename": rel_str.rsplit("/", 1)[-1],
+                "relative_path": rel_str,
+                "size_kb": _autoindex_size_kb(size),
+                # Autoindex stamps look like "2020-03-05 10:35"; keep the date.
+                "modified": modified.split()[0] if modified.strip() else "",
+            })
+
+    # "YYYY-MM-DD" sorts correctly as text, so no date parsing is needed.
+    files.sort(key=lambda f: f["modified"], reverse=True)
+    _logsheet_index_cache[token] = (time.time(), files)
+    return files
 
 
 def _normalize_instrument_token(instrument: str) -> str:
@@ -433,49 +533,23 @@ def find_experiment_logsheet(instrument: str, query: str = "", top: int = 15) ->
 
     Returns {"instrument", "query", "count", "matches"} where matches is up to
     `top` records (most recent first), each {"filename", "relative_path",
-    "size_kb", "modified", "download_url"}. count==0 means nothing matched -- tell
+    "size_kb" (approximate, may be null), "modified", "download_url"}. count==0
+    means nothing matched -- tell
     the user and suggest a PI surname or date. Render each download_url as a
     Markdown link so the user can open/save the PDF; if several match, list them
     and ask which experiment they meant."""
     token = _normalize_instrument_token(instrument)
-    root = LOGSHEET_ROOTS[token]
-    if not root.is_dir():
-        raise RuntimeError(
-            f"Log-sheet directory for {token} is not reachable ({root}); "
-            "the SANS data share may be unmounted or offline."
-        )
-
     terms = [t.lower() for t in query.split()]
     matches = []
-    for pdf in root.rglob("*.pdf"):
-        # macOS leaves AppleDouble resource-fork stubs ("._name.pdf") on the
-        # share; they're a few KB of metadata, not the real scan -- skip them.
-        if pdf.name.startswith("._"):
-            continue
-        try:
-            rel = pdf.relative_to(root)
-        except ValueError:
-            continue
-        rel_str = rel.as_posix()
-        hay = rel_str.lower()
-        if terms and not all(t in hay for t in terms):
-            continue
-        try:
-            stat = pdf.stat()
-        except OSError:
+    # Already sorted most-recent-first by the walk.
+    for entry in _walk_logsheet_index(token):
+        if terms and not all(t in entry["relative_path"].lower() for t in terms):
             continue
         matches.append({
-            "filename": pdf.name,
-            "relative_path": rel_str,
-            "size_kb": round(stat.st_size / 1024, 1),
-            "modified": time.strftime("%Y-%m-%d", time.localtime(stat.st_mtime)),
-            "_mtime": stat.st_mtime,
-            "download_url": f"/download/logsheet/{token}/{quote(rel_str)}",
+            **entry,
+            "download_url": f"/download/logsheet/{token}/{quote(entry['relative_path'])}",
         })
 
-    matches.sort(key=lambda m: m["_mtime"], reverse=True)
-    for m in matches:
-        del m["_mtime"]
     top_matches = matches[: max(1, top)]
     # Return a dict (never a bare list): langchain-core treats a tool's returned
     # list as message content blocks when every element qualifies -- true for an

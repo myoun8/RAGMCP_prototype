@@ -9,7 +9,7 @@ import threading
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
-from urllib.parse import unquote
+from urllib.parse import quote, unquote
 
 import requests
 import uvicorn
@@ -510,9 +510,11 @@ def download_export(export_id: str, filename: str):
     )
 
 
-# Roots for experiment log-sheet PDFs on the SANS data share; mcpServer owns the
-# mapping (find_experiment_logsheet builds the /download/logsheet URLs), we read
-# the same dict so the served path resolves to the exact file it found.
+# Base URLs for experiment log-sheet PDFs on charlotte's public mirror of the
+# SANS data share; mcpServer owns the mapping (find_experiment_logsheet builds
+# the /download/logsheet URLs), we read the same dict so the served path
+# resolves to the exact file it found. Only these fixed roots are reachable, so
+# the proxy below can't be turned into an open SSRF relay to arbitrary URLs.
 LOGSHEET_ROOTS = _mod.LOGSHEET_ROOTS
 
 
@@ -521,31 +523,33 @@ def download_logsheet(instrument: str, path: str):
     """Serve an experiment log-sheet PDF from the SANS data share as a download.
 
     find_experiment_logsheet returns exactly this URL for each match; instrument
-    and path are the token and relative_path it reported. The files live on a
-    Windows network share, so we read them locally and stream them inline (PDFs
-    open in the browser's viewer) with traversal guarded against escaping the
-    instrument's log-sheet root."""
-    root = LOGSHEET_ROOTS.get(instrument)
-    if root is None:
+    and path are the token and relative_path it reported. The files are published
+    read-only over public HTTP (not on this host), so we proxy them -- streaming
+    inline, so PDFs open in the browser's viewer rather than downloading -- with
+    traversal guarded against escaping the instrument's log-sheet root."""
+    base = LOGSHEET_ROOTS.get(instrument)
+    if base is None:
         raise HTTPException(status_code=400, detail=f"Unknown instrument {instrument!r}.")
 
     clean = unquote(path).replace("\\", "/").strip("/")
     if not clean or ".." in clean.split("/") or not clean.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Invalid log-sheet path.")
 
-    target = (root / clean)
-    # Confirm the resolved file really sits under the root (defense in depth on
-    # top of the ".." check above) before reading it.
+    # The names contain spaces, so re-quote the decoded path for the upstream
+    # URL; "/" stays a separator.
+    url = base + quote(clean)
     try:
-        target.relative_to(root)
-    except ValueError:
-        raise HTTPException(status_code=400, detail="Invalid log-sheet path.")
-    if not target.is_file():
-        raise HTTPException(status_code=404, detail="Log sheet not found.")
+        upstream = requests.get(url, stream=True, timeout=60)
+    except requests.RequestException as exc:
+        raise HTTPException(status_code=502, detail=f"Could not reach the log-sheet archive: {exc}") from exc
+    if upstream.status_code != 200:
+        upstream.close()
+        raise HTTPException(status_code=404 if upstream.status_code == 404 else 502,
+                            detail=f"Log sheet not found (source returned {upstream.status_code}).")
 
-    filename = target.name
+    filename = clean.rsplit("/", 1)[-1]
     return StreamingResponse(
-        _file_chunks(target),
+        upstream.iter_content(chunk_size=65536),
         media_type="application/pdf",
         headers={"Content-Disposition": f'inline; filename="{filename}"'},
     )
