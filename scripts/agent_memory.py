@@ -11,10 +11,11 @@ per-thread) MemorySaver:
                                  in a Chroma collection and recalled by semantic
                                  search on the current message.
 
-This module reuses chatapp's validated schemas + extraction/summarization
-prompts and the repo's existing Ollama(nomic-embed-text)+Chroma stack, but keeps
-its own storage so it never depends on chatapp's users/conversations/messages
-tables.
+This module reuses chatapp's validated schemas + summarization prompt and the
+repo's existing Ollama(nomic-embed-text)+Chroma stack, but keeps its own storage
+so it never depends on chatapp's users/conversations/messages tables. Fact
+extraction uses a local, domain-tuned prompt rather than chatapp's generic one
+(see EXTRACTOR_SYSTEM).
 
 Extraction and summarization run against RChat `gpt-oss-120b` (server-side
 RCHAT_API_KEY). If that key is absent the background workers no-op and the app
@@ -28,6 +29,7 @@ import asyncio
 import importlib.util
 import logging
 import os
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -45,7 +47,7 @@ if str(REPO_ROOT) not in sys.path:
 # Reused chatapp building blocks (schemas are pure pydantic; the workers/llm
 # imports only construct an engine + client object, no connection at import).
 from chatapp.schemas import PersistentProfile, ProfileFact, SummaryMetadata
-from chatapp.workers import EXTRACTOR_SYSTEM, SUMMARIZER_SYSTEM, _FACT_CATEGORIES
+from chatapp.workers import SUMMARIZER_SYSTEM, _FACT_CATEGORIES
 from chatapp.llm import _parse_json_object, estimate_tokens
 
 # Import rag/scripts/_common the same way mcpServer.py does, reusing the entry
@@ -77,6 +79,57 @@ RETRIEVAL_TOP_K = int(os.getenv("AGENT_MEMORY_TOP_K", "3"))
 RETRIEVAL_MAX_DISTANCE = float(os.getenv("AGENT_MEMORY_MAX_DISTANCE", "0.9"))
 COMPACTION_TOKEN_LIMIT = int(os.getenv("AGENT_MEMORY_COMPACTION_TOKEN_LIMIT", "3000"))
 COMPACTION_KEEP_RECENT = int(os.getenv("AGENT_MEMORY_KEEP_RECENT", "6"))
+
+# Facts the extractor is not sure about are dropped rather than stored: a wrong
+# durable fact is worse than a missing one, since it is injected into every
+# future turn and the user never sees why the agent believes it. A genuinely
+# durable fact recurs, so anything dropped here gets another chance later.
+MIN_FACT_CONFIDENCE = float(os.getenv("AGENT_MEMORY_MIN_CONFIDENCE", "0.7"))
+# Token-overlap ratio above which two facts are treated as the same fact.
+FACT_DEDUP_THRESHOLD = float(os.getenv("AGENT_MEMORY_DEDUP_THRESHOLD", "0.7"))
+
+
+# --------------------------------------------------------------------------
+# Fact extraction prompt
+# --------------------------------------------------------------------------
+# chatapp's EXTRACTOR_SYSTEM is written for a general-purpose chatbot. Here,
+# every exchange is dense with experiment ids, run numbers, file paths and
+# reduction settings, and a generic extractor files those as durable "project"
+# facts -- they are by far the biggest source of memory junk on this app, and
+# they go stale the moment the user moves to the next dataset. So this prompt
+# names them as exclusions outright, and asks for honest confidence, which
+# MIN_FACT_CONFIDENCE then acts on.
+EXTRACTOR_SYSTEM = (
+    "You mine chat exchanges for durable facts about THE USER AS A PERSON that "
+    "would still matter months from now in a completely unrelated conversation: "
+    "who they are, their role and institution, the instruments or science they "
+    "work on long-term, and standing preferences for how they want answers.\n"
+    "\n"
+    "This is a neutron-scattering assistant, so most exchanges are about "
+    "transient task state. Do NOT extract any of the following, even when the "
+    "user states them plainly:\n"
+    "- what the user is doing right now: experiment ids, proposal numbers, run "
+    "numbers, file names or paths, sample names, dates, reduction settings, or "
+    "plots requested\n"
+    "- facts about instruments, physics, or the NCNR itself -- that is subject "
+    "matter, not a fact about the user\n"
+    "- anything the assistant said, inferred, or recommended\n"
+    "- one-off requests, small talk, or restatements of what you already know\n"
+    "\n"
+    "Test every candidate: would this still be true and useful if the user came "
+    "back in six months about a different experiment? If not, leave it out.\n"
+    "\n"
+    'Respond with a JSON object: {"facts": [{"fact": "...", "category": "...", '
+    '"confidence": 0.0-1.0}]} where category is exactly one word chosen from: '
+    "work, project, personal, preference, general. Write each fact as a "
+    "standalone third-person sentence starting 'The user'.\n"
+    "Set confidence honestly: 0.9+ only when the user stated it about "
+    f"themselves outright, and below {MIN_FACT_CONFIDENCE:g} for anything you "
+    "are inferring. Facts below that floor are discarded, so do not pad.\n"
+    'MOST exchanges contain NO durable facts -- then return {"facts": []}. '
+    "Returning nothing is the correct and common answer; never invent a fact to "
+    "look useful."
+)
 
 
 def _utcnow() -> datetime:
@@ -141,12 +194,63 @@ def load_profile(user_id: str) -> PersistentProfile | None:
             return None
 
 
+# --------------------------------------------------------------------------
+# Near-duplicate fact detection
+# --------------------------------------------------------------------------
+# What actually bloats a profile is restatement, not repetition: "works on
+# VSANS" and "The user works with VSANS data" are one fact in two wordings, and
+# an exact-string key stores both. Strip the filler every extracted fact carries
+# ("the user is/has/was ...") and compare what content words are left.
+_FACT_STOPWORDS = frozenset({
+    "the", "a", "an", "is", "are", "was", "were", "be", "been", "being",
+    "this", "that", "these", "those", "user", "users", "they", "them",
+    "their", "he", "him", "his", "she", "her", "it", "its",
+    "of", "to", "in", "on", "at", "for", "with", "and", "or", "as", "by",
+    "from", "about", "into", "who", "has", "have", "had", "does", "do",
+})
+_WORD_RE = re.compile(r"[a-z0-9]+")
+
+
+def _fact_tokens(fact: str) -> frozenset[str]:
+    """The content words of a fact, with filler and punctuation removed."""
+    return frozenset(w for w in _WORD_RE.findall(fact.lower()) if w not in _FACT_STOPWORDS)
+
+
+def _is_near_duplicate(a: frozenset[str], b: frozenset[str]) -> bool:
+    """True when two token sets say the same thing.
+
+    Jaccard alone misses the common case where one fact is just the other plus
+    filler -- {works, vsans} vs {works, vsans, data} scores only 0.67 -- so a
+    fact contained in another counts as duplicate too. That containment check
+    requires >=2 content words on the smaller side, because a one-word fact is
+    contained by everything: without the guard, a stored "The user is a
+    scientist" would swallow "The user is a beamline scientist".
+
+    Synonym-level restatement ("is an expert in X" vs "has expertise in X") is
+    out of scope and stays a duplicate pair. Do NOT lower FACT_DEDUP_THRESHOLD
+    to catch it: that pair scores exactly the same as "prefers concise answers"
+    vs "prefers detailed answers" (jaccard 0.50 / containment 0.67), so any
+    threshold that merges the former silently discards the latter, which is the
+    worse failure. Catching synonyms needs embeddings, and Layer 2 is
+    deliberately embedding-free so it survives Ollama being down.
+    """
+    if not a or not b:
+        return False
+    overlap = len(a & b)
+    if not overlap:
+        return False
+    if overlap / len(a | b) >= FACT_DEDUP_THRESHOLD:
+        return True
+    smaller = min(len(a), len(b))
+    return smaller >= 2 and overlap / smaller >= FACT_DEDUP_THRESHOLD
+
+
 def save_extracted_facts(user_id: str, candidates: list[ProfileFact]) -> list[str]:
     """Merge new facts into the user's profile under an optimistic lock.
 
-    Mirrors chatapp.workers.run_memory_extraction: dedup on lowercased fact
-    text, write only if nobody bumped `version` meanwhile (else drop and
-    re-learn later). Returns the newly added fact strings.
+    Drops candidates that restate a fact already stored (or one accepted earlier
+    in this same batch), then writes only if nobody bumped `version` meanwhile
+    (else drop and re-learn later). Returns the newly added fact strings.
     """
     if not candidates:
         return []
@@ -162,13 +266,18 @@ def save_extracted_facts(user_id: str, candidates: list[ProfileFact]) -> list[st
             session.flush()
 
         profile = PersistentProfile.model_validate(row.data)
-        seen = {f.fact.strip().lower() for f in profile.facts}
+        # Dedup against stored facts AND against candidates accepted earlier in
+        # this batch, which are not in the profile yet.
+        seen = [_fact_tokens(f.fact) for f in profile.facts]
         added = []
         for c in candidates:
-            key = c.fact.strip().lower()
-            if key in seen:  # dedup against stored facts AND earlier in this batch
+            tokens = _fact_tokens(c.fact)
+            if not tokens:  # nothing but filler, e.g. "The user is a user."
                 continue
-            seen.add(key)
+            if any(_is_near_duplicate(tokens, s) for s in seen):
+                logger.debug("Dropping restated fact for %s: %s", user_id, c.fact)
+                continue
+            seen.append(tokens)
             added.append(c)
         if not added:
             return []
@@ -462,6 +571,12 @@ async def extract_facts(user_id: str, user_text: str, assistant_text: str) -> li
                 confidence = min(1.0, max(0.0, float(item.get("confidence", 0.8))))
             except (TypeError, ValueError):
                 confidence = 0.8
+            if confidence < MIN_FACT_CONFIDENCE:
+                logger.debug(
+                    "Dropping low-confidence (%.2f) fact for %s: %s",
+                    confidence, user_id, item["fact"],
+                )
+                continue
             category = str(item.get("category", "general")).strip().lower()
             if category not in _FACT_CATEGORIES:
                 category = "general"

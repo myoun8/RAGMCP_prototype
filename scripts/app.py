@@ -248,6 +248,12 @@ GROUP_SIGNALS = {
         "explain", "works", "work?", "principle", "resolution", "geometry",
         "detector", "monochromator", "documentation", "manual", "concept",
         "why ", "difference between",
+        # Specification/limit queries must reach the knowledge base: the specs
+        # live only in the RAG packs, and several of these phrasings otherwise
+        # match "search" alone (e.g. "list the instrument specs for candor"),
+        # which would leave the model answering limits from memory.
+        "specification", "specs", "limit", "range", "wavelength", "flux",
+        "maximum", "minimum", "capabilit", "how many", "how much",
     ),
     "search": (
         "experiment", "raw data", "data file", "datafile", "files", "file ",
@@ -356,6 +362,11 @@ async def lifespan(app: FastAPI):
         "\n"
         "STYLE: brief and direct, no preamble; short sentences or lists. Max 10 rows per list "
         "unless asked for more.\n"
+        "\n"
+        "INSTRUMENT SPECS: specs and standard limits come only from gen_chunks (get_instrument "
+        "returns a module graph, not specs). Quote retrieved values verbatim — digits, units, "
+        "bounds, qualifiers (~, ≤, 'typical'). Never round, convert, or supply one the chunks "
+        "omit; say it isn't there instead.\n"
         "\n"
         "REDUCTION WORKFLOW: (1) find_raw_data_paths / list_data_files for each file's "
         "path+mtime+source. (2) get_file_intent per file if intents are needed (reuse step 1's "
