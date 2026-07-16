@@ -590,16 +590,26 @@ class OpenReductusEditorRequest(BaseModel):
     template_id: str
 
 
-@app.post("/reductus/open-editor")
-def open_reductus_editor(req: OpenReductusEditorRequest):
-    """Launch a local browser (via Playwright) with the exact reduction
-    template reduce_files/export_reduction built -- same modules/wires and the
-    same files loaded into each node -- open in the reductus web editor.
+_LOOPBACK_HOSTS = {"127.0.0.1", "::1", "localhost"}
 
-    Runs the injection in a background thread and returns immediately: it's a
-    blocking call that opens a GUI browser window and waits for the user to
-    close it, which only makes sense because this server runs on the user's
-    own machine (not a shared multi-user host)."""
+
+@app.post("/reductus/open-editor")
+def open_reductus_editor(req: OpenReductusEditorRequest, request: Request):
+    """Open the exact reduction template reduce_files/export_reduction built --
+    same modules/wires and the same files loaded into each node -- in the
+    reductus web editor.
+
+    Default path (client on this same machine): launch a GUI browser server-side
+    via Playwright and inject the template straight into the editor.
+
+    A remote client can't be auto-injected -- the app page can't script the
+    cross-origin reductus.nist.gov window -- so for a non-loopback client we
+    skip Playwright and hand back a download_url instead: the client opens
+    reductus itself and the user loads the downloaded template via menu -> Load.
+
+    The Playwright path runs in a background thread and returns immediately:
+    it's a blocking call that opens a GUI browser window and waits for the user
+    to close it, which only makes sense when the client is on this host."""
     template_id = req.template_id
     if not template_id.isalnum():
         raise HTTPException(status_code=400, detail="Invalid template_id.")
@@ -611,6 +621,12 @@ def open_reductus_editor(req: OpenReductusEditorRequest):
     instrument_id = payload.get("instrument")
     if not instrument_id:
         raise HTTPException(status_code=500, detail="Template payload is missing its instrument id.")
+
+    # Remote client: we can't drive its browser from here, so let the client
+    # open reductus and load the template file itself (menu -> Load).
+    client_host = request.client.host if request.client else None
+    if client_host not in _LOOPBACK_HOSTS:
+        return {"status": "remote", "download_url": f"/reductus/template/{template_id}.json"}
 
     try:
         reductus_external = _load_reductus_external()
@@ -629,6 +645,26 @@ def open_reductus_editor(req: OpenReductusEditorRequest):
 
     threading.Thread(target=_run, daemon=True).start()
     return {"status": "launching"}
+
+
+@app.get("/reductus/template/{template_id}.json")
+def download_reductus_template(template_id: str):
+    """Serve a saved reduction-template payload as a Save-As download so a
+    remote client can load it into the reductus editor via menu -> Load. The
+    saved {modules, wires} shape is exactly what reductus' template file reader
+    expects, so it needs no re-wrapping. Serves the 'remote' branch of
+    /reductus/open-editor."""
+    # The id is a uuid hex; the isalnum() check also blocks path traversal.
+    if not template_id.isalnum():
+        raise HTTPException(status_code=400, detail="Invalid template_id.")
+    path = TEMPLATES_DIR / f"{template_id}.json"
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="Template not found (it may have expired).")
+    return StreamingResponse(
+        _file_chunks(path),
+        media_type="application/json",
+        headers={"Content-Disposition": 'attachment; filename="reductus-template.json"'},
+    )
 
 
 @app.get("/api/key-status")

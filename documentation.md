@@ -131,6 +131,64 @@ Sanity-check retrieval without an LLM in the loop:
 python rag/scripts/gen_chunks.py "How do I align the CANDOR detector?" --pack candor
 ```
 
+## 7. Developing and connecting a tool
+
+A tool is a plain Python function in [`scripts/mcpServer.py`](scripts/mcpServer.py). Writing it is the easy part; **connecting it to the agents is four hand-maintained lists, none of which are auto-discovered.** If you only do step 1, the tool exists over the MCP stdio transport and is invisible to both front-ends.
+
+### Step 1 — write the function
+
+```python
+@mcp.tool()
+def find_experiment_logsheet(instrument: str, query: str = "", top: int = 15) -> dict:
+    """Searches the NG7 / NGB30 experiment log-sheet PDF archives and returns
+    download links. Log sheets are named by date + PI surname, NOT by
+    experiment number — search by PI or date."""
+    ...
+```
+
+Three things carry real weight here:
+
+- **The docstring is the tool's prompt.** Both front-ends pass `getattr(mcpServer, name).__doc__` straight to the model as the tool description — it is the only thing the model reads when deciding whether to call your tool. Say what it does, and say when *not* to use it; the existing docstrings do exactly this (`gen_chunks` ends with "Do NOT use this tool to answer questions about raw data files"). A vague docstring shows up as the model calling the wrong tool.
+- **Type-annotate every parameter.** `StructuredTool.from_function` derives the JSON schema the model fills in from the signature. An un-annotated parameter gives the model no idea what to pass.
+- **Return a `dict` or a `str` — never a bare `list`.** See the gotcha below; this one bites at runtime, not at import.
+
+If your tool returns anything large (metadata blobs, reduction output, file structure), pass it through `_fit_result()` on the way out, like the reduction tools do. It compacts and truncates to a fixed character budget so a single result can't blow the context window.
+
+### Step 2 — register it in both front-ends
+
+Add the function name to the `MCP_TOOL_NAMES` list in **both** [`app.py`](scripts/app.py#L113) and [`agent.py`](scripts/agent.py#L24). Each front-end builds its LangChain tool set by looping that list and doing `getattr(mcpServer, name)` — a name that isn't in the list is never loaded.
+
+The two lists are maintained separately and **are not identical today**: `agent.py` omits `search_instrument_schedule`. That's the normal failure mode — someone adds a tool to one list and not the other, and it works in the web UI and silently doesn't exist in the CLI. Update both unless you deliberately want the tool in only one.
+
+### Step 3 — put it in a tool group (`app.py` only)
+
+[`app.py`](scripts/app.py#L219) doesn't bind all sixteen tools on every request. `_select_tool_names` matches the user's message against `GROUP_SIGNALS` keywords, picks the implicated groups out of `TOOL_GROUPS` (plus anything they chain into via `GROUP_DEPENDENCIES`), and binds only those — every model step re-sends every bound tool's full JSON schema, so this is a real input-token saving on the hot path.
+
+So add your tool to the right `TOOL_GROUPS` bucket (`knowledge_base` / `search` / `reduction` / `plot` / `admin`), and add trigger words to that group's `GROUP_SIGNALS` entry if the existing ones wouldn't catch a question aimed at your tool. Keep signals broad — a false positive just re-adds a schema, while a false negative drops a tool the run needed.
+
+Two safety valves mean scoping can't silently hide your tool: a message with no recognized signal at all falls back to the full set, and any loaded tool that isn't in `_KNOWN_TOOL_NAMES` (i.e. any tool you forgot to group) is always kept. So skipping this step is *safe* — it just means your tool is always bound and never pulls in its workflow's companion tools.
+
+### Step 4 — give it a status label (optional, `app.py` only)
+
+`TOOL_STATUS` at [`app.py:780`](scripts/app.py#L780) maps a tool name to the text the UI shows while it runs (`"Searching experiment log sheets…"`). Without an entry the UI falls back to `Using <tool_name>…`, which works but reads like debug output. (`search_instrument_schedule` currently has no entry.)
+
+### What you get for free
+
+- **Exceptions won't kill the run.** `app.py` wraps every tool in `_safe_tool`, which catches anything your function raises and returns it as a `TOOL ERROR in <name>: ...` string, so the model can report that one item as failed and carry on with the rest of a multi-file request. Don't add defensive try/except just to keep the agent alive — do add one where you can return a *useful* message instead of a traceback.
+- **Parallel fan-out.** The MULTI-ITEM system prompt tells the model to issue per-item tool calls in a single turn, and LangGraph's `ToolNode` runs them concurrently. Your function should be safe to call several times at once.
+- **Timing.** `_TurnMetrics` records per-tool durations and streams them to the UI and the `ncnr.timing` logger with no work on your side.
+
+### Testing it
+
+Call the function directly — no MCP transport, no agent — the way [`test_reductus_tools.py`](scripts/test_reductus_tools.py) does:
+
+```python
+import mcpServer
+print(mcpServer.find_experiment_logsheet("ng7", "smith"))
+```
+
+Note that importing `mcpServer` starts Ollama and opens Chroma, so a bare import takes a few seconds. Then check the wiring end-to-end by asking the web UI a question phrased the way a user would — if the model never calls your tool, the problem is almost always the docstring (step 1) or a missing `GROUP_SIGNALS` keyword (step 3).
+
 ---
 
 ## Known bugs and gotchas
@@ -156,7 +214,9 @@ python rag/scripts/gen_chunks.py "How do I align the CANDOR detector?" --pack ca
 
 ### Adding a tool
 
-- **Neither front-end auto-discovers tools.** Registering `@mcp.tool()` alone only exposes it over stdio. To make it usable in the agents you must add the name to the hand-maintained `MCP_TOOL_NAMES` list in **both** [`app.py`](scripts/app.py) and [`agent.py`](scripts/agent.py) — the two lists are maintained separately and are not identical (`agent.py` omits `export_reduction`). For `app.py`, also add it to the right `TOOL_GROUPS` bucket (and `GROUP_SIGNALS` if it needs new trigger words), or per-request scoping won't pull in its workflow group.
+*Full walkthrough in [step 7](#7-developing-and-connecting-a-tool); these are the two that bite hardest.*
+
+- **Neither front-end auto-discovers tools.** Registering `@mcp.tool()` alone only exposes it over stdio. To make it usable in the agents you must add the name to the hand-maintained `MCP_TOOL_NAMES` list in **both** [`app.py`](scripts/app.py) and [`agent.py`](scripts/agent.py) — the two lists are maintained separately and are not identical (`agent.py` omits `search_instrument_schedule`).
 - **Never return a bare `list` from a tool.** langchain-core keeps a returned list as message-content blocks instead of JSON-stringifying it whenever every element looks like a content block — vacuously true for an empty list — and the un-stringified list is then rejected by the OpenAI/RChat API (`content.0 is not a valid Content`). Wrap results in a dict, e.g. `{"count": n, "matches": [...]}`.
 
 ### Environment
