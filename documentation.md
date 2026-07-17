@@ -113,6 +113,8 @@ python scripts/mcpServer.py     # stdio transport
 
 ## 6. Building the knowledge base
 
+In order to add a new file into the database, you must put the file into the correct folder within the **`rag/context_database`**. After choosing the correct instrument, look into the **`originals/`** folder to select the correct file type.
+
 The `gen_chunks` tool retrieves from a Chroma vectorstore at `rag/chroma_db/` (collection `ncnr_rag`). **`chroma_db/` is gitignored**, so a fresh clone has no vectorstore — `gen_chunks` returns nothing until you build one:
 
 ```bash
