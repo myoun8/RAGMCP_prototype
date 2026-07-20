@@ -1127,103 +1127,95 @@
 
     /* Attach a "PNG / Data (CSV)" download bar under a rendered plot. PNG is the
        graph image; CSV is the underlying (reduction) plot data from its traces. */
-    function addPlotDownloads(plotEl, fig) {
-      if (plotEl.nextElementSibling?.classList?.contains('plot-downloads')) return;
-      const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
-      const bar = document.createElement('div');
-      bar.className = 'plot-downloads';
+function addPlotDownloads(plotEl, fig) {
+  console.log("Figure data:", fig); // <--- Add this!
+  console.log("Template ID:", fig.reductus_template_id); // <--- Add this!
+  if (plotEl.nextElementSibling?.classList?.contains('plot-downloads')) return;
+  const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+  const bar = document.createElement('div');
+  bar.className = 'plot-downloads';
 
-      const pngBtn = document.createElement('button');
-      pngBtn.className = 'plot-dl-btn';
-      pngBtn.textContent = '⬇ PNG';
-      pngBtn.addEventListener('click', () => {
-        Plotly.downloadImage(plotEl, { format: 'png', scale: 2, filename: `plot-${stamp}` });
-      });
-      bar.appendChild(pngBtn);
+  // --- 1. PNG Button ---
+  const pngBtn = document.createElement('button');
+  pngBtn.className = 'plot-dl-btn';
+  pngBtn.textContent = '⬇ PNG';
+  pngBtn.addEventListener('click', () => {
+    Plotly.downloadImage(plotEl, { format: 'png', scale: 2, filename: `plot-${stamp}` });
+  });
+  bar.appendChild(pngBtn);
 
-      const csv = figureToCsv(fig);
-      if (csv) {
-        const csvBtn = document.createElement('button');
-        csvBtn.className = 'plot-dl-btn';
-        csvBtn.textContent = '⬇ Data (CSV)';
-        csvBtn.addEventListener('click', () => {
-          triggerDownload(new Blob([csv], { type: 'text/csv' }), `plot-data-${stamp}.csv`);
-        });
-        bar.appendChild(csvBtn);
+  // --- 2. CSV Button ---
+  const csv = figureToCsv(fig);
+  if (csv) {
+    const csvBtn = document.createElement('button');
+    csvBtn.className = 'plot-dl-btn';
+    csvBtn.textContent = '⬇ Data (CSV)';
+    csvBtn.addEventListener('click', () => {
+      triggerDownload(new Blob([csv], { type: 'text/csv' }), `plot-data-${stamp}.csv`);
+    });
+    bar.appendChild(csvBtn);
+  }
+
+  // --- 3. Reductus Link ---
+  const reductusLink = document.createElement('a');
+  reductusLink.className = 'plot-reductus-link';
+  reductusLink.target = '_blank';
+  reductusLink.rel = 'noopener noreferrer';
+  const originalLabel = 'Open in Reductus ↗';
+  reductusLink.innerHTML = originalLabel;
+
+  const baseUrl = fig.reductus_url || 'https://reductus.nist.gov/';
+
+  if (fig.reductus_template_id) {
+    // If we have a template, fetch it and append it to the URL hash
+    reductusLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      
+      if (reductusLink.classList.contains('launching')) return;
+      reductusLink.classList.add('launching');
+      reductusLink.innerHTML = 'Loading Template…';
+
+      // Open a blank tab synchronously so it isn't blocked by pop-up blockers
+      const remoteTab = window.open('', '_blank');
+
+      try {
+        // Fetch the raw JSON template from the server
+        const response = await fetch(`/reductus/template/${fig.reductus_template_id}.json`);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to load template: ${response.statusText}`);
+        }
+        
+        const templateData = await response.json();
+        
+        // Convert to string and URL-encode it
+        const encodedTemplate = encodeURIComponent(JSON.stringify(templateData));
+        
+        // Navigate the blank tab to the deep link
+        if (remoteTab) {
+          remoteTab.location = `${baseUrl}#template=${encodedTemplate}`;
+        }
+        
+        // Reset the button
+        reductusLink.classList.remove('launching');
+        reductusLink.innerHTML = originalLabel;
+        
+      } catch (err) {
+        if (remoteTab) remoteTab.close();
+        reductusLink.classList.remove('launching');
+        reductusLink.innerHTML = originalLabel;
+        alert(`Could not open reductus editor: ${err.message}`);
       }
+    });
+  } else {
+    // If no template, just act as a normal link
+    reductusLink.href = baseUrl;
+  }
+  
+  bar.appendChild(reductusLink);
 
-      const reductusLink = document.createElement('a');
-      reductusLink.className = 'plot-reductus-link';
-      // generate_plot embeds a deep link (instrument/folder) when the data came
-      // from reduction; otherwise this is the reductus homepage.
-      reductusLink.href = fig.reductus_url || 'https://reductus.nist.gov/';
-      reductusLink.target = '_blank';
-      reductusLink.rel = 'noopener noreferrer';
-      const originalLabel = 'Open in Reductus ↗';
-      reductusLink.innerHTML = originalLabel;
-
-      // generate_plot embeds a reductus_template_id when the data came from
-      // reduce_files/export_reduction; when present, clicking this link
-      // instead launches a local browser (server-side, via
-      // reductus_external.py's Playwright injection) with the exact
-      // reduction template -- same modules/wires/files -- loaded into the
-      // reductus web editor, rather than just opening reductus_url.
-      if (fig.reductus_template_id) {
-        reductusLink.addEventListener('click', (e) => {
-          e.preventDefault();
-          if (reductusLink.classList.contains('launching')) return;
-          reductusLink.classList.add('launching');
-          reductusLink.innerHTML = 'Launching…';
-          // Open a blank tab synchronously (before the async fetch) so it isn't
-          // blocked as a pop-up. The server injects locally, in which case we
-          // close it; for a remote client we navigate it to reductus instead.
-          const remoteTab = window.open('', '_blank');
-          const resetLink = (label, ms) => {
-            reductusLink.innerHTML = label;
-            setTimeout(() => {
-              reductusLink.classList.remove('launching');
-              reductusLink.innerHTML = originalLabel;
-            }, ms);
-          };
-          fetch('/reductus/open-editor', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ template_id: fig.reductus_template_id }),
-          })
-            .then(async (r) => {
-              if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
-              const data = await r.json();
-              if (data.status === 'remote') {
-                // Server can't drive this (remote) client's browser, so open
-                // reductus ourselves and download the template for the user to
-                // load via reductus' menu → Template → Upload Template.
-                if (remoteTab) remoteTab.location = fig.reductus_url || 'https://reductus.nist.gov/';
-                const dl = document.createElement('a');
-                dl.href = data.download_url;
-                dl.download = 'reductus-template.json';
-                document.body.appendChild(dl);
-                dl.click();
-                document.body.removeChild(dl);
-                resetLink('Downloaded — in Reductus: ☰ → Template → Upload Template', 8000);
-              } else {
-                // Local: Playwright injected into a browser on this machine, so
-                // the blank tab isn't needed.
-                if (remoteTab) remoteTab.close();
-                resetLink('Launched — check your desktop', 4000);
-              }
-            })
-            .catch((err) => {
-              if (remoteTab) remoteTab.close();
-              reductusLink.classList.remove('launching');
-              reductusLink.innerHTML = originalLabel;
-              alert(`Could not open reductus editor: ${err.message}`);
-            });
-        });
-      }
-      bar.appendChild(reductusLink);
-
-      plotEl.insertAdjacentElement('afterend', bar);
-    }
+  plotEl.insertAdjacentElement('afterend', bar);
+}
 
     /*
      * Split rawText into [safeToRender, pendingTail].

@@ -10,6 +10,7 @@ import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 from urllib.parse import quote, unquote
+import webbrowser
 
 import requests
 import uvicorn
@@ -653,7 +654,7 @@ def open_reductus_editor(req: OpenReductusEditorRequest, request: Request):
 
     def _run():
         try:
-            reductus_external.inject_template_with_open_browser(instrument_id, json.dumps(payload))
+            webbrowser.open("https://reductus.nist.gov/")
         except Exception:
             timing_logger.exception("open-in-reductus-editor failed for template_id=%s", template_id)
 
