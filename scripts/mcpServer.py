@@ -1,23 +1,21 @@
 import os
-from turtle import pd
-
 from fastmcp import FastMCP
 import copy
 import html
 import importlib.util
 import io
 import json
-import os
 import re
 import subprocess
 import sys
 import time
 import uuid
-import pandas
+import pandas as pd
 from pathlib import Path
 from urllib.parse import quote, unquote
+from ldap3 import Server, Connection, SUBTREE, ALL
+from typing import Literal
 
-import pandas
 import requests
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -133,6 +131,7 @@ def _reductus_url(instrument: str | None = None, path: str | None = None,
 # uuid, so generate_plot/the UI can reference one by a short id instead of
 # round-tripping the full template JSON through the model's context window.
 TEMPLATES_DIR = GENERATED_DIR / "templates"
+
 
 
 def _template_payload(template_def: dict, config: dict) -> dict:
@@ -894,7 +893,7 @@ def search_instrument_schedule(
         csv_path = script_dir.parent / "rag" / "scraping" / csv_name
 
         # Load the selected instrument's database
-        df = pandas.read_csv(csv_path)
+        df = pd.read_csv(csv_path)
 
         # Fill empty cells with empty strings so text search doesn't crash on NaNs
         df = df.fillna("")
@@ -1596,6 +1595,84 @@ def inspect_raw_file(
     # _fit_result's last-resort fallback is a dict; keep the declared list shape.
     return result if isinstance(result, list) else [result]
 
+LdapField = Literal[
+    'givenName', 'sn', 'cn', 'mail', 'telephoneNumber', 
+    'department', 'roomNumber', 'l', 'employeeType', 'employeeNumber',
+    'nistBuildingName', 'nistBuildingNumber', 'nistRoomNumber',
+    'nistDivisionName', 'nistDivisionNumber', 'nistOUFullName',
+    'uid', 'sAMAccountName', 'otherMailbox', '*'
+]
+
+# ---------------------------------------------------------
+# TOOL 1: The Everyday Workhorse
+# ---------------------------------------------------------
+@mcp.tool()
+def search_user_by_name(
+    first_name: str | None = None,
+    last_name: str | None = None,
+    return_attributes: list[LdapField] | None = None
+) -> str:
+    """
+    Searches the NIST LDAP directory for standard user lookups by name.
+    
+    Args:
+        first_name: User's first name. Wildcards (*) are supported.
+        last_name: User's last name. Wildcards (*) are supported.
+        return_attributes: Fields to return. Defaults to all ('*').
+    if it this tool doesn't return the desired information, tell user "this information is not recorded"
+    """
+    if not first_name and not last_name:
+        return "Error: Must provide at least first_name or last_name."
+
+    search_params = {}
+    if first_name: search_params['givenName'] = first_name
+    if last_name: search_params['sn'] = last_name
+
+    filter_parts = [f"({key}={val})" for key, val in search_params.items()]
+    search_filter = f"(&{''.join(filter_parts)})" if len(filter_parts) > 1 else filter_parts[0]
+
+    return execute_ldap_search(search_filter, return_attributes)
+
+
+# ---------------------------------------------------------
+# TOOL 2: The Advanced Skeleton Key
+# ---------------------------------------------------------
+@mcp.tool()
+def advanced_ldap_query(
+    raw_filter: str,
+    return_attributes: list[LdapField] | None = None
+) -> str:
+    """
+    Executes a raw LDAP syntax query against the NIST directory.
+    Use this to search by building, division, employee type, uid, or complex AND/OR logic.
+    
+    Args:
+        raw_filter: A properly formatted LDAP filter (e.g., "(&(nistBuildingNumber=235)(employeeType=EFTP))")
+        return_attributes: Fields to return. Defaults to all ('*').
+    """
+    return execute_ldap_search(raw_filter, return_attributes)
+
+
+# ---------------------------------------------------------
+# HELPER FUNCTION (To keep code DRY)
+# ---------------------------------------------------------
+def execute_ldap_search(search_filter: str, return_attributes: list[LdapField] | None) -> str:
+    if not return_attributes:
+        return_attributes = ['*']
+
+    server = Server('people.nist.gov', port=389, get_info=ALL)
+    conn = Connection(server, auto_bind=True)
+    
+    conn.search(
+        search_base='DC=NDIR,DC=NIST,DC=GOV',
+        search_filter=search_filter,
+        attributes=return_attributes
+    )
+    
+    results = [entry.entry_attributes_as_dict for entry in conn.entries]
+    conn.unbind()
+    
+    return json.dumps(results, indent=2, default=str)    
 
 if __name__ == "__main__":
     mcp.run(transport="stdio")
