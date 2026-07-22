@@ -13,7 +13,7 @@ import uuid
 import pandas as pd
 from pathlib import Path
 from urllib.parse import quote, unquote
-from ldap3 import Server, Connection, SUBTREE, ALL
+from ldap3 import Server, Connection, SUBTREE, ALL, NONE
 from typing import Literal
 
 import requests
@@ -1660,8 +1660,8 @@ def execute_ldap_search(search_filter: str, return_attributes: list[LdapField] |
     if not return_attributes:
         return_attributes = ['*']
 
-    server = Server('people.nist.gov', port=389, get_info=ALL)
-    conn = Connection(server, auto_bind=True)
+    server = Server('people.nist.gov', port=389, get_info=NONE, connect_timeout=5)
+    conn = Connection(server, auto_bind=True, receive_timeout=5)
     
     conn.search(
         search_base='DC=NDIR,DC=NIST,DC=GOV',
