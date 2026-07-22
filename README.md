@@ -30,8 +30,9 @@ Retrieval-augmented generation over the instrument documentation is **one of tho
    ```
    The web UI is bring-your-own-key — each browser session supplies its own key per provider (OpenAI / Anthropic / Google / RChat) in a modal, so a server-side key is only an optional fallback.
 2. `pip install -r requirements.txt`
-3. Start Ollama with `nomic-embed-text` pulled (`ollama pull nomic-embed-text`) — the RAG tool embeds queries locally. Scripts auto-start `ollama serve` if it isn't running.
-4. Run an agent:
+3. Install **Node.js** (which provides `npx`) — required by both front-ends at startup to launch the `@ivotoby/openapi-mcp-server` external MCP server for the NCNR metadata API. Without it, `python scripts/app.py` aborts on startup with `FileNotFoundError: [WinError 2]` (or `npx: command not found`). Get it from [nodejs.org](https://nodejs.org/), or on Windows `winget install OpenJS.NodeJS.LTS`; reopen your terminal afterward so `npx` is on `PATH`. Verify with `npx --version`.
+4. Start Ollama with `nomic-embed-text` pulled (`ollama pull nomic-embed-text`) — the RAG tool embeds queries locally. Scripts auto-start `ollama serve` if it isn't running.
+5. Run an agent:
    - **Web UI** — `python scripts/app.py`, then open [http://127.0.0.1:8000](http://127.0.0.1:8000). Enter your API key and pick a model in the browser; each tab gets its own conversation thread.
    - **CLI** — `python scripts/agent.py` for a terminal REPL, fixed to RChat's `gpt-oss-120b`.
 
@@ -79,7 +80,7 @@ Run standalone as `python scripts/mcpServer.py` (stdio transport) to use from an
 
 ### External MCP server
 
-- **NCNR metadata API** — [`openAPI.json`](openAPI.json) (OpenAPI 3.0 spec for the CHRNS metadata search API) is served through `@ivotoby/openapi-mcp-server`, invoked automatically via `npx` at agent startup. Adds `search-instruments`, `search-experiments`, and `search-datafiles`.
+- **NCNR metadata API** — [`openAPI.json`](openAPI.json) (OpenAPI 3.0 spec for the CHRNS metadata search API) is served through `@ivotoby/openapi-mcp-server`, invoked automatically via `npx` at agent startup. Adds `search-instruments`, `search-experiments`, and `search-datafiles`. **Requires Node.js** (`npx`) to be installed — see [Quick start](#quick-start) step 3.
 
 ### Tool tests
 

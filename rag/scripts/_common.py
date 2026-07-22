@@ -44,11 +44,17 @@ def _model_loaded() -> bool:
 def ensure_ollama() -> None:
     if not _ollama_ready():
         print("Ollama not running — starting 'ollama serve' ...")
-        subprocess.Popen(
-            ["ollama", "serve"],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
+        try:
+            subprocess.Popen(
+                ["ollama", "serve"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+        except FileNotFoundError:
+            raise SystemExit(
+                "Ollama is not installed (or not on PATH). Install it from "
+                "https://ollama.com/download and reopen your shell, then retry."
+            )
         for _ in range(20):
             time.sleep(0.5)
             if _ollama_ready():
@@ -58,7 +64,13 @@ def ensure_ollama() -> None:
 
     if not _model_loaded():
         print(f"Pulling embedding model '{EMBED_MODEL}' ...")
-        result = subprocess.run(["ollama", "pull", EMBED_MODEL])
+        try:
+            result = subprocess.run(["ollama", "pull", EMBED_MODEL])
+        except FileNotFoundError:
+            raise SystemExit(
+                "Ollama is not installed (or not on PATH). Install it from "
+                "https://ollama.com/download and reopen your shell, then retry."
+            )
         if result.returncode != 0:
             raise SystemExit(f"Failed to pull '{EMBED_MODEL}'.")
 

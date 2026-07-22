@@ -4,6 +4,7 @@ import importlib.util
 import json
 import logging
 import os
+import shutil
 import sys
 import threading
 import time
@@ -263,7 +264,11 @@ GROUP_SIGNALS = {
         "path", "list ", "datasource", "intent", "find ", "search",
         "instrument", "metadata", "description", "inside the file", "hdf5",
         "nexus", "comment", "details", "about the", "schedule",
-        "log sheet", "logsheet", "log-sheet", "pdf", "ng7", "ngb30", "where"
+        "log sheet", "logsheet", "log-sheet", "pdf", "ng7", "ngb30", "where",
+        # NIST people/LDAP directory lookups (search_user_by_name / advanced_ldap_query)
+        "who is", "who's", "employee", "staff", "person", "people", "ldap",
+        "directory", "email", "phone", "office", "building", "division",
+        "contact", "uid",
     ),
     "reduction": (
         "reduce", "reduction", "template", "specular", "background",
@@ -324,6 +329,63 @@ def _safe_tool(fn):
     return wrapped
 
 
+def _resolve_npx():
+    """Return an invocable path to `npx`, robust against a stale PATH.
+
+    On Windows the launcher is `npx.cmd`. We can't rely on it being on the
+    current process's PATH: after a fresh Node install, terminals started
+    before the install (including VS Code's integrated terminal, which caches
+    its environment) still carry the old PATH, so a bare `npx.cmd` raises
+    WinError 2 and aborts startup. Prefer `shutil.which`, then fall back to the
+    known install locations, then the machine/user PATH from the registry
+    (Windows), before giving up and returning the bare command name."""
+    is_windows = os.name == "nt"
+    names = ("npx.cmd", "npx") if is_windows else ("npx",)
+
+    for name in names:
+        found = shutil.which(name)
+        if found:
+            return found
+
+    if is_windows:
+        candidates = [
+            Path(os.environ.get("ProgramFiles", r"C:\Program Files")) / "nodejs" / "npx.cmd",
+            Path(os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)")) / "nodejs" / "npx.cmd",
+            Path(os.environ.get("APPDATA", "")) / "npm" / "npx.cmd",
+            Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "nodejs" / "npx.cmd",
+        ]
+        for cand in candidates:
+            if cand.is_file():
+                return str(cand)
+
+        # Terminal PATH can be stale after an install; the registry PATH is
+        # current, so search it with a temporarily-augmented PATH.
+        try:
+            import winreg
+
+            reg_paths = []
+            for root, sub in (
+                (winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment"),
+                (winreg.HKEY_CURRENT_USER, "Environment"),
+            ):
+                try:
+                    with winreg.OpenKey(root, sub) as key:
+                        reg_paths.append(winreg.QueryValueEx(key, "Path")[0])
+                except OSError:
+                    pass
+            if reg_paths:
+                merged = os.pathsep.join(filter(None, [os.environ.get("PATH", ""), *reg_paths]))
+                found = shutil.which("npx.cmd", path=merged) or shutil.which("npx", path=merged)
+                if found:
+                    return found
+        except Exception:  # noqa: BLE001 - registry lookup is best-effort
+            pass
+
+    # Not found anywhere; return the bare name so the resulting WinError 2
+    # message still points at the missing dependency.
+    return names[0]
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # These resources are shared across all users/requests, but none of them
@@ -338,8 +400,17 @@ async def lifespan(app: FastAPI):
         )
         for name in MCP_TOOL_NAMES
     ]
-    # os.name is 'nt' on Windows, and 'posix' on Linux/macOS
-    npx_cmd = "npx.cmd" if os.name == "nt" else "npx"
+    npx_cmd = _resolve_npx()
+    # `npx.cmd` is a batch wrapper that shells out to `node.exe`, which it finds
+    # via PATH. If the launching terminal's PATH is stale (e.g. Node was just
+    # installed but VS Code's cached env predates it), npx launches but can't
+    # find node, dies, and the client sees "Connection closed". We resolved
+    # npx to an absolute path, so its parent is the Node dir -- put it on the
+    # subprocess PATH so node is always findable regardless of the parent env.
+    mcp_env = dict(os.environ)
+    npx_dir = str(Path(npx_cmd).parent)
+    if os.path.isdir(npx_dir):
+        mcp_env["PATH"] = npx_dir + os.pathsep + mcp_env.get("PATH", "")
     mcp_client = MultiServerMCPClient({
         "ncnr-api-server": {
             "transport": "stdio",
@@ -350,6 +421,7 @@ async def lifespan(app: FastAPI):
                 "--api-base-url", "https://ncnr.nist.gov/ncnrdata/metadata/api/v1",
                 "--openapi-spec", str(REPO_ROOT / "openAPI.json"),
             ],
+            "env": mcp_env,
         },
     })
 

@@ -37,6 +37,8 @@ MCP_TOOL_NAMES = [
     "export_reduction",
     "get_file_intent",
     "inspect_raw_file",
+    "search_user_by_name",
+    "advanced_ldap_query",
 ]
 
 # LangGraph's default recursion_limit of 25 caps a run at ~12 sequential tool
