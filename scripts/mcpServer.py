@@ -1628,10 +1628,20 @@ def search_user_by_name(
     if first_name: search_params['givenName'] = first_name
     if last_name: search_params['sn'] = last_name
 
-    filter_parts = [f"({key}={val})" for key, val in search_params.items()]
+    filter_parts = [f"({key}=*{val}*)" for key, val in search_params.items()]
     search_filter = f"(&{''.join(filter_parts)})" if len(filter_parts) > 1 else filter_parts[0]
 
-    return execute_ldap_search(search_filter, return_attributes)
+    response = execute_ldap_search(search_filter, return_attributes)
+    if response:
+        return response
+    else:
+        if first_name and last_name:
+            search_filter = f"(display_name=*{last_name}, {first_name}*)"
+        elif first_name:
+            search_filter = f"(display_name=*{first_name}*)"
+        else:
+            search_filter = f"(display_name=*{last_name}*)"
+        return execute_ldap_search(search_filter, return_attributes)
 
 
 # ---------------------------------------------------------
