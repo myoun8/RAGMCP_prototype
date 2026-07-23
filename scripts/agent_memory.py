@@ -84,7 +84,7 @@ COMPACTION_KEEP_RECENT = int(os.getenv("AGENT_MEMORY_KEEP_RECENT", "6"))
 # durable fact is worse than a missing one, since it is injected into every
 # future turn and the user never sees why the agent believes it. A genuinely
 # durable fact recurs, so anything dropped here gets another chance later.
-MIN_FACT_CONFIDENCE = float(os.getenv("AGENT_MEMORY_MIN_CONFIDENCE", "0.7"))
+MIN_FACT_CONFIDENCE = float(os.getenv("AGENT_MEMORY_MIN_CONFIDENCE", "0.5"))
 # Token-overlap ratio above which two facts are treated as the same fact.
 FACT_DEDUP_THRESHOLD = float(os.getenv("AGENT_MEMORY_DEDUP_THRESHOLD", "0.7"))
 
