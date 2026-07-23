@@ -425,6 +425,93 @@ def clear_user_memory(user_id: str) -> dict[str, Any]:
 
 
 # --------------------------------------------------------------------------
+# Viewing / editing the durable profile (Layer 2) from the UI
+# --------------------------------------------------------------------------
+
+def get_profile_facts(user_id: str) -> list[dict[str, Any]]:
+    """Return the durable facts stored for one user, for the memory editor UI.
+
+    Each item is ``{fact, category, confidence}``. Layer 2's editable content is
+    the facts list — identity/preferences are never populated by the extraction
+    pipeline (see EXTRACTOR_SYSTEM), so they're not surfaced here. Returns [] if
+    the user has no profile yet. Tenant-scoped."""
+    if not user_id:
+        return []
+    profile = load_profile(user_id)
+    if profile is None:
+        return []
+    return [
+        {"fact": f.fact, "category": f.category, "confidence": f.confidence}
+        for f in profile.facts
+    ]
+
+
+def replace_profile_facts(user_id: str, facts: list[dict[str, Any]]) -> dict[str, Any]:
+    """Overwrite the user's stored facts with an edited set from the UI.
+
+    Only the facts list is replaced; identity/preferences on the existing
+    profile are preserved. Blank facts are dropped, categories are validated,
+    and confidence is clamped (defaulting to 1.0 — a fact the user asserts by
+    hand is fully trusted). Writes under the same optimistic lock as
+    save_extracted_facts so a concurrent background extraction can't clobber the
+    user's edit. Tenant-scoped; never touches another user's row."""
+    if not user_id:
+        return {"saved": False, "reason": "no user_id"}
+
+    new_facts: list[ProfileFact] = []
+    for item in facts or []:
+        if not isinstance(item, dict):
+            continue
+        text = str(item.get("fact", "")).strip()
+        if not text:
+            continue
+        category = str(item.get("category", "general")).strip().lower()
+        if category not in _FACT_CATEGORIES:
+            category = "general"
+        try:
+            confidence = min(1.0, max(0.0, float(item.get("confidence", 1.0))))
+        except (TypeError, ValueError):
+            confidence = 1.0
+        new_facts.append(ProfileFact(fact=text, category=category, confidence=confidence))
+
+    with _Session() as session:
+        row = session.get(AgentUserProfile, user_id)
+        if row is None:
+            if not new_facts:
+                return {"saved": True, "user_id": user_id, "fact_count": 0}
+            profile = PersistentProfile()
+            profile.facts = new_facts
+            session.add(AgentUserProfile(
+                user_id=user_id,
+                data=profile.model_dump(mode="json"),
+                version=1,
+            ))
+            session.commit()
+            logger.info("User created memory for %s: %d fact(s).", user_id, len(new_facts))
+            return {"saved": True, "user_id": user_id, "fact_count": len(new_facts)}
+
+        profile = PersistentProfile.model_validate(row.data)
+        profile.facts = new_facts  # identity + preferences carried through unchanged
+        current_version = row.version
+        rows_hit = session.execute(
+            update(AgentUserProfile)
+            .where(
+                AgentUserProfile.user_id == user_id,
+                AgentUserProfile.version == current_version,
+            )
+            .values(data=profile.model_dump(mode="json"), version=current_version + 1)
+        ).rowcount
+        if rows_hit == 0:
+            session.rollback()
+            logger.warning("Profile version conflict editing memory for %s.", user_id)
+            return {"saved": False, "reason": "version conflict, please retry"}
+        session.commit()
+
+    logger.info("User edited memory for %s: %d fact(s) now stored.", user_id, len(new_facts))
+    return {"saved": True, "user_id": user_id, "fact_count": len(new_facts)}
+
+
+# --------------------------------------------------------------------------
 # System-prompt memory block (Layer 2 + Layer 3 rendered for injection)
 # --------------------------------------------------------------------------
 

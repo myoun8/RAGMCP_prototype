@@ -765,6 +765,190 @@
     }
     #clear-memory-confirm.show { opacity: 1; }
 
+    #edit-memory-btn {
+      width: 100%;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      color: #444;
+      background: #fff;
+      border: 1px solid #e0ddd7;
+      border-radius: 10px;
+      padding: 11px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    #edit-memory-btn:hover { background: #f0ede6; border-color: #cfcabf; }
+    #edit-memory-btn:disabled { opacity: 0.6; cursor: default; }
+
+    /* ── Edit persistent memory modal ── */
+    #memory-edit-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 260;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    #memory-edit-modal-overlay.open { display: flex; }
+    #memory-edit-modal {
+      position: relative;
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px;
+      width: 620px;
+      max-width: 100%;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    }
+    #memory-edit-modal h2 {
+      font-size: 19px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+    }
+    #memory-edit-modal .modal-subtitle {
+      font-size: 12px;
+      color: #8a8578;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    #memory-edit-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      color: #999;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+    #memory-edit-close:hover { background: #f0ede6; color: #555; }
+    #memory-edit-close svg { width: 18px; height: 18px; }
+    #memory-edit-list {
+      flex: 1;
+      overflow-y: auto;
+      margin: 0 -4px 12px;
+      padding: 0 4px;
+      min-height: 60px;
+    }
+    #memory-edit-empty {
+      font-size: 13px;
+      color: #8a8578;
+      text-align: center;
+      padding: 24px 0;
+    }
+    .memory-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .memory-row textarea {
+      flex: 1;
+      font-family: inherit;
+      font-size: 13px;
+      line-height: 1.45;
+      color: #222;
+      background: #faf9f6;
+      border: 1px solid #e0ddd7;
+      border-radius: 9px;
+      padding: 8px 10px;
+      resize: vertical;
+      min-height: 38px;
+    }
+    .memory-row textarea:focus {
+      outline: none;
+      border-color: #b9b3a6;
+      background: #fff;
+    }
+    .memory-row select {
+      font-family: inherit;
+      font-size: 12px;
+      color: #444;
+      background: #fff;
+      border: 1px solid #e0ddd7;
+      border-radius: 9px;
+      padding: 8px 6px;
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
+    .memory-row-delete {
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #c0392b;
+      background: #fff;
+      border: 1px solid #e6c9c4;
+      border-radius: 9px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .memory-row-delete:hover { background: #fbdada; }
+    .memory-row-delete svg { width: 16px; height: 16px; }
+    #memory-edit-add {
+      align-self: flex-start;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a4fd6;
+      background: none;
+      border: none;
+      padding: 4px 2px;
+      margin-bottom: 14px;
+      cursor: pointer;
+    }
+    #memory-edit-add:hover { text-decoration: underline; }
+    #memory-edit-footer {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      border-top: 1px solid #eceae4;
+      padding-top: 16px;
+    }
+    #memory-edit-status {
+      flex: 1;
+      font-size: 12px;
+      color: #8a8578;
+    }
+    #memory-edit-cancel, #memory-edit-save {
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 10px;
+      padding: 10px 18px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    #memory-edit-cancel {
+      color: #444;
+      background: #fff;
+      border: 1px solid #e0ddd7;
+    }
+    #memory-edit-cancel:hover { background: #f0ede6; }
+    #memory-edit-save {
+      color: #fff;
+      background: #1a1a1a;
+      border: 1px solid #1a1a1a;
+    }
+    #memory-edit-save:hover { background: #3a3a3a; }
+    #memory-edit-save:disabled { opacity: 0.6; cursor: default; }
+
     /* ── Disclaimer modal ── */
     #disclaimer-modal-overlay {
       display: none;
@@ -950,9 +1134,31 @@
       <div id="memory-field">
         <div class="memory-label">Long-term memory</div>
         <div class="memory-hint">The assistant remembers durable facts and past conversations for this browser. Clearing is permanent.</div>
+        <button id="edit-memory-btn" type="button">Edit persistent memory</button>
         <button id="clear-memory-btn" type="button">Clear my memory</button>
         <div id="clear-memory-confirm">Memory cleared.</div>
       </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit persistent memory modal -->
+  <div id="memory-edit-modal-overlay" role="presentation">
+    <div id="memory-edit-modal" role="dialog" aria-modal="true" aria-labelledby="memory-edit-title">
+      <button id="memory-edit-close" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+      <h2 id="memory-edit-title">Edit persistent memory</h2>
+      <p class="modal-subtitle">These are the durable facts the assistant remembers about you on this browser and uses to personalize its answers. Edit the wording, change a category, or remove anything that's wrong or out of date.</p>
+      <div id="memory-edit-list"></div>
+      <button id="memory-edit-add" type="button">+ Add a fact</button>
+      <div id="memory-edit-footer">
+        <div id="memory-edit-status"></div>
+        <button id="memory-edit-cancel" type="button">Cancel</button>
+        <button id="memory-edit-save" type="button">Save changes</button>
       </div>
     </div>
   </div>
@@ -1486,6 +1692,133 @@ function addPlotDownloads(plotEl, fig) {
         clearMemoryConfirm.classList.add('show');
         clearTimeout(clearConfirmTimeout);
         clearConfirmTimeout = setTimeout(() => clearMemoryConfirm.classList.remove('show'), 2000);
+      }
+    });
+
+    /* ── Edit persistent memory (Layer-2 durable facts) for this user_id ── */
+    const MEMORY_CATEGORIES = ['general', 'work', 'project', 'personal', 'preference'];
+    const editMemoryBtn      = document.getElementById('edit-memory-btn');
+    const memoryEditOverlay  = document.getElementById('memory-edit-modal-overlay');
+    const memoryEditClose    = document.getElementById('memory-edit-close');
+    const memoryEditCancel   = document.getElementById('memory-edit-cancel');
+    const memoryEditSave     = document.getElementById('memory-edit-save');
+    const memoryEditAdd      = document.getElementById('memory-edit-add');
+    const memoryEditList     = document.getElementById('memory-edit-list');
+    const memoryEditStatus   = document.getElementById('memory-edit-status');
+
+    function memoryEmptyState() {
+      memoryEditList.innerHTML = '<div id="memory-edit-empty">No stored facts yet. Add one below, or just keep chatting — the assistant learns durable facts on its own.</div>';
+    }
+
+    function addMemoryRow(fact) {
+      const empty = document.getElementById('memory-edit-empty');
+      if (empty) empty.remove();
+
+      const row = document.createElement('div');
+      row.className = 'memory-row';
+      row.dataset.confidence = (fact && typeof fact.confidence === 'number') ? fact.confidence : 1.0;
+
+      const ta = document.createElement('textarea');
+      ta.rows = 1;
+      ta.value = (fact && fact.fact) || '';
+      ta.placeholder = 'e.g. The user is a beamline scientist at the NCNR.';
+
+      const sel = document.createElement('select');
+      MEMORY_CATEGORIES.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        sel.appendChild(opt);
+      });
+      sel.value = (fact && MEMORY_CATEGORIES.includes(fact.category)) ? fact.category : 'general';
+
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'memory-row-delete';
+      del.setAttribute('aria-label', 'Remove this fact');
+      del.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+      del.addEventListener('click', () => {
+        row.remove();
+        if (!memoryEditList.querySelector('.memory-row')) memoryEmptyState();
+      });
+
+      row.append(ta, sel, del);
+      memoryEditList.appendChild(row);
+      return ta;
+    }
+
+    function setMemoryStatus(msg, isError) {
+      memoryEditStatus.textContent = msg || '';
+      memoryEditStatus.style.color = isError ? '#c0392b' : '#8a8578';
+    }
+
+    function openMemoryEditModal() {
+      memoryEditList.innerHTML = '<div id="memory-edit-empty">Loading…</div>';
+      setMemoryStatus('');
+      memoryEditSave.disabled = false;
+      memoryEditOverlay.classList.add('open');
+      fetch('/api/memory?user_id=' + encodeURIComponent(userId))
+        .then(resp => { if (!resp.ok) throw new Error('HTTP ' + resp.status); return resp.json(); })
+        .then(data => {
+          memoryEditList.innerHTML = '';
+          const facts = (data && data.facts) || [];
+          if (!facts.length) memoryEmptyState();
+          else facts.forEach(addMemoryRow);
+        })
+        .catch(() => {
+          memoryEditList.innerHTML = '';
+          memoryEmptyState();
+          setMemoryStatus('Could not load your saved memory.', true);
+        });
+    }
+
+    function closeMemoryEditModal() {
+      memoryEditOverlay.classList.remove('open');
+    }
+
+    editMemoryBtn.addEventListener('click', openMemoryEditModal);
+    memoryEditClose.addEventListener('click', closeMemoryEditModal);
+    memoryEditCancel.addEventListener('click', closeMemoryEditModal);
+    memoryEditOverlay.addEventListener('click', (e) => {
+      if (e.target === memoryEditOverlay) closeMemoryEditModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && memoryEditOverlay.classList.contains('open')) closeMemoryEditModal();
+    });
+    memoryEditAdd.addEventListener('click', () => {
+      const ta = addMemoryRow(null);
+      ta.focus();
+    });
+
+    memoryEditSave.addEventListener('click', async () => {
+      const facts = [];
+      memoryEditList.querySelectorAll('.memory-row').forEach(row => {
+        const text = row.querySelector('textarea').value.trim();
+        if (!text) return;
+        facts.push({
+          fact: text,
+          category: row.querySelector('select').value,
+          confidence: parseFloat(row.dataset.confidence) || 1.0,
+        });
+      });
+      memoryEditSave.disabled = true;
+      const original = memoryEditSave.textContent;
+      memoryEditSave.textContent = 'Saving…';
+      setMemoryStatus('');
+      try {
+        const resp = await fetch('/api/memory/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userId, facts }),
+        });
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        setMemoryStatus('Saved.', false);
+        setTimeout(closeMemoryEditModal, 500);
+      } catch (err) {
+        setMemoryStatus('Could not save your changes. Please try again.', true);
+      } finally {
+        memoryEditSave.disabled = false;
+        memoryEditSave.textContent = original;
       }
     });
 

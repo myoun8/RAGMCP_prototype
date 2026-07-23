@@ -520,6 +520,35 @@ async def clear_memory(req: ClearMemoryRequest):
     return await asyncio.to_thread(agent_memory.clear_user_memory, req.user_id.strip())
 
 
+@app.get("/api/memory")
+async def get_memory(user_id: str):
+    """Return the durable facts the agent stores for one user, so the UI can
+    show them in the persistent-memory editor. Scoped to the caller's user_id."""
+    if not user_id or not user_id.strip():
+        raise HTTPException(status_code=400, detail="Missing user_id.")
+    facts = await asyncio.to_thread(agent_memory.get_profile_facts, user_id.strip())
+    return {"facts": facts}
+
+
+class UpdateMemoryRequest(BaseModel):
+    user_id: str
+    facts: list[dict] = []
+
+
+@app.post("/api/memory/update")
+async def update_memory(req: UpdateMemoryRequest):
+    """Overwrite the durable facts the agent stores for one user with an edited
+    set from the UI. Scoped to the caller's own user_id."""
+    if not req.user_id or not req.user_id.strip():
+        raise HTTPException(status_code=400, detail="Missing user_id.")
+    result = await asyncio.to_thread(
+        agent_memory.replace_profile_facts, req.user_id.strip(), req.facts
+    )
+    if not result.get("saved"):
+        raise HTTPException(status_code=409, detail=result.get("reason", "Could not save memory."))
+    return result
+
+
 # Base URLs of the reductus "ncnr"-family data sources (see reductus
 # list_datasources): a raw file's path (e.g. "ncnrdata/candor/.../data/x.nxz")
 # is fetched from <base>/<path>. Only these fixed hosts are reachable, so the
