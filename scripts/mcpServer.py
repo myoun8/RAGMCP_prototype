@@ -518,6 +518,95 @@ def _normalize_instrument_token(instrument: str) -> str:
         )
     return token
 
+INSTRUMENT_MAP = {
+    # BT Series
+    "BT1": "1",
+    "BT2": "2",
+    "BT4": "3",        # FANS (BT-4)
+    "BT7": "5",
+    "BT8": "6",
+    "BT5": "13",       # BT-5 / uSANS
+    "USANS": "13",
+    
+    # CHRNS & Aliases
+    "CANDOR": "9",
+    "HFBS": "10",
+    "MACS": "11",
+    "NSE": "12",
+    "VSANS": "14",
+    "DCS": "16",
+    "MAGIK": "26",
+    "PBR": "27",
+    "PHADES": "23",
+    "NSOFT": "24",
+    
+    # NG Series & Others
+    "BD8XRAY": "7",
+    "NGB": "8",
+    "NAA": "15",
+    "NG4": "16",
+    "NG5": "17",
+    "NG6": "19",
+    "NG7": "20",
+    "NGB10": "24",
+    "NGC": "25",
+    "NGD": "26",
+    "PGAA": "28",
+    "VT5": "29",
+    "XRL": "30",
+    "NGA": "31",
+}
+
+def resolve_instrument_id(input_val: str) -> str:
+    """
+    Translates strings like 'BT5', 'bt-5', 'uSANS', or '13' 
+    into the corresponding numeric ID string required by the IMS API.
+    """
+    raw_str = str(input_val).strip()
+    
+    # 1. If it's already a digit (e.g. "13"), return it directly
+    if raw_str.isdigit():
+        return raw_str
+
+    # 2. Normalize input: remove hyphens/spaces and convert to uppercase
+    clean_key = re.sub(r'[^A-Z0-9]', '', raw_str.upper())
+
+    # 3. Lookup in dictionary
+    if clean_key in INSTRUMENT_MAP:
+        return INSTRUMENT_MAP[clean_key]
+
+    # 4. Fallback/Error if unknown
+    raise ValueError(f"Unknown instrument identifier '{input_val}'.")
+
+@mcp.tool()
+def get_schedule(instrument_name: str, start_date: str, end_date: str | None = None) -> str:
+    """
+    Get the schedule for a given NCNR instrument and date range.
+    
+    Args:
+        instrument_name (str): The shorthand name of the instrument.
+        start_date (str): The start date STRICTLY in MM/DD/YYYY format.
+        end_date (str): The optional end date STRICTLY in MM/DD/YYYY format.
+    """
+    url = "https://awswebster.ncnr.nist.gov/IMS/getSchedule.php"
+    
+    params = {
+        "instrumentId": resolve_instrument_id(instrument_name),
+        "startDate": start_date
+    }
+    if end_date:
+        params["endDate"] = end_date
+
+    try:
+        response = requests.get(url, params=params, verify=False, timeout=10)
+        
+        response.raise_for_status() 
+        
+        return response.text
+        
+    except requests.exceptions.RequestException as e:
+        return f"<error>Failed to reach the schedule database: {str(e)}</error>"
+
 
 @mcp.tool()
 def find_experiment_logsheet(instrument: str, query: str = "", top: int = 15) -> dict:

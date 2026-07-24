@@ -115,6 +115,7 @@ def _provider_for_model(model: str) -> str:
 MCP_TOOL_NAMES = [
     "run_pipeline",
     "gen_chunks",
+    "get_schedule",
     "generate_plot",
     "plot_reduction",
     "list_instruments",
@@ -227,7 +228,8 @@ TOOL_GROUPS = {
         "list_data_files", "find_raw_data_paths", "get_file_intent",
         "inspect_raw_file", "find_experiment_logsheet",
         "search-instruments", "search-experiments", "search-datafiles",
-        "search_instrument_schedule", "search_user_by_name", "advanced_ldap_query"
+        "search_instrument_schedule", "search_user_by_name", "advanced_ldap_query",
+        "get_schedule"
     },
     "reduction": {"list_reduction_templates", "reduce_files", "export_reduction"},
     "plot": {"generate_plot", "plot_reduction"},
@@ -268,7 +270,7 @@ GROUP_SIGNALS = {
         # NIST people/LDAP directory lookups (search_user_by_name / advanced_ldap_query)
         "who is", "who's", "employee", "staff", "person", "people", "ldap",
         "directory", "email", "phone", "office", "building", "division",
-        "contact", "uid",
+        "contact", "uid", "where", "room", "status"
     ),
     "reduction": (
         "reduce", "reduction", "template", "specular", "background",
