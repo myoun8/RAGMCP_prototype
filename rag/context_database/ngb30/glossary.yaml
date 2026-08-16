@@ -1,0 +1,25 @@
+pack: ngb30
+terms:
+  - term: NGB30
+    aliases:
+      - replace_with_alias
+    instrument: NGB30
+    definition: Replace with approved definition.
+  - term: NICE
+    aliases:
+      - instrument control
+      - NCNR instrument control
+    instrument: COMMON
+    definition: Replace with approved description of shared instrument-control environment.
+  - term: data reduction
+    aliases:
+      - reduction
+      - reduce data
+    instrument: NGB30
+    definition: Convert raw instrument data into scientifically usable reduced data.
+  - term: data analysis
+    aliases:
+      - fitting
+      - model fitting
+    instrument: NGB30
+    definition: Interpret reduced data using appropriate models, software, and uncertainty practices.

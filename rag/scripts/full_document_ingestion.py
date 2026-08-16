@@ -61,7 +61,7 @@ SOURCE_TYPE_MAP = {
     "data_examples": "example",
 }
 
-CONVERTIBLE_EXTENSIONS = {".html", ".pdf", ".py", ".ipynb", ".txt", ".rst", ".md"}
+CONVERTIBLE_EXTENSIONS = {".html", ".htm", ".pdf", ".py", ".ipynb", ".txt", ".rst", ".md"}
 ASSET_EXTENSIONS = {
     ".css", ".js", ".png", ".jpg", ".jpeg", ".svg", ".ico", ".gif",
     ".webp", ".woff", ".woff2", ".ttf", ".eot", ".map",
@@ -448,7 +448,7 @@ def main() -> None:
 
             # ── Extract text content ──
             ext = original.suffix.lower()
-            if ext == ".html":
+            if ext in (".html", ".htm"):
                 raw     = original.read_text(encoding="utf-8", errors="ignore")
                 content = extract_html_text(raw)
             elif ext == ".pdf":

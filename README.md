@@ -94,15 +94,25 @@ Run standalone as `python scripts/mcpServer.py` (stdio transport) to use from an
 
 ## Knowledge base (RAG)
 
-The `gen_chunks` tool retrieves from a Chroma vectorstore ([`rag/chroma_db/`](rag/chroma_db/), collection `ncnr_rag`) built from six knowledge packs under [`rag/context_database/`](rag/context_database/):
+The `gen_chunks` tool retrieves from a Chroma vectorstore ([`rag/chroma_db/`](rag/chroma_db/), collection `ncnr_rag`) built from sixteen knowledge packs under [`rag/context_database/`](rag/context_database/):
 
 ```text
 common/   Shared NCNR resources such as NICE, data access, sample environments, glossary terms
-candor/   CANDOR-specific documentation and examples
-vsans/    VSANS-specific documentation and examples
-nse/      NSE-specific documentation and examples
-magik/    MAGIK-specific documentation and examples
+bt1/      BT-1 High-Resolution Powder Diffractometer documentation and examples
+bt2nif/   BT-2 Neutron Imaging Facility (NIF) documentation and examples
+bt5/      BT5 USANS (Ultra Small Angle Neutron Scattering) documentation and examples
 bt7/      BT7-specific documentation and examples
+bt8/      BT-8 Diffractometer for Stress and Texture documentation and examples
+candor/   CANDOR-specific documentation and examples
+cnii/     Cold Neutron Imaging Instrument documentation and examples
+macs/     MACS (Multi-Axis Crystal Spectrometer) documentation and examples
+magik/    MAGIK-specific documentation and examples
+ng7/      NG7 30m SANS documentation and examples
+ngb10/    NGB10 10m SANS documentation and examples
+ngb30/    NGB30 30m SANS documentation and examples
+nse/      NSE-specific documentation and examples
+pbr/      Polarized Beam Reflectometer documentation and examples
+vsans/    VSANS-specific documentation and examples
 ```
 
 A RAG-ready pack is more than a folder of PDFs. Each contains original source snapshots (`originals/`), normalized Markdown with frontmatter metadata (`normalized/`), chunked JSONL records (`chunks/`), source inventory tracking (`source_inventory.csv`), manifests (`manifest.jsonl`), access-control labels (`access_policy.yaml`), a glossary (`glossary.yaml`), evaluation questions (`eval/`), and review artifacts (`review/`).

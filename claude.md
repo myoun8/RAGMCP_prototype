@@ -1,6 +1,6 @@
 # rag-knowledge-pack-template
 
-A RAG knowledge-pack template for NIST NCNR neutron-scattering instrument documentation, plus an agent/serving layer that answers questions over the packs and drives NCNR reduction tooling. Six packs under `rag/context_database/`: `candor/`, `vsans/`, `nse/`, `magik/`, `bt7/` (instrument-specific) and `common/` (shared NICE/NCNR-wide docs).
+A RAG knowledge-pack template for NIST NCNR neutron-scattering instrument documentation, plus an agent/serving layer that answers questions over the packs and drives NCNR reduction tooling. Sixteen packs under `rag/context_database/`: `bt1/`, `bt2nif/`, `bt5/`, `bt7/`, `bt8/`, `candor/`, `cnii/`, `macs/`, `magik/`, `ng7/`, `ngb10/`, `ngb30/`, `nse/`, `pbr/`, `vsans/` (instrument-specific) and `common/` (shared NICE/NCNR-wide docs).
 
 The repo has two layers, in two script directories:
 - **Ingestion & evaluation** (`rag/scripts/`) — builds the RAG knowledge base: normalize → chunk → validate → embed, plus retrieval-quality evaluation. Packs and the Chroma store both live under `rag/`.

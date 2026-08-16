@@ -1,5 +1,5 @@
 ---
-doc_id: 10m_sans_small_angle_neutron_scattering
+doc_id: vsans_related_10m_sans_small_angle_neutron_scattering
 source_id: VSANS-008
 title: 10m SANS - Small Angle Neutron Scattering
 instrument: VSANS
