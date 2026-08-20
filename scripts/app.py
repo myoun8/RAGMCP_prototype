@@ -202,7 +202,7 @@ MCP_TOOL_NAMES = [
 # detail -- where this list needs one plain-English line per tool. Keep in
 # sync with MCP_TOOL_NAMES; a tool missing here just shows no description.
 TOOL_DESCRIPTIONS = {
-    "gen_chunks": "Searches the NCNR knowledge base for documentation relevant to a question. Currently we have context for: bt7, candor, magik, nse, and vsans. More coming soon!",
+    "gen_chunks": "Searches the NCNR knowledge base for documentation relevant to a question. Currently we have context for 16/28 instruments. More coming soon!",
     "get_schedule": "Looks up the experiment schedule for an NCNR instrument over a date range.",
     "search_instrument_schedule": "Looks up historical experiment schedules for SANS/USANS instruments.",
     "inspect_raw_file": "Reads free-text descriptions and metadata from inside a raw NeXus/HDF5 file.",
