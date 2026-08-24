@@ -1719,7 +1719,7 @@ def inspect_raw_file(
     return result if isinstance(result, list) else [result]
 
 @mcp.tool()
-def getHeliumInventory() -> str:
+def get_helium_inventory() -> str:
     '''
     Returns the current inventory of helium at NIST NCNR.
     '''
