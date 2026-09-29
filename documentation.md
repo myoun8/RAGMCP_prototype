@@ -11,7 +11,7 @@ For what the system *is* and what each tool does, see [`README.md`](README.md). 
 | Requirement | Why | Check |
 |---|---|---|
 | **Python 3.10+** | Everything | `python --version` |
-| **Ollama** | `gen_chunks` embeds queries locally with `bge-large` | `ollama --version` |
+| **Ollama** | `gen_chunks` embeds queries locally with `embeddinggemma` | `ollama --version` |
 | **Node.js / `npx`** | The NCNR metadata API is served through `@ivotoby/openapi-mcp-server`, launched via `npx` at agent startup | `npx --version` |
 | **An LLM API key** | RChat (NIST-hosted), or OpenAI / Anthropic / Google | see step 2 |
 | **Network access to NCNR** | Reduction, raw-file, log-sheet, and schedule tools all call live NCNR servers | — |
@@ -19,7 +19,7 @@ For what the system *is* and what each tool does, see [`README.md`](README.md). 
 Ollama needs the embedding model pulled once:
 
 ```bash
-ollama pull bge-large
+ollama pull embeddinggemma
 ```
 
 You do not need to start `ollama serve` yourself — `rag/scripts/_common.py`'s `ensure_ollama()` starts it and pulls the model if it's missing. Pulling ahead of time just avoids a slow first run.
@@ -229,7 +229,7 @@ Note that importing `mcpServer` starts Ollama and opens Chroma, so a bare import
 
 ### Environment
 
-- **Ollama must be reachable or nothing retrieves.** Scripts auto-start `ollama serve` and pull `bge-large`, but a first run with no model pulled is slow and looks like a hang.
+- **Ollama must be reachable or nothing retrieves.** Scripts auto-start `ollama serve` and pull `embeddinggemma`, but a first run with no model pulled is slow and looks like a hang.
 - **`npx` must be on PATH.** Without Node, the metadata-API MCP server fails to start at agent startup. Windows is handled (`npx.cmd`).
 - **Most tools need live NCNR network access.** Reduction, raw-file inspection, log sheets, and the schedule all hit NCNR servers; off-network they fail rather than degrade.
 - **`setup.sh` is macOS/Linux only** — bash, `python3`, and `source .venv/bin/activate`. Use the manual steps on Windows.

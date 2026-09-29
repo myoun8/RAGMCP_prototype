@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Evaluate embedding-based retrieval (Chroma + Ollama bge-large) using the
+"""Evaluate embedding-based retrieval (Chroma + Ollama embeddinggemma) using the
 RAGAS-standard retrieval metrics: Context Precision@K and Context Recall.
 
 Unlike the ragas package's non-LLM metrics (which infer relevance via fuzzy
@@ -100,7 +100,7 @@ def main() -> int:
                 continue
             m = ragas_metrics(details)
             rows.append({
-                "run_date": run_date, "git_commit": commit, "embed_model": "bge-large",
+                "run_date": run_date, "git_commit": commit, "embed_model": "embeddinggemma",
                 "pack": pack_name, "top_n": args.top, "queries": m["queries"],
                 "mean_context_precision": m["mean_context_precision"], "mean_context_recall": m["mean_context_recall"],
             })

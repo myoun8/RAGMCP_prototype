@@ -1,9 +1,9 @@
 """
-Embed normalized RAG chunks with Ollama's bge-large model and load into Chroma.
+Embed normalized RAG chunks with Ollama's embeddinggemma model and load into Chroma.
 
 Assumptions (change at top if different):
-  - Model:   bge-large via Ollama (1024-dim, cosine)
-  - Ollama:  running locally, model pulled (`ollama pull nomic-embed-text`)
+  - Model:   embeddinggemma via Ollama (768-dim, cosine)
+  - Ollama:  running locally, model pulled (`ollama pull embeddinggemma`)
   - Chroma:  PersistentClient -> ./chroma_db
   - Input:   per-pack *_chunks.jsonl files, one JSON object per line
   - Output:  ONE collection "ncnr_rag", filter by metadata
@@ -79,16 +79,12 @@ def sanitize_metadata(meta):
     return clean
 
 
-DOC_PREFIX = ""  # bge-large's asymmetric-instruction convention puts the retrieval
-                 # instruction only on the query side (see QUERY_PREFIX in _common.py);
-                 # documents are embedded with no instruction prefix at all, unlike
-                 # nomic-embed-text which prefixes both sides.
-
-
 def embed_text_for_doc(text, doc_id=None, section=None):
     """
-    Prepend lightweight context (doc_id / section) so terse technical chunks
-    embed with semantic anchors.
+    Wrap a chunk in EmbeddingGemma's document-side retrieval template
+    ("title: {title} | text: {content}"; pairs with QUERY_PREFIX in _common.py),
+    using doc_id / section as the title so terse technical chunks embed with
+    semantic anchors.
 
     Uses doc_id rather than a "title" field -- no chunk metadata actually
     carries a title, and section names alone (e.g. "Overview", "Contacts")
@@ -96,12 +92,8 @@ def embed_text_for_doc(text, doc_id=None, section=None):
     same-named sections closer together in embedding space instead of
     disambiguating them.
     """
-    prefix_bits = [b for b in (doc_id, section) if b]
-    if prefix_bits:
-        body = " | ".join(prefix_bits) + "\n\n" + text
-    else:
-        body = text
-    return DOC_PREFIX + body
+    title = " | ".join(b for b in (doc_id, section) if b) or "none"
+    return f"title: {title} | text: {text}"
 
 
 def main():
@@ -133,7 +125,7 @@ def main():
         )
         metas.append(meta)
 
-    # ---- embed (document side: search_document: prefix, normalized) ----
+    # ---- embed (document side: EmbeddingGemma title/text template) ----
     # delete-and-recreate the collection so re-runs are clean (TEST index, safe to wipe).
     # Wrapped in langchain_chroma.Chroma so the collection this script produces is the
     # same vectorstore object query_rag.py / the eval scripts consume as a retriever.
@@ -151,8 +143,8 @@ def main():
 
     print("Adding to Chroma ...")
     # Chroma.add_texts()/from_documents() always re-embeds page_content themselves
-    # (no precomputed-embeddings parameter), which would discard the search_document:
-    # prefix + doc_id/section enrichment baked into docs_for_embed above and embed the
+    # (no precomputed-embeddings parameter), which would discard the title/text
+    # template + doc_id/section enrichment baked into docs_for_embed above and embed the
     # stored (unenriched) text instead. Reaching into the wrapped raw chromadb
     # collection preserves "embed enriched text, store/display original text",
     # identical to the add() call this replaces.

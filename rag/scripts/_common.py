@@ -22,9 +22,11 @@ PACKS = [
 
 CHROMA_PATH = Path(__file__).parent.parent / "chroma_db"
 COLLECTION = "ncnr_rag"
-EMBED_MODEL = "bge-large"
+EMBED_MODEL = "embeddinggemma"
 EMBED_BASE_URL = "http://localhost:11434"
-QUERY_PREFIX = "Represent this sentence for searching relevant passages: "
+# EmbeddingGemma's retrieval prompt template (query side); Ollama does not add it
+# automatically. The matching document-side template lives in embed_and_ingest.py.
+QUERY_PREFIX = "task: search result | query: "
 
 
 def _ollama_ready(timeout: float = 0.5) -> bool:
@@ -152,7 +154,7 @@ def open_vectorstore(*, base_url: str | None = None, recreate: bool = False):
             pass
         vectorstore = Chroma(
             client=client, collection_name=COLLECTION, embedding_function=embedder,
-            collection_metadata={"hnsw:space": "cosine"},  # match normalized Nomic Embed vectors
+            collection_metadata={"hnsw:space": "cosine"},  # match normalized EmbeddingGemma vectors
         )
     else:
         vectorstore = Chroma(client=client, collection_name=COLLECTION, embedding_function=embedder)

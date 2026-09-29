@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Evaluate embedding-based retrieval (Chroma + Ollama bge-large) against each
+"""Evaluate embedding-based retrieval (Chroma + Ollama embeddinggemma) against each
 pack's eval/*.jsonl questions: top-1/top-k/all-sources accuracy and MRR.
 
 Requires scripts/embed_and_ingest.py to have been run first (populates ./chroma_db).
@@ -93,7 +93,7 @@ def main() -> int:
                 continue
             m = topk_metrics(details)
             rows.append({
-                "run_date": run_date, "git_commit": commit, "embed_model": "bge-large",
+                "run_date": run_date, "git_commit": commit, "embed_model": "embeddinggemma",
                 "pack": pack_name, "top_n": args.top, "queries": m["queries"],
                 "top1_accuracy": m["top1_accuracy"], "topk_accuracy": m["topk_accuracy"],
                 "all_sources_accuracy": m["all_sources_accuracy"], "mrr": m["mrr"],
