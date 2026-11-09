@@ -29,6 +29,7 @@ Retrieval-augmented generation over the instrument documentation is **one of tho
    RCHAT_API_KEY=...      # required for the CLI agent and the ingestion pipeline
    ```
    The web UI is bring-your-own-key — each browser session supplies its own key per provider (OpenAI / Anthropic / Google / RChat) in a modal, so a server-side key is only an optional fallback.
+   The RChat picker loads the current chat-model catalog using your key (or the server fallback) on page load, when opening the model dialog, and after saving keys. Embedding models are excluded. If discovery is unavailable, it offers `Muse-Glimmer-30B` and `Muse-Spark-Open-816B-A42B-NVFP4`; model selections persist in this browser. The chat request includes the provider so newly published RChat model names route correctly.
 2. `pip install -r requirements.txt`
 3. Install **Node.js** (which provides `npx`) — required by both front-ends at startup to launch the `@ivotoby/openapi-mcp-server` external MCP server for the NCNR metadata API. Without it, `python scripts/app.py` aborts on startup with `FileNotFoundError: [WinError 2]` (or `npx: command not found`). Get it from [nodejs.org](https://nodejs.org/), or on Windows `winget install OpenJS.NodeJS.LTS`; reopen your terminal afterward so `npx` is on `PATH`. Verify with `npx --version`.
 4. Start Ollama with `embeddinggemma` pulled (`ollama pull embeddinggemma`) — the RAG tool embeds queries locally. Scripts auto-start `ollama serve` if it isn't running.

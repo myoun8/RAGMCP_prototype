@@ -156,19 +156,11 @@ MODEL_CATALOG = {
 }
 
 
-def _provider_for_model(model: str) -> str:
-    for provider, models in MODEL_CATALOG.items():
-        if model in models:
-            return provider
-    # Fall back to prefix sniffing so callers can pass a model that isn't
-    # in the curated dropdown list (e.g. a newer snapshot name).
-    if model.startswith("gpt-") or model.startswith("o1") or model.startswith("o3"):
-        return "openai"
-    if model.startswith("claude-"):
-        return "anthropic"
-    if model.startswith("gemini-"):
-        return "google"
-    raise HTTPException(status_code=400, detail=f"Unrecognized model '{model}'. Cannot determine provider.")
+def _provider_for_model(model: str, provider: str | None = None) -> str:
+    try:
+        return provider_for_model(model, provider)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 MCP_TOOL_NAMES = [
@@ -590,6 +582,7 @@ class ChatRequest(BaseModel):
     message: str
     thread_id: str = "default"
     model: str
+    provider: str | None = None
     api_keys: dict[str, str] = {}
     # Stable per-browser id (localStorage) that keys durable memory across
     # threads and page reloads. Distinct from thread_id, which scopes one
@@ -610,6 +603,17 @@ async def root():
 @app.get("/api/models")
 async def list_models():
     return {"models": MODEL_CATALOG}
+
+
+class ModelCatalogRequest(BaseModel):
+    api_keys: dict[str, str] = {}
+
+
+@app.post("/api/models")
+async def refresh_models(req: ModelCatalogRequest):
+    key = req.api_keys.get("rchat", "").strip() or SERVER_API_KEYS.get("rchat", "")
+    models, live = await asyncio.to_thread(discover_models, key)
+    return {"models": models, "rchat_live": live}
 
 
 @app.get("/api/tools")
@@ -1022,11 +1026,11 @@ def _extract_reasoning(chunk) -> str:
     return ""
 
 
-def _build_agent(app: FastAPI, model: str, api_keys: dict[str, str], message: str = "", memory_block: str = ""):
+def _build_agent(app: FastAPI, model: str, api_keys: dict[str, str], message: str = "", memory_block: str = "", provider: str | None = None):
     if not model or not model.strip():
         raise HTTPException(status_code=400, detail="Missing model selection.")
 
-    provider = _provider_for_model(model)
+    provider = _provider_for_model(model, provider)
     api_key = (api_keys or {}).get(provider, "").strip() or SERVER_API_KEYS.get(provider, "")
     if not api_key:
         raise HTTPException(
@@ -1081,7 +1085,7 @@ async def chat(req: ChatRequest):
     memory_block = await asyncio.to_thread(
         agent_memory.memory_prompt_block, req.user_id, req.message
     )
-    agent_executor = _build_agent(app, req.model, req.api_keys, req.message, memory_block)
+    agent_executor = _build_agent(app, req.model, req.api_keys, req.message, memory_block, req.provider)
     config = {
         "configurable": {"thread_id": req.thread_id},
         "recursion_limit": AGENT_RECURSION_LIMIT,
@@ -1264,7 +1268,7 @@ async def chat_stream(req: ChatRequest, request: Request):
     memory_block = await asyncio.to_thread(
         agent_memory.memory_prompt_block, req.user_id, req.message
     )
-    agent_executor = _build_agent(app, req.model, req.api_keys, req.message, memory_block)
+    agent_executor = _build_agent(app, req.model, req.api_keys, req.message, memory_block, req.provider)
 
     async def generate():
         config = {

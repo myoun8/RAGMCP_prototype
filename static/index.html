@@ -8,6 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+  <script src="/static/model-picker.js"></script>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1364,7 +1365,7 @@
     </button>
     <button id="model-key-btn" class="keys-missing" aria-haspopup="dialog" aria-expanded="false">
       <span class="key-dot"></span>
-      <span id="model-key-label">gpt-oss-120b</span>
+      <span id="model-key-label">Muse-Glimmer-30B</span>
       <span class="chevron-mini">▾</span>
     </button>
   </div>
@@ -1413,10 +1414,8 @@
             <option value="gemini-3.5-flash" data-provider="google">gemini-3.5-flash</option>
           </optgroup>
           <optgroup label="NIST rchat">
-            <option value="gpt-oss-120b" data-provider="rchat">gpt-oss-120b</option>
-            <option value="gemma-4-31B-it" data-provider="rchat">gemma-4-31B-it</option>
-            <option value="Llama-4-Maverick-17B-128E-Instruct-FP8" data-provider="rchat">Llama-4-Maverick-17B-128E-Instruct-FP8</option>
-            <option value="NVIDIA-Nemotron-3-Super-120B-A12B-FP8" data-provider="rchat">NVIDIA-Nemotron-3-Super-120B-A12B-FP8</option>
+            <option value="Muse-Glimmer-30B" data-provider="rchat">Muse-Glimmer-30B</option>
+            <option value="Muse-Spark-Open-816B-A42B-NVFP4" data-provider="rchat">Muse-Spark-Open-816B-A42B-NVFP4</option>
           </optgroup>
         </select>
       </div>
@@ -1886,8 +1885,8 @@ micBtn.addEventListener('click', async () => {
       localStorage.setItem('ncnr_user_id', userId);
     }
 
-    /* ── selected model state, defaults to gpt-oss-120b (rchat) ── */
-    let selectedModel = 'gpt-oss-120b';
+    /* ── selected model state, defaults to Muse Glimmer (rchat) ── */
+    let selectedModel = 'Muse-Glimmer-30B';
     modelSelect.value = selectedModel;
     modelSelect.addEventListener('change', () => {
       selectedModel = modelSelect.value;
@@ -1940,6 +1939,12 @@ micBtn.addEventListener('click', async () => {
     }
     updateModelKeyBtn();
 
+    const modelPicker = new NcnrModelPicker(modelSelect, localStorage, () => {
+      selectedModel = modelSelect.value;
+      updateModelKeyBtn();
+    }, () => isGenerating);
+    modelPicker.refresh(apiKeys.rchat);
+
     fetch('/api/key-status')
       .then(r => r.json())
       .then(status => {
@@ -1955,6 +1960,7 @@ micBtn.addEventListener('click', async () => {
     const apiKeySaveConfirm  = document.getElementById('api-key-save-confirm');
 
     function openApiKeyModal() {
+      modelPicker.refresh(apiKeys.rchat);
       apiKeyModalOverlay.classList.add('open');
       modelKeyBtn.setAttribute('aria-expanded', 'true');
     }
@@ -2177,6 +2183,7 @@ micBtn.addEventListener('click', async () => {
       updateModelKeyBtn();
 
       apiKeySaveConfirm.classList.add('show');
+      modelPicker.refresh(apiKeys.rchat);
       clearTimeout(saveConfirmTimeout);
       saveConfirmTimeout = setTimeout(() => apiKeySaveConfirm.classList.remove('show'), 1500);
       setTimeout(closeApiKeyModal, 500);
@@ -2970,6 +2977,7 @@ micBtn.addEventListener('click', async () => {
             message: text,
             thread_id: sendChatId,
             model: selectedModel,
+            provider: modelSelect.selectedOptions[0]?.dataset.provider,
             api_keys: apiKeys,
             user_id: userId,
           }),
